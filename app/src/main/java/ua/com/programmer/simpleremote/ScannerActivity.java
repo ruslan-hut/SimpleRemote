@@ -74,7 +74,7 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
             }
 
             @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
+            public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
                 if (barcodes.size() != 0) {
@@ -136,15 +136,15 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
 
         cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
-            public void surfaceCreated(SurfaceHolder holder) {
+            public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 startCamera();
             }
 
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) { }
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) { }
 
             @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
+            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
                 cameraSource.stop();
             }
         });

@@ -19,12 +19,6 @@ import ua.com.programmer.simpleremote.settings.AppSettings;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SelectDataTypeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SelectDataTypeFragment extends Fragment {
 
     private static final String DATA_TYPE_CLASS = "data_type_class";
@@ -34,9 +28,7 @@ public class SelectDataTypeFragment extends Fragment {
     private Context context;
     private Adapter adapter;
 
-    public SelectDataTypeFragment() {
-        // Required empty public constructor
-    }
+    public SelectDataTypeFragment() {}
 
     static SelectDataTypeFragment newInstance(String dataTypeClass) {
         SelectDataTypeFragment fragment = new SelectDataTypeFragment();
@@ -112,8 +104,6 @@ public class SelectDataTypeFragment extends Fragment {
         void onFragmentInteraction(DataBaseItem currentListItem);
     }
 
-    ///////// Recycler Adapter //////////////////////////////////////
-
     static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvDescription;
@@ -130,7 +120,7 @@ public class SelectDataTypeFragment extends Fragment {
 
     class Adapter extends RecyclerView.Adapter<SelectDataTypeFragment.ViewHolder>{
 
-        private ArrayList<DataBaseItem> listItems = new ArrayList<>();
+        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
 
         void loadListItems(ArrayList<DataBaseItem> values){
             listItems.clear();
