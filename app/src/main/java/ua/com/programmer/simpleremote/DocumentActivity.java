@@ -98,7 +98,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             @Override
             public int getSwipeDirs(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                if (contentAdapter.getItemViewType(viewHolder.getAdapterPosition()) == 1){
+                if (contentAdapter.getItemViewType(viewHolder.getBindingAdapterPosition()) == RecyclerView.NO_POSITION){
                     return 0;
                 }
                 return super.getSwipeDirs(recyclerView, viewHolder);
@@ -106,7 +106,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                contentAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+                contentAdapter.onItemDismiss(viewHolder.getBindingAdapterPosition());
             }
 
             @Override
