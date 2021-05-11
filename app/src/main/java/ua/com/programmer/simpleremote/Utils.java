@@ -35,9 +35,11 @@ public class Utils {
         }
     }
 
-    public void log(String message){
-        message = cleanMessage(message);
-        Log.i("XBUG",message);
+    public void debug(String message){
+        if (BuildConfig.DEBUG){
+            message = cleanMessage(message);
+            Log.d("XBUG",message);
+        }
     }
 
     StringBuilder readLogs() {

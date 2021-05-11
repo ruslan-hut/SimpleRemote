@@ -126,8 +126,6 @@ public class DocumentsListFragment extends Fragment{
         void onListScrolled(int dy);
     }
 
-    ///////// Recycler Adapter //////////////////////////////////////
-
     static class DocumentViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvNumber;
@@ -223,7 +221,7 @@ public class DocumentsListFragment extends Fragment{
 
     class DocumentsAdapter extends RecyclerView.Adapter<DocumentViewHolder>{
 
-        private ArrayList<DataBaseItem> listItems = new ArrayList<>();
+        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
 
         void loadListItems(ArrayList<DataBaseItem> values){
             listItems.clear();

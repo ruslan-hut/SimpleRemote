@@ -80,7 +80,7 @@ class DataLoader {
 
     private void loadDataFromResponse(JSONObject response){
 
-        //utils.log("i","response: "+response.toString());
+        utils.debug("<<< "+response.toString().substring(0,100));
 
         if (response.has("result")) {
             try {
@@ -156,7 +156,7 @@ class DataLoader {
 
     private void postDataSet(String type, String data){
 
-        //utils.log("i","request: "+type+" "+data);
+        utils.debug(">>> "+type+" "+data);
 
         //===========================================
         //   make JSON object for sending
