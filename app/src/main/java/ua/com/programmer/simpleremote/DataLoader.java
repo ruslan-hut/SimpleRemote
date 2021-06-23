@@ -80,7 +80,12 @@ class DataLoader {
 
     private void loadDataFromResponse(JSONObject response){
 
-        utils.debug("<<< "+response.toString().substring(0,100));
+        String responseString = response.toString();
+        if (responseString.length() < 500) {
+            utils.debug("<<< " + responseString);
+        }else{
+            utils.debug("<<< "+responseString.substring(0,500)+"...");
+        }
 
         if (response.has("result")) {
             try {
