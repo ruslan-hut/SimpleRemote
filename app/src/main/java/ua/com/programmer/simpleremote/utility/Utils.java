@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import ua.com.programmer.simpleremote.BuildConfig;
@@ -35,6 +36,14 @@ public class Utils {
                 Log.w("XBUG",message);
                 break;
         }
+    }
+
+    public void warn(String message){
+        Log.w("XBUG",message);
+    }
+
+    public void error(String message){
+        Log.e("XBUG",message);
     }
 
     public void debug(String message){
@@ -116,6 +125,34 @@ public class Utils {
         }catch (Exception ex){
             //log("w","round String: "+ex.toString());
         }
+        return result;
+    }
+
+    /**
+     * Returns current timestamp in seconds
+     */
+    public long currentTime(){
+        return GregorianCalendar.getInstance().getTimeInMillis() / 1000;
+    }
+
+    /**
+     * Calculates difference between given times and forms readable description.
+     *
+     * @param begin time of period beginning, seconds
+     * @param end time of period ending, seconds
+     * @return readable text description of time period
+     */
+    public String showTime(long begin, long end){
+        long seconds = end - begin;
+        long days = seconds/86400;
+        long hours = (seconds - days*86400) / 3600;
+        long minutes = (seconds - days*86400 - hours*3600) / 60;
+        seconds = seconds - days*86400 - hours*3600 - minutes*60;
+        String result = "";
+        if (days > 0) result = ""+days+" d ";
+        if (hours > 0 || !result.isEmpty()) result = result + hours + " h ";
+        if (minutes > 0 || !result.isEmpty()) result = result + minutes + " m ";
+        result = result + seconds + " s ";
         return result;
     }
 

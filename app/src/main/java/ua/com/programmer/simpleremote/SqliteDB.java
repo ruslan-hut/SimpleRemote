@@ -106,4 +106,14 @@ public class SqliteDB {
         }
         return resultArray;
     }
+
+    public DataBaseItem getImage(String guid){
+        DataBaseItem item = new DataBaseItem();
+        //TODO: return image parameters (?)
+        return item;
+    }
+
+    public ArrayList<DataBaseItem> getImages(){
+        return new ArrayList<>();
+    }
 }

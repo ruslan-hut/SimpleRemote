@@ -3,6 +3,9 @@ package ua.com.programmer.simpleremote.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Base64;
+
+import com.bumptech.glide.load.model.LazyHeaders;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,6 +101,14 @@ public class AppSettings {
 
     public String getUserPassword() {
         return sharedPreferences.getString("password", "");
+    }
+
+    public LazyHeaders getAuthHeaders(){
+        String namePass = getUserName()+":"+getUserPassword();
+        String authToken = "Basic "+ Base64.encodeToString(namePass.getBytes(), Base64.NO_WRAP);
+        return new LazyHeaders.Builder()
+                .addHeader("Authorization",authToken)
+                .build();
     }
 
     public int getConnectionID() {
