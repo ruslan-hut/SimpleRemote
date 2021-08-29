@@ -45,7 +45,7 @@
         <activity
             android:name=".ScannerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ConnectionSettingsActivity" />
+        <activity android:name=".settings.ConnectionSettingsActivity" />
         <activity android:name=".LoginActivity" />
     </application>
 

@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
-import ua.com.programmer.simpleremote.Utils;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class DocumentField {
 

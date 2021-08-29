@@ -1,6 +1,10 @@
 package ua.com.programmer.simpleremote;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.ActionBar;
@@ -25,12 +29,13 @@ import java.util.ArrayList;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class CatalogListActivity extends AppCompatActivity implements DataLoader.DataLoaderListener{
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private CatalogListAdapter catalogListAdapter;
-    private Utils utils = new Utils();
+    private final Utils utils = new Utils();
     private String catalogType;
     private String currentGroup = "";
     private String currentGroupName = "";
@@ -38,6 +43,9 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
     private TextView noDataText;
     private Boolean itemSelectionMode;
     private String documentGUID;
+
+    private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {});
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +92,7 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
         documentGUID = intent.getStringExtra("documentGUID");
 
         swipeRefreshLayout = findViewById(R.id.catalog_swipe);
-        swipeRefreshLayout.setOnRefreshListener(() -> updateList());
+        swipeRefreshLayout.setOnRefreshListener(this::updateList);
 
         RecyclerView recyclerView = findViewById(R.id.catalog_recycler);
         recyclerView.setHasFixedSize(true);
@@ -140,20 +148,18 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            case R.id.action_search:
-                EditText editText = findViewById(R.id.edit_search);
-                if (editText.getVisibility() == View.VISIBLE) {
-                    editText.setVisibility(View.GONE);
-                    searchFilter = "";
-                    updateList();
-                }else {
-                    editText.setVisibility(View.VISIBLE);
-                }
-                break;
+
+        if (id == android.R.id.home) onBackPressed();
+
+        if (id == R.id.action_search){
+            EditText editText = findViewById(R.id.edit_search);
+            if (editText.getVisibility() == View.VISIBLE) {
+                editText.setVisibility(View.GONE);
+                searchFilter = "";
+                updateList();
+            }else {
+                editText.setVisibility(View.VISIBLE);
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -174,7 +180,7 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
             intent.putExtra("currentGroupName", dataBaseItem.getString("description"));
             intent.putExtra("itemSelectionMode", itemSelectionMode);
             if (itemSelectionMode) {
-                startActivityForResult(intent, 3);
+                openNextScreen.launch(intent);
             }else {
                 startActivity(intent);
             }
@@ -189,10 +195,7 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null){
-            return;
-        }
-        if (requestCode == 3){
+        if (data != null){
             Intent intent = getIntent();
             intent.putExtra("cacheKey", data.getStringExtra("cacheKey"));
             setResult(RESULT_OK, intent);
@@ -257,8 +260,9 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
 
     class CatalogListAdapter extends RecyclerView.Adapter<CatalogViewHolder>{
 
-        private ArrayList<DataBaseItem> listItems = new ArrayList<>();
+        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
 
+        @SuppressLint("NotifyDataSetChanged")
         void loadListItems(ArrayList<DataBaseItem> values){
             listItems.clear();
             listItems.addAll(values);

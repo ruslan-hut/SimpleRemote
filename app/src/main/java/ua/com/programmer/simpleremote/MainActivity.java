@@ -2,6 +2,9 @@ package ua.com.programmer.simpleremote;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
@@ -22,9 +25,11 @@ import java.util.ArrayList;
 
 import ua.com.programmer.simpleremote.serviceUtils.DocumentsFilterActivity;
 import ua.com.programmer.simpleremote.settings.AppSettings;
+import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -40,6 +45,9 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton floatingActionButton;
     private final Utils utils = new Utils();
     private final Cache cache = Cache.getInstance();
+
+    private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {});
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,22 +107,19 @@ public class MainActivity extends AppCompatActivity
             AppSettings.getInstance(this).setAutoConnectMode(false);
         }
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, 1);
+        openNextScreen.launch(intent);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //requestCode = 1: from Login activity
-        if (requestCode == 1) {
-            if (resultCode == 1) {
-                //on successful connection with server
-                if (fragmentTAG == null || fragmentTAG.equals("")){
-                    attachFragment(Constants.DOCUMENTS);
-                }
-            }else {
-                //connection failed
-                finish();
+        if (resultCode == 1) {
+            //on successful connection with server
+            if (fragmentTAG == null || fragmentTAG.equals("")){
+                attachFragment(Constants.DOCUMENTS);
             }
+        }else {
+            //connection failed
+            finish();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

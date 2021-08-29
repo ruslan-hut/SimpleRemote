@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.specialItems.DocumentField;
-import ua.com.programmer.simpleremote.Utils;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class AppSettings {
 

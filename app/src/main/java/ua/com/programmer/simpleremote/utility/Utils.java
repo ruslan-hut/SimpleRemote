@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote.utility;
 
 import android.util.Log;
 
@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.Locale;
 
+import ua.com.programmer.simpleremote.BuildConfig;
+import ua.com.programmer.simpleremote.R;
 import ua.com.programmer.simpleremote.settings.Constants;
 
 public class Utils {
@@ -42,7 +44,7 @@ public class Utils {
         }
     }
 
-    StringBuilder readLogs() {
+    public StringBuilder readLogs() {
         StringBuilder logBuilder = new StringBuilder();
         try {
             Process process = Runtime.getRuntime().exec("logcat -d XBUG:D *:E");
@@ -67,7 +69,7 @@ public class Utils {
         return logBuilder;
     }
 
-    int getPageTitleID(String tag){
+    public int getPageTitleID(String tag){
         switch (tag){
             case Constants.GOODS: return R.string.header_goods_list;
             case Constants.SHIP: return R.string.document_title_shipment;
@@ -86,27 +88,27 @@ public class Utils {
         return String.format(Locale.getDefault(),"%1$td.%1$tm.%1$tY",currentDate);
     }
 
-    String format (double i, int accuracy) {
+    public String format(double i, int accuracy) {
         return String.format(Locale.getDefault(),"%."+accuracy+"f",i).replace(",",".");
     }
 
-    String formatAsInteger (double i) {
+    public String formatAsInteger (double i) {
         if (i == round(i,0)) {
             return ""+((int) i);
         }
         return format(i,3);
     }
 
-    String formatAsInteger (String i) {
+    public String formatAsInteger (String i) {
         double number = round(i,3);
         return formatAsInteger(number);
     }
 
-    double round (double i, int accuracy) {
+    public double round (double i, int accuracy) {
         return Double.parseDouble(format(i,accuracy));
     }
 
-    double round (String i, int accuracy) {
+    public double round(String i, int accuracy) {
         double result=0;
         //need to use try{} for cases when input string contains letters
         try {

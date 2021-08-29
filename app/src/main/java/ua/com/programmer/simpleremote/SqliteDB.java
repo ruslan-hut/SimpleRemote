@@ -9,8 +9,9 @@ import java.util.ArrayList;
 
 import ua.com.programmer.simpleremote.settings.AppSettings;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.Utils;
 
-class SqliteDB {
+public class SqliteDB {
 
     private static SQLiteDatabase database;
 
@@ -45,7 +46,7 @@ class SqliteDB {
         return resultArray;
     }
 
-    void updateSettings(DataBaseItem item){
+    public void updateSettings(DataBaseItem item){
         String alias = item.getString("alias");
         if (alias.equals("")){
             return;
@@ -59,7 +60,7 @@ class SqliteDB {
         }
     }
 
-    void deleteSettings(String alias){
+    public void deleteSettings(String alias){
         database.delete("connections","alias=?",new String[]{alias});
     }
 

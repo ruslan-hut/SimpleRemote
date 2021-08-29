@@ -1,8 +1,12 @@
 package ua.com.programmer.simpleremote;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -39,6 +43,7 @@ import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.specialItems.DocumentField;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class DocumentActivity extends AppCompatActivity implements DataLoader.DataLoaderListener {
 
@@ -63,6 +68,9 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private DocumentField field2;
     private DocumentField field3;
     private DocumentField field4;
+
+    private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {});
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -526,7 +534,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private void openScanner(){
         Intent intent = new Intent(this, ScannerActivity.class);
         intent.putExtra("document",documentGUID);
-        startActivityForResult(intent, 1);
+        openNextScreen.launch(intent);
     }
 
     private void setEditableMode(Boolean newMode){
@@ -628,7 +636,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             intent.putExtra("catalogType", Constants.GOODS);
             intent.putExtra("itemSelectionMode", true);
             intent.putExtra("documentGUID",documentGUID);
-            startActivityForResult(intent, 2);
+            openNextScreen.launch(intent);
         }
     }
 
@@ -639,7 +647,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 intent.putExtra("catalogType", specialField.type);
                 intent.putExtra("itemSelectionMode", true);
                 intent.putExtra("documentGUID", documentGUID);
-                startActivityForResult(intent, 2);
+                openNextScreen.launch(intent);
             }else{
                 openTextEditDialog(fieldName,specialField);
             }
@@ -800,17 +808,17 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         private final int colorYellow = getResources().getColor(R.color.backgroundYellow);
         private final int colorWhite = getResources().getColor(R.color.colorWhite);
 
+        @SuppressLint("NotifyDataSetChanged")
         void loadListItems(ArrayList<DataBaseItem> values){
             listItems.clear();
             listItems.addAll(values);
             notifyDataSetChanged();
-            //showAllCheckedIcon();
         }
 
         void addItem(DataBaseItem item){
             listItems.add(item);
-            notifyDataSetChanged();
-            //showAllCheckedIcon();
+            notifyItemInserted(listItems.size()-1);
+            //notifyDataSetChanged();
         }
 
         void setItemProperties(DataBaseItem item, String quantity, String price, boolean isChecked){
@@ -824,7 +832,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             double sum = prc * qty;
             item.put("sum",utils.round(sum,2));
 
-            contentAdapter.notifyDataSetChanged();
+            contentAdapter.notifyItemChanged(getPosition(item));
         }
 
         ArrayList<DataBaseItem> getListItems(){
@@ -900,7 +908,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             holder.isChecked.setOnClickListener((View v) -> {
                 dataBaseItem.put("checked",holder.isChecked.isChecked());
                 isModified = true;
-                notifyDataSetChanged();
+                notifyItemChanged(position);
             });
 
             if (checkedFlagEnabled){

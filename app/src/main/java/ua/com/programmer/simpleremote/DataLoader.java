@@ -24,6 +24,7 @@ import ua.com.programmer.simpleremote.settings.AppSettings;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.specialItems.DocumentField;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 class DataLoader {
 

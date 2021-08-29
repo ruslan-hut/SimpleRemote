@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote.settings;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import ua.com.programmer.simpleremote.settings.AppSettings;
+import ua.com.programmer.simpleremote.R;
+import ua.com.programmer.simpleremote.SqliteDB;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 
 public class ConnectionSettingsActivity extends AppCompatActivity {

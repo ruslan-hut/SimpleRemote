@@ -23,9 +23,11 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 
 import ua.com.programmer.simpleremote.settings.AppSettings;
+import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class LoginActivity extends AppCompatActivity implements DataLoader.DataLoaderListener, AdapterView.OnItemSelectedListener{
 
@@ -51,7 +53,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         autoConnect.setOnCheckedChangeListener((CompoundButton b, boolean isChecked) ->
             appSettings.setAutoConnectMode(isChecked));
 
-        String textVersion = BuildConfig.VERSION_NAME+" "+appSettings.getUserID().substring(0,8);
+        String textVersion = BuildConfig.VERSION_NAME+" : "+appSettings.getUserID().substring(0,8);
         TextView version = findViewById(R.id.version);
         version.setText(textVersion);
         version.setOnClickListener((View view) -> {
