@@ -1,5 +1,6 @@
 package ua.com.programmer.simpleremote;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -223,6 +224,7 @@ public class DocumentsListFragment extends Fragment{
 
         private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
 
+        @SuppressLint("NotifyDataSetChanged")
         void loadListItems(ArrayList<DataBaseItem> values){
             listItems.clear();
             listItems.addAll(values);
