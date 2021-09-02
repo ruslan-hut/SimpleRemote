@@ -188,7 +188,7 @@ class DataLoader {
                 return authHeaders();
             }
         };
-        request.setRetryPolicy(new DefaultRetryPolicy(5000,3,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(15000,3,1.5f));
 
         requestQueue.add(request);
     }
