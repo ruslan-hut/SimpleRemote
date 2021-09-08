@@ -701,6 +701,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     class ContentViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvCode;
+        TextView tvCode2;
         TextView tvDescription;
         TextView tvLineNumber;
         TextView tvQuantity;
@@ -718,6 +719,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             super(view);
             cardView = view.findViewById(R.id.item_card);
             tvCode = view.findViewById(R.id.item_code);
+            tvCode2 = view.findViewById(R.id.item_code2);
             tvDescription = view.findViewById(R.id.item_description);
             tvLineNumber = view.findViewById(R.id.item_line_number);
             tvNotes = view.findViewById(R.id.item_notes);
@@ -729,10 +731,16 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             tvSum = view.findViewById(R.id.item_sum);
             iconStar = view.findViewById(R.id.icon_star);
             isChecked = view.findViewById(R.id.is_checked);
+
         }
 
         void setCode(String str) {
             this.tvCode.setText(str);
+        }
+
+        void setCode2(String str) {
+            this.tvCode2.setText(str);
+            if (str.isEmpty()) tvCode2.setVisibility(View.GONE);
         }
 
         void setDescription(String str) {
@@ -741,9 +749,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         void setNotes(String str) {
             this.tvNotes.setText(str);
-            if (str.equals("")){
-                tvNotes.setVisibility(View.GONE);
-            }
+            if (str.isEmpty()) tvNotes.setVisibility(View.GONE);
         }
 
         void  setRest(String str,String unit) {
@@ -894,6 +900,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             String unit = dataBaseItem.getString("unit");
             holder.setCode(dataBaseItem.getString("art"));
+            holder.setCode2(dataBaseItem.getString("code2"));
             holder.setDescription(dataBaseItem.getString("description"));
             holder.setLineNumber(dataBaseItem.getString("line"));
             holder.setQuantity(dataBaseItem.getString("quantity"));
