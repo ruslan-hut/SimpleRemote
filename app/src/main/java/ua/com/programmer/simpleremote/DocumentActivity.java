@@ -54,6 +54,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private RecyclerView recyclerView;
     private boolean isEditable = false;
     private boolean isModified = false;
+    private boolean loadImages;
     private ProgressBar progressBar;
     private DataBaseItem documentDataItem;
     private SqliteDB database;
@@ -83,6 +84,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         setTitle(R.string.document);
 
         database = SqliteDB.getInstance(this);
+        loadImages = AppSettings.getInstance(this).isLoadImages();
         progressBar = findViewById(R.id.progress_bar);
 
         Intent intent = getIntent();
@@ -696,8 +698,6 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         return true;
     }
 
-    ///////// Recycler Adapter //////////////////////////////////////
-
     class ContentViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvCode;
@@ -713,6 +713,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         TextView tvNotes;
         CardView cardView;
         ImageView iconStar;
+        ImageView image;
         CheckBox isChecked;
 
         ContentViewHolder(View view){
@@ -731,7 +732,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             tvSum = view.findViewById(R.id.item_sum);
             iconStar = view.findViewById(R.id.icon_star);
             isChecked = view.findViewById(R.id.is_checked);
-
+            image = view.findViewById(R.id.item_image);
         }
 
         void setCode(String str) {
@@ -803,6 +804,14 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 isChecked.setChecked(checkedFlag);
             }else{
                 isChecked.setVisibility(View.GONE);
+            }
+        }
+
+        void showImage(String code){
+            if (loadImages) {
+                image.setVisibility(View.VISIBLE);
+            }else{
+                image.setVisibility(View.GONE);
             }
         }
     }
@@ -897,8 +906,9 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             boolean checked = dataBaseItem.getBoolean("checked");
             String rest = dataBaseItem.getString("rest");
-
             String unit = dataBaseItem.getString("unit");
+
+            holder.showImage(dataBaseItem.getString("code"));
             holder.setCode(dataBaseItem.getString("art"));
             holder.setCode2(dataBaseItem.getString("code2"));
             holder.setDescription(dataBaseItem.getString("description"));

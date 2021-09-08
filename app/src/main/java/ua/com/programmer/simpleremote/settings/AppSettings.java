@@ -22,6 +22,7 @@ public class AppSettings {
 
     private static SharedPreferences sharedPreferences;
     private static String userID = "";
+    private static boolean loadImages;
 
     private static final ArrayList<DataBaseItem> allowedDocuments = new ArrayList<>();
     private static final ArrayList<DataBaseItem> allowedCatalogs = new ArrayList<>();
@@ -196,5 +197,13 @@ public class AppSettings {
             utils.log("e","getDocumentFilterAsString: "+ex.toString());
         }
         return jsonObject.toString();
+    }
+
+    public void setLoadImages(boolean value){
+        loadImages = value;
+    }
+
+    public boolean isLoadImages(){
+        return loadImages;
     }
 }

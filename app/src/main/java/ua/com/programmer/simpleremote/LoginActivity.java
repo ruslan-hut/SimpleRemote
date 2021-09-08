@@ -200,6 +200,8 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         //reset documents filter
         appSettings.setDocumentFilter(new ArrayList<>());
 
+        appSettings.setLoadImages(response.getBoolean("loadImages"));
+
         return response.getBoolean("read");
     }
 
