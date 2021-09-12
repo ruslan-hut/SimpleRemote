@@ -43,6 +43,7 @@ import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.specialItems.DocumentField;
+import ua.com.programmer.simpleremote.utility.ImageLoader;
 import ua.com.programmer.simpleremote.utility.Utils;
 
 public class DocumentActivity extends AppCompatActivity implements DataLoader.DataLoaderListener {
@@ -58,6 +59,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private ProgressBar progressBar;
     private DataBaseItem documentDataItem;
     private SqliteDB database;
+    private ImageLoader imageLoader;
 
     private String documentGUID;
     private String documentDataString="";
@@ -85,6 +87,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         database = SqliteDB.getInstance(this);
         loadImages = AppSettings.getInstance(this).isLoadImages();
+        imageLoader = new ImageLoader(this);
         progressBar = findViewById(R.id.progress_bar);
 
         Intent intent = getIntent();
@@ -817,6 +820,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         void showImage(String code){
             if (loadImages) {
                 image.setVisibility(View.VISIBLE);
+                imageLoader.load(code,image);
             }else{
                 image.setVisibility(View.GONE);
             }
@@ -959,5 +963,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         public int getItemCount() {
             return listItems.size();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        imageLoader.stop();
     }
 }

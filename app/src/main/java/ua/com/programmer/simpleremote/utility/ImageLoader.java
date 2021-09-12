@@ -39,39 +39,31 @@ public class ImageLoader {
      * Initialise environment parameters for load requests.
      */
     private void init(){
-        baseImageURL = "";//appSettings.getBaseImageUrl();
+        baseImageURL = appSettings.getBaseImageUrl();
         authHeaders = appSettings.getAuthHeaders();
     }
 
     /**
-     * Image parameters has two keys, if a direct URL is given, than using it,
-     * otherwise using image GUID with the base URL combined
+     * Construct an image URL using image GUID with the base URL combined
      *
-     * @param imageParameters data set of image parameters
+     * @param imageGUID image GUID
      * @return image URL
      */
-    private String imageURL(DataBaseItem imageParameters){
-
-        String url = imageParameters.getString("image_url");
-        if (url.isEmpty()) url = imageParameters.getString("url");
-        if (!url.isEmpty()) return url;
-
-        String imageGUID = imageParameters.getString("image_guid");
+    private String imageURL(String imageGUID){
         if (!imageGUID.isEmpty()) return baseImageURL + imageGUID;
-
         return "";
     }
 
     /**
-     * Load image data with given parameters into given ImageView
+     * Load image by GUID into given ImageView.
      *
-     * @param imageParameters parameters of an image
+     * @param imageGUID image GUID
      * @param view image showing view
      */
-    public void load(DataBaseItem imageParameters, ImageView view){
+    public void load(String imageGUID, ImageView view){
         init();
 
-        String url = imageURL(imageParameters);
+        String url = imageURL(imageGUID);
 
         if (!url.isEmpty()) {
             view.setVisibility(View.VISIBLE);
@@ -84,58 +76,6 @@ public class ImageLoader {
         }else {
             view.setVisibility(View.INVISIBLE);
         }
-    }
-
-    /**
-     * Load image by GUID into given ImageView. Image parameters is retrieved from the database
-     *
-     * @param imageGUID image GUID
-     * @param view image showing view
-     */
-    public void load(String imageGUID, ImageView view){
-        init();
-        DataBaseItem imageParameters = dataBase.getImage(imageGUID);
-        load(imageParameters,view);
-    }
-
-    /**
-     * Loading images into disk cache. If image data contains an "url", loading via direct url.
-     * Otherwise loading via image GUID.
-     */
-    public void requestImages(){
-        init();
-
-        Thread thread = new Thread(){
-            @Override
-            public void run() {
-
-                Utils utils = new Utils();
-                String url;
-
-                //Glide.get(context).clearDiskCache();
-
-                long time = utils.currentTime();
-                ArrayList<DataBaseItem> imageList = dataBase.getImages();
-
-                for (DataBaseItem image: imageList){
-                    url = imageURL(image);
-                    if (url.isEmpty()) continue;
-                    GlideUrl glideUrl = new GlideUrl(url,authHeaders);
-                    FutureTarget<File> future = requestManager.downloadOnly()
-                            .signature(new ObjectKey(image.getString("time")))
-                            .load(glideUrl)
-                            .submit();
-                    try {
-                        future.get();
-                    }catch (Exception e){
-                        utils.warn("get image file; url: "+url+"; "+e.toString());
-                    }
-                }
-                utils.debug("Loaded "+imageList.size()+" images in "+utils.showTime(time,utils.currentTime()));
-            }
-        };
-        thread.start();
-
     }
 
     /**

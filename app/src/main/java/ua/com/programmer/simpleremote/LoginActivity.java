@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -172,6 +174,8 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
     }
 
     private boolean checkServerResponse(DataBaseItem response){
+
+        //Glide.get(this).clearDiskCache();
 
         ArrayList<DataBaseItem> catalogsList = new ArrayList<>();
         ArrayList<DataBaseItem> documentsList = new ArrayList<>();

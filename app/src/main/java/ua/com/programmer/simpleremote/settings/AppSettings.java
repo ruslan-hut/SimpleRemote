@@ -112,6 +112,17 @@ public class AppSettings {
                 .build();
     }
 
+    public String getBaseUrl(){
+        String server = getServerAddress();
+        String database = getDatabaseName();
+        if (demoMode()) return "http://hoot.com.ua/simple/";
+        return "http://"+server+"/"+database+"/";
+    }
+
+    public String getBaseImageUrl(){
+        return getBaseUrl()+"hs/rc/image/";
+    }
+
     public int getConnectionID() {
         return sharedPreferences.getInt("connectionID", 0);
     }
