@@ -702,6 +702,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         TextView tvCode;
         TextView tvCode2;
+        TextView tvCode3;
         TextView tvDescription;
         TextView tvLineNumber;
         TextView tvQuantity;
@@ -721,6 +722,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             cardView = view.findViewById(R.id.item_card);
             tvCode = view.findViewById(R.id.item_code);
             tvCode2 = view.findViewById(R.id.item_code2);
+            tvCode3 = view.findViewById(R.id.item_code3);
             tvDescription = view.findViewById(R.id.item_description);
             tvLineNumber = view.findViewById(R.id.item_line_number);
             tvNotes = view.findViewById(R.id.item_notes);
@@ -742,6 +744,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         void setCode2(String str) {
             this.tvCode2.setText(str);
             if (str.isEmpty()) tvCode2.setVisibility(View.GONE);
+        }
+
+        void setCode3(String str) {
+            this.tvCode3.setText(str);
+            if (str.isEmpty()) tvCode3.setVisibility(View.GONE);
         }
 
         void setDescription(String str) {
@@ -911,6 +918,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             holder.showImage(dataBaseItem.getString("code"));
             holder.setCode(dataBaseItem.getString("art"));
             holder.setCode2(dataBaseItem.getString("code2"));
+            holder.setCode3(dataBaseItem.getString("code3"));
             holder.setDescription(dataBaseItem.getString("description"));
             holder.setLineNumber(dataBaseItem.getString("line"));
             holder.setQuantity(dataBaseItem.getString("quantity"));

@@ -71,6 +71,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:text="@string/sample_number"/>
+            <TextView
+                android:id="@+id/item_code3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
                 android:text="@string/sample_number"/>
 
             <LinearLayout
@@ -103,10 +111,28 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/item_quantity"
+                    android:id="@+id/item_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="@color/colorDarkGrey"
+                    android:text="@string/sample_number"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:text="X"/>
+                <TextView
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/item_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/colorDarkGrey"
                     android:text="@string/sample_number"/>
@@ -115,45 +141,35 @@
                     android:id="@+id/item_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
                     android:textColor="@color/colorDarkGrey"
                     android:text="@string/sample_text"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:text="X"/>
-                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:text="@string/title_sum"/>
+                <TextView
+                    android:id="@+id/item_sum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/item_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="@color/colorDarkGrey"
-                        android:text="@string/sample_number"/>
-                    <TextView
-                        android:id="@+id/item_sum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorDarkGrey"
-                        android:text="@string/sample_number"/>
-
-                </LinearLayout>
-
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorDarkGrey"
+                    android:text="@string/sample_number"/>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/item_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="16sp"
                 android:text="@string/sample_text"/>
 
         </LinearLayout>
