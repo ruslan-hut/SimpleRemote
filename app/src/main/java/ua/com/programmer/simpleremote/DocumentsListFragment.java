@@ -163,7 +163,11 @@ public class DocumentsListFragment extends Fragment{
             tvDate.setText(dataBaseItem.getString("date"));
             tvCompany.setText(dataBaseItem.getString("company"));
             tvWarehouse.setText(dataBaseItem.getString("warehouse"));
-            tvSum.setText(dataBaseItem.getString("sum"));
+
+            String currency = dataBaseItem.getString("currency");
+            String textSum = dataBaseItem.getString("sum");
+            if (!currency.isEmpty()) textSum = textSum+" "+currency;
+            tvSum.setText(textSum);
 
             DocumentField field1 = new DocumentField(dataBaseItem.getString("field1"));
             tvField1.setText(field1.value);

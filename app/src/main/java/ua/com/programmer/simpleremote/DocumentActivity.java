@@ -66,6 +66,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private boolean isCachedDocument;
     private String barcode="";
     private boolean checkedFlagEnabled;
+    private String currency;
 
     private DocumentField field1;
     private DocumentField field2;
@@ -95,6 +96,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         documentGUID = documentDataItem.getString("guid");
         isCachedDocument = documentDataItem.hasValue(Constants.CACHE_GUID);
         checkedFlagEnabled = documentDataItem.hasValue("checked");
+        currency = documentDataItem.getString("currency");
 
         recyclerView = findViewById(R.id.document_content);
         recyclerView.setHasFixedSize(true);
@@ -786,11 +788,12 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         }
 
         void setPrice(String str) {
+            str = str+" "+currency;
             this.tvPrice.setText(str);
         }
 
         void setSum(String str) {
-            str = "= "+str;
+            str = "= "+str+" "+currency;
             this.tvSum.setText(str);
         }
 
