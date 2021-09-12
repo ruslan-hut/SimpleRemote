@@ -9,16 +9,9 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
-import com.bumptech.glide.request.FutureTarget;
-import com.bumptech.glide.signature.ObjectKey;
-
-import java.io.File;
-import java.util.ArrayList;
 
 import ua.com.programmer.simpleremote.R;
-import ua.com.programmer.simpleremote.SqliteDB;
 import ua.com.programmer.simpleremote.settings.AppSettings;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 
 public class ImageLoader {
 
@@ -26,13 +19,11 @@ public class ImageLoader {
     private String baseImageURL;
     private LazyHeaders authHeaders;
 
-    private final SqliteDB dataBase;
     private final AppSettings appSettings;
 
     public ImageLoader(Context context){
         requestManager = Glide.with(context);
         appSettings = AppSettings.getInstance(context);
-        dataBase = SqliteDB.getInstance(context);
     }
 
     /**

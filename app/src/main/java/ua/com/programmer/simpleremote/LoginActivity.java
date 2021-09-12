@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
 
         setResult(0);
         Cache.getInstance().clear();
+        imageCacheCleaner();
 
         appSettings = AppSettings.getInstance(this);
 
@@ -175,8 +176,6 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
 
     private boolean checkServerResponse(DataBaseItem response){
 
-        //Glide.get(this).clearDiskCache();
-
         ArrayList<DataBaseItem> catalogsList = new ArrayList<>();
         ArrayList<DataBaseItem> documentsList = new ArrayList<>();
         try {
@@ -253,4 +252,12 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         }
     }
 
+    private void imageCacheCleaner(){
+
+        Context context = getApplicationContext();
+
+        Thread thread = new Thread(() -> Glide.get(context).clearDiskCache());
+        thread.start();
+
+    }
 }
