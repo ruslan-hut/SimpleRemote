@@ -22,6 +22,7 @@ public class AppSettings {
 
     private static SharedPreferences sharedPreferences;
     private static String userID = "";
+    private static boolean loadImages;
 
     private static final ArrayList<DataBaseItem> allowedDocuments = new ArrayList<>();
     private static final ArrayList<DataBaseItem> allowedCatalogs = new ArrayList<>();
@@ -111,6 +112,17 @@ public class AppSettings {
                 .build();
     }
 
+    public String getBaseUrl(){
+        String server = getServerAddress();
+        String database = getDatabaseName();
+        if (demoMode()) return "http://hoot.com.ua/simple/";
+        return "http://"+server+"/"+database+"/";
+    }
+
+    public String getBaseImageUrl(){
+        return getBaseUrl()+"hs/rc/image/";
+    }
+
     public int getConnectionID() {
         return sharedPreferences.getInt("connectionID", 0);
     }
@@ -196,5 +208,13 @@ public class AppSettings {
             utils.log("e","getDocumentFilterAsString: "+ex.toString());
         }
         return jsonObject.toString();
+    }
+
+    public void setLoadImages(boolean value){
+        loadImages = value;
+    }
+
+    public boolean isLoadImages(){
+        return loadImages;
     }
 }

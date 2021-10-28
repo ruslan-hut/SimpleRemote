@@ -240,7 +240,7 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
                     tvGroupDescription.setText(dataBaseItem.getString("groupName"));
 
                     String restValue = dataBaseItem.getString("rest");
-                    if (restValue.equals("0")) {
+                    if (restValue.isEmpty() || restValue.equals("0")) {
                         tvRestTitle.setVisibility(View.INVISIBLE);
                         tvRestValue.setVisibility(View.INVISIBLE);
                     } else {
@@ -248,8 +248,14 @@ public class CatalogListActivity extends AppCompatActivity implements DataLoader
                         tvRestValue.setVisibility(View.VISIBLE);
                         tvRestValue.setText(restValue);
                     }
-                    String price = utils.format(dataBaseItem.getDouble("price"), 2);
-                    tvPriceValue.setText(price);
+                    String price = dataBaseItem.getString("price");
+                    if (price.isEmpty() || price.equals("0")) {
+                        tvPriceValue.setVisibility(View.INVISIBLE);
+                    }else{
+                        price = utils.format(dataBaseItem.getDouble("price"),2);
+                        tvPriceValue.setVisibility(View.VISIBLE);
+                        tvPriceValue.setText(price);
+                    }
                 }else{
                     tvCode.setText(dataBaseItem.getString("code"));
                 }

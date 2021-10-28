@@ -83,23 +83,19 @@ public class DataBaseItem {
 
     public String getString(String valueName){
         String value = "";
-        if (itemValues.containsKey(valueName)){
+        if (itemValues.containsKey(valueName) && itemValues.get(valueName) != null){
             value = itemValues.getAsString(valueName);
         }
         return value;
     }
 
     public boolean hasValue(String valueName){
-        if (itemValues.containsKey(valueName)){
-            String value = itemValues.getAsString(valueName);
-            return value != null && !value.equals("");
-        }
-        return false;
+        return !getString(valueName).isEmpty();
     }
 
     public Double getDouble(String valueName){
         Double value = 0.0;
-        if (itemValues.containsKey(valueName) && itemValues.get(valueName) != null){
+        if (hasValue(valueName)){
             value = itemValues.getAsDouble(valueName);
         }
         return value;
@@ -107,8 +103,7 @@ public class DataBaseItem {
 
     public int getInt(String valueName){
         int value = 0;
-        if (itemValues.containsKey(valueName) && itemValues.get(valueName) != null){
-            if (itemValues.getAsString(valueName).equals("")) return value;
+        if (hasValue(valueName)){
             value = itemValues.getAsInteger(valueName);
         }
         return value;
@@ -116,8 +111,7 @@ public class DataBaseItem {
 
     public long getLong(String valueName){
         long value = 0;
-        if (itemValues.containsKey(valueName) && itemValues.get(valueName) != null){
-            if (itemValues.getAsString(valueName).equals("")) return value;
+        if (hasValue(valueName)){
             value = itemValues.getAsLong(valueName);
         }
         return value;

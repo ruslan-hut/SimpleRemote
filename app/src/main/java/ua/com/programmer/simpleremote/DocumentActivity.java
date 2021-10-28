@@ -43,6 +43,7 @@ import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.specialItems.DocumentField;
+import ua.com.programmer.simpleremote.utility.ImageLoader;
 import ua.com.programmer.simpleremote.utility.Utils;
 
 public class DocumentActivity extends AppCompatActivity implements DataLoader.DataLoaderListener {
@@ -54,15 +55,18 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private RecyclerView recyclerView;
     private boolean isEditable = false;
     private boolean isModified = false;
+    private boolean loadImages;
     private ProgressBar progressBar;
     private DataBaseItem documentDataItem;
     private SqliteDB database;
+    private ImageLoader imageLoader;
 
     private String documentGUID;
     private String documentDataString="";
     private boolean isCachedDocument;
     private String barcode="";
     private boolean checkedFlagEnabled;
+    private String currency;
 
     private DocumentField field1;
     private DocumentField field2;
@@ -83,6 +87,8 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         setTitle(R.string.document);
 
         database = SqliteDB.getInstance(this);
+        loadImages = AppSettings.getInstance(this).isLoadImages();
+        imageLoader = new ImageLoader(this);
         progressBar = findViewById(R.id.progress_bar);
 
         Intent intent = getIntent();
@@ -90,6 +96,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         documentGUID = documentDataItem.getString("guid");
         isCachedDocument = documentDataItem.hasValue(Constants.CACHE_GUID);
         checkedFlagEnabled = documentDataItem.hasValue("checked");
+        currency = documentDataItem.getString("currency");
 
         recyclerView = findViewById(R.id.document_content);
         recyclerView.setHasFixedSize(true);
@@ -696,11 +703,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         return true;
     }
 
-    ///////// Recycler Adapter //////////////////////////////////////
-
     class ContentViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvCode;
+        TextView tvCode2;
+        TextView tvCode3;
         TextView tvDescription;
         TextView tvLineNumber;
         TextView tvQuantity;
@@ -712,12 +719,15 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         TextView tvNotes;
         CardView cardView;
         ImageView iconStar;
+        ImageView image;
         CheckBox isChecked;
 
         ContentViewHolder(View view){
             super(view);
             cardView = view.findViewById(R.id.item_card);
             tvCode = view.findViewById(R.id.item_code);
+            tvCode2 = view.findViewById(R.id.item_code2);
+            tvCode3 = view.findViewById(R.id.item_code3);
             tvDescription = view.findViewById(R.id.item_description);
             tvLineNumber = view.findViewById(R.id.item_line_number);
             tvNotes = view.findViewById(R.id.item_notes);
@@ -729,10 +739,21 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             tvSum = view.findViewById(R.id.item_sum);
             iconStar = view.findViewById(R.id.icon_star);
             isChecked = view.findViewById(R.id.is_checked);
+            image = view.findViewById(R.id.item_image);
         }
 
         void setCode(String str) {
             this.tvCode.setText(str);
+        }
+
+        void setCode2(String str) {
+            this.tvCode2.setText(str);
+            if (str.isEmpty()) tvCode2.setVisibility(View.GONE);
+        }
+
+        void setCode3(String str) {
+            this.tvCode3.setText(str);
+            if (str.isEmpty()) tvCode3.setVisibility(View.GONE);
         }
 
         void setDescription(String str) {
@@ -741,9 +762,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         void setNotes(String str) {
             this.tvNotes.setText(str);
-            if (str.equals("")){
-                tvNotes.setVisibility(View.GONE);
-            }
+            if (str.isEmpty()) tvNotes.setVisibility(View.GONE);
         }
 
         void  setRest(String str,String unit) {
@@ -769,11 +788,12 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         }
 
         void setPrice(String str) {
+            str = str+" "+currency;
             this.tvPrice.setText(str);
         }
 
         void setSum(String str) {
-            str = "= "+str;
+            str = "= "+str+" "+currency;
             this.tvSum.setText(str);
         }
 
@@ -797,6 +817,15 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 isChecked.setChecked(checkedFlag);
             }else{
                 isChecked.setVisibility(View.GONE);
+            }
+        }
+
+        void showImage(String code){
+            if (loadImages) {
+                image.setVisibility(View.VISIBLE);
+                imageLoader.load(code,image);
+            }else{
+                image.setVisibility(View.GONE);
             }
         }
     }
@@ -891,9 +920,12 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             boolean checked = dataBaseItem.getBoolean("checked");
             String rest = dataBaseItem.getString("rest");
-
             String unit = dataBaseItem.getString("unit");
+
+            holder.showImage(dataBaseItem.getString("code"));
             holder.setCode(dataBaseItem.getString("art"));
+            holder.setCode2(dataBaseItem.getString("code2"));
+            holder.setCode3(dataBaseItem.getString("code3"));
             holder.setDescription(dataBaseItem.getString("description"));
             holder.setLineNumber(dataBaseItem.getString("line"));
             holder.setQuantity(dataBaseItem.getString("quantity"));
@@ -934,5 +966,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         public int getItemCount() {
             return listItems.size();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        imageLoader.stop();
     }
 }

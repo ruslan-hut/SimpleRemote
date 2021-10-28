@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
 
         setResult(0);
         Cache.getInstance().clear();
+        imageCacheCleaner();
 
         appSettings = AppSettings.getInstance(this);
 
@@ -200,6 +203,8 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         //reset documents filter
         appSettings.setDocumentFilter(new ArrayList<>());
 
+        appSettings.setLoadImages(response.getBoolean("loadImages"));
+
         return response.getBoolean("read");
     }
 
@@ -247,4 +252,12 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         }
     }
 
+    private void imageCacheCleaner(){
+
+        Context context = getApplicationContext();
+
+        Thread thread = new Thread(() -> Glide.get(context).clearDiskCache());
+        thread.start();
+
+    }
 }

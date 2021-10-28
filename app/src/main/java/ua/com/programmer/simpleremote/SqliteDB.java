@@ -84,17 +84,6 @@ public class SqliteDB {
         database.delete("cache","guid=?",new String[]{guid});
     }
 
-    String getCachedData(String guid){
-        String result="";
-        String[] whereArgs = new String[]{guid};
-        Cursor cursor = database.query("cache",null,"guid=?",whereArgs,null,null,null);
-        if (cursor != null && cursor.moveToFirst()) {
-            result = cursor.getString(cursor.getColumnIndex("data"));
-            cursor.close();
-        }
-        return result;
-    }
-
     ArrayList<DataBaseItem> getCachedDataList(){
         ArrayList<DataBaseItem> resultArray = new ArrayList<>();
         Cursor cursor = database.query("cache",null,"connection_id="+connectionID,null,null,null,null);
@@ -107,13 +96,4 @@ public class SqliteDB {
         return resultArray;
     }
 
-    public DataBaseItem getImage(String guid){
-        DataBaseItem item = new DataBaseItem();
-        //TODO: return image parameters (?)
-        return item;
-    }
-
-    public ArrayList<DataBaseItem> getImages(){
-        return new ArrayList<>();
-    }
 }
