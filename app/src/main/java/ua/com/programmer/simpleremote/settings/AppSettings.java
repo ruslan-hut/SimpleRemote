@@ -26,7 +26,6 @@ public class AppSettings {
 
     private static final ArrayList<DataBaseItem> allowedDocuments = new ArrayList<>();
     private static final ArrayList<DataBaseItem> allowedCatalogs = new ArrayList<>();
-
     private static final ArrayList<DocumentField> documentFilter = new ArrayList<>();
 
     private static AppSettings appSettings;
@@ -40,19 +39,17 @@ public class AppSettings {
     }
 
     public String getUserID(){
-        if (userID.equals("")){
+        if (userID.isEmpty()){
             userID = sharedPreferences.getString("userID","");
         }
-        if (userID == null || userID.equals("")){
+        if (userID == null || userID.isEmpty()){
             //generate new random userID
             userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("userID",userID);
             editor.apply();
         }
-        if (userID.length() < 8) {
-            userID = "00000000";
-        }
+        if (userID.length() < 8) userID = "00000000";
         return userID;
     }
 
