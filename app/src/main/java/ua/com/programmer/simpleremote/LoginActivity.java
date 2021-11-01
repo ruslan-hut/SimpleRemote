@@ -205,6 +205,10 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
 
         appSettings.setLoadImages(response.getBoolean("loadImages"));
 
+        String workingMode = response.getString("mode");
+        if (workingMode.isEmpty()) workingMode = Constants.MODE_FULL;
+        appSettings.setWorkingMode(workingMode);
+
         return response.getBoolean("read");
     }
 

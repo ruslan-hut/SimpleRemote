@@ -29,4 +29,7 @@ public final class Constants {
     public final static String DOCUMENT_IS_DELETED = "isDeleted";
     public final static String DOCUMENT_IS_PROCESSED = "isProcessed";
 
+    //working modes
+    public final static String MODE_FULL = "full";
+    public final static String MODE_COLLECT = "collect";
 }

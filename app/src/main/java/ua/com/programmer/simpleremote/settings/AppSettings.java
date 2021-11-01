@@ -23,6 +23,7 @@ public class AppSettings {
     private static SharedPreferences sharedPreferences;
     private static String userID = "";
     private static boolean loadImages;
+    private static String workingMode = "";
 
     private static final ArrayList<DataBaseItem> allowedDocuments = new ArrayList<>();
     private static final ArrayList<DataBaseItem> allowedCatalogs = new ArrayList<>();
@@ -213,5 +214,13 @@ public class AppSettings {
 
     public boolean isLoadImages(){
         return loadImages;
+    }
+
+    public void setWorkingMode(String mode){
+        workingMode = mode;
+    }
+
+    public String getWorkingMode(){
+        return workingMode;
     }
 }
