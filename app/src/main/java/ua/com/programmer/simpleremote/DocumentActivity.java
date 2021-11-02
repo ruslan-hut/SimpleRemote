@@ -67,6 +67,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private String barcode="";
     private boolean checkedFlagEnabled;
     private String currency;
+    private String workingMode;
 
     private DocumentField field1;
     private DocumentField field2;
@@ -86,8 +87,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         }
         setTitle(R.string.document);
 
+        AppSettings appSettings = AppSettings.getInstance(this);
+
         database = SqliteDB.getInstance(this);
-        loadImages = AppSettings.getInstance(this).isLoadImages();
+        loadImages = appSettings.isLoadImages();
+        workingMode = appSettings.getWorkingMode();
         imageLoader = new ImageLoader(this);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -134,8 +138,10 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 return false;
             }
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        if (workingMode.equals(Constants.MODE_FULL)){
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+        }
 
         showDocumentHeader();
         updateContent();
@@ -553,6 +559,9 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             bottomBar.setVisibility(View.VISIBLE);
             scannerButton.setOnClickListener((View v) -> openScanner());
             addItemButton.setOnClickListener((View v)->onAddButtonClick());
+            if (workingMode.equals(Constants.MODE_COLLECT)){
+                addItemButton.setVisibility(View.GONE);
+            }
         }else {
             bottomBar.setVisibility(View.GONE);
         }
