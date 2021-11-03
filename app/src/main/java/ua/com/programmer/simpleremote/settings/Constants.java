@@ -28,6 +28,7 @@ public final class Constants {
     public final static String DOCUMENT_DATE = "date";
     public final static String DOCUMENT_IS_DELETED = "isDeleted";
     public final static String DOCUMENT_IS_PROCESSED = "isProcessed";
+    public final static String DOCUMENT_LINE = "documentLine";
 
     //working modes
     public final static String MODE_FULL = "full";

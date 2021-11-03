@@ -27,6 +27,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity
+            android:name=".ItemEditScreen"
+            android:exported="false"
+            android:screenOrientation="locked"/>
         <activity android:name=".serviceUtils.DocumentsFilterActivity" />
         <activity
             android:name=".MainActivity"
