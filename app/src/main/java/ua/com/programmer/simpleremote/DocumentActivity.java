@@ -391,22 +391,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             JSONArray lines = new JSONArray();
             ArrayList<DataBaseItem> items = contentAdapter.getListItems();
             for (DataBaseItem item: items){
-                JSONObject line = new JSONObject();
-                line.put("code", item.getString("code"));
-                line.put("art", item.getString("art"));
-                line.put("quantity", item.getString("quantity"));
-                line.put("price", item.getString("price"));
-
-                //extra data for cached document
-                line.put("description", item.getString("description"));
-                line.put("line", item.getString("line"));
-                line.put("rest", item.getString("rest"));
-                line.put("unit", item.getString("unit"));
-                line.put("notes", item.getString("notes"));
-                line.put("edited", item.getInt("edited"));
-                line.put("checked", item.getBoolean("checked"));
-
-                lines.put(line);
+                lines.put(item.getAsJSON());
             }
             document.put("lines", lines);
             documentDataString = document.toString();
