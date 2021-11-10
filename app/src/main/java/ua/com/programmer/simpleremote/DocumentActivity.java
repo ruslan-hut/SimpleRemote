@@ -702,7 +702,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             return true;
         }
         int keyCode = event.getKeyCode();
-        //utils.log("d","KEY: "+keyCode+"; "+barcode);
+        //utils.debug("KEY: "+keyCode+"; "+barcode);
         if (keyCode == KeyEvent.KEYCODE_BACK){
             onBackPressed();
             return true;
