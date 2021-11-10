@@ -23,6 +23,7 @@ public class ItemEditScreen extends AppCompatActivity {
 
     private DataBaseItem item;
     private EditText editQuantity;
+    private EditText editNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,9 @@ public class ItemEditScreen extends AppCompatActivity {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
         editQuantity.requestFocus();
+
+        editNotes = findViewById(R.id.edit_notes);
+        editNotes.setText(item.getString("notes"));
 
         setText(R.id.item_description, item.getString("description"));
         setText(R.id.item_code, item.getString("art"));
@@ -82,6 +86,9 @@ public class ItemEditScreen extends AppCompatActivity {
     private void saveValuesAndExit(){
         String enteredQuantity = editQuantity.getText().toString();
         if (!enteredQuantity.isEmpty()) item.put("quantity", enteredQuantity);
+
+        String enteredNotes = editNotes.getText().toString();
+        item.put("notes", enteredNotes);
 
         Intent intent = getIntent();
         intent.putExtra("cacheKey", Cache.getInstance().put(item));
