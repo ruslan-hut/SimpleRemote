@@ -84,4 +84,6 @@
     <string name="notes">Примечание</string>
     <string name="warn_document_has_unchecked_items">В документе остались непроверенные товары</string>
     <string name="title_sum">Сумма</string>
+    <string name="have_to_collect">Нужно собрать</string>
+    <string name="item_edit">Товар (редактирование)</string>
 </resources>

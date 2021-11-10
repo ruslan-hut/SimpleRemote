@@ -67,6 +67,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private String barcode="";
     private boolean checkedFlagEnabled;
     private String currency;
+    private String workingMode;
 
     private DocumentField field1;
     private DocumentField field2;
@@ -74,7 +75,49 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private DocumentField field4;
 
     private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
+            result -> {
+                Intent data = result.getData();
+                if (data == null) return;
+
+                DataBaseItem dataBaseItem = cache.get(data.getStringExtra("cacheKey"));
+                String itemCode = dataBaseItem.getString("code");
+                String type = dataBaseItem.getString("type");
+                String value = dataBaseItem.getString("description");
+
+                if (!itemCode.isEmpty() && !type.isEmpty()) {
+
+                    if (type.equals(field1.type)) {
+
+                        field1.code = itemCode;
+                        field1.value = value;
+                        documentDataItem.put("field1", field1.asString());
+
+                    }else if (type.equals(field2.type)) {
+
+                        field2.code = itemCode;
+                        field2.value = value;
+                        documentDataItem.put("field2", field2.asString());
+
+                    }else if (type.equals(Constants.DOCUMENT_LINE)){
+
+                        contentAdapter.setItemProperties(dataBaseItem,
+                                dataBaseItem.getString("quantity"),
+                                dataBaseItem.getString("price"),
+                                dataBaseItem.getBoolean("checked"));
+                        recyclerView.scrollToPosition(contentAdapter.getPosition(dataBaseItem));
+
+                        if (!contentAdapter.hasUncheckedItems()) documentDataItem.put("checked", true);
+
+                    }else if (type.equals(Constants.GOODS)){
+                        addGoodsItem(dataBaseItem);
+                    }
+
+                    showDocumentHeader();
+
+                } else {
+                    Toast.makeText(this, R.string.no_data, Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +129,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         }
         setTitle(R.string.document);
 
+        AppSettings appSettings = AppSettings.getInstance(this);
+
         database = SqliteDB.getInstance(this);
-        loadImages = AppSettings.getInstance(this).isLoadImages();
+        loadImages = appSettings.isLoadImages();
+        workingMode = appSettings.getWorkingMode();
         imageLoader = new ImageLoader(this);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -134,8 +180,10 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 return false;
             }
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        if (workingMode.equals(Constants.MODE_FULL)){
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+        }
 
         showDocumentHeader();
         updateContent();
@@ -343,22 +391,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             JSONArray lines = new JSONArray();
             ArrayList<DataBaseItem> items = contentAdapter.getListItems();
             for (DataBaseItem item: items){
-                JSONObject line = new JSONObject();
-                line.put("code", item.getString("code"));
-                line.put("art", item.getString("art"));
-                line.put("quantity", item.getString("quantity"));
-                line.put("price", item.getString("price"));
-
-                //extra data for cached document
-                line.put("description", item.getString("description"));
-                line.put("line", item.getString("line"));
-                line.put("rest", item.getString("rest"));
-                line.put("unit", item.getString("unit"));
-                line.put("notes", item.getString("notes"));
-                line.put("edited", item.getInt("edited"));
-                line.put("checked", item.getBoolean("checked"));
-
-                lines.put(line);
+                lines.put(item.getAsJSON());
             }
             document.put("lines", lines);
             documentDataString = document.toString();
@@ -485,38 +518,6 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null){
-            return;
-        }
-
-        DataBaseItem dataBaseItem = cache.get(data.getStringExtra("cacheKey"));
-        String itemCode = dataBaseItem.getString("code");
-        String type = dataBaseItem.getString("type");
-        String value = dataBaseItem.getString("description");
-
-        if (!itemCode.equals("") && !type.equals("")) {
-
-            if (type.equals(field1.type)) {
-                field1.code = itemCode;
-                field1.value = value;
-                documentDataItem.put("field1", field1.asString());
-            }else if (type.equals(field2.type)){
-                field2.code = itemCode;
-                field2.value = value;
-                documentDataItem.put("field2", field2.asString());
-            }else if (type.equals(Constants.GOODS)){
-                addGoodsItem(dataBaseItem);
-            }
-            showDocumentHeader();
-
-        } else {
-            Toast.makeText(this, R.string.no_data, Toast.LENGTH_SHORT).show();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     private void updateContent(){
         progressBar.setVisibility(View.VISIBLE);
         DataLoader dataLoader = new DataLoader(this);
@@ -552,16 +553,17 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         if (isEditable) {
             bottomBar.setVisibility(View.VISIBLE);
             scannerButton.setOnClickListener((View v) -> openScanner());
-            addItemButton.setOnClickListener((View v)->onAddButtonClick());
+            if (workingMode.equals(Constants.MODE_COLLECT)) {
+                addItemButton.setVisibility(View.GONE);
+            }else{
+                addItemButton.setOnClickListener((View v) -> onAddButtonClick());
+            }
         }else {
             bottomBar.setVisibility(View.GONE);
         }
     }
 
-    private void  onListItemClick(DataBaseItem item){
-        if (!isEditable){
-            return;
-        }
+    private void openItemEditDialog(DataBaseItem item){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -619,21 +621,39 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         editQuantity.setOnEditorActionListener((TextView textView, int i, KeyEvent keyEvent) ->
         {
-                if (i == EditorInfo.IME_ACTION_NEXT || i == EditorInfo.IME_ACTION_DONE) {
-                    String enteredQuantity = editQuantity.getText().toString();
-                    if (enteredQuantity.equals("")) {
-                        enteredQuantity = item.getString("quantity");
-                    }
-                    String enteredPrice = editPrice.getText().toString();
-                    if (enteredPrice.equals("")) {
-                        enteredPrice = item.getString("price");
-                    }
-                    contentAdapter.setItemProperties(item,enteredQuantity,enteredPrice,checkedCheckBox.isChecked());
-                    recyclerView.scrollToPosition(contentAdapter.getPosition(item));
-                    dialog.dismiss();
+            if (i == EditorInfo.IME_ACTION_NEXT || i == EditorInfo.IME_ACTION_DONE) {
+                String enteredQuantity = editQuantity.getText().toString();
+                if (enteredQuantity.equals("")) {
+                    enteredQuantity = item.getString("quantity");
                 }
-                return false;
+                String enteredPrice = editPrice.getText().toString();
+                if (enteredPrice.equals("")) {
+                    enteredPrice = item.getString("price");
+                }
+                contentAdapter.setItemProperties(item,enteredQuantity,enteredPrice,checkedCheckBox.isChecked());
+                recyclerView.scrollToPosition(contentAdapter.getPosition(item));
+                dialog.dismiss();
+            }
+            return false;
         });
+    }
+
+    private void  onListItemClick(DataBaseItem item){
+        if (!isEditable){
+            return;
+        }
+
+        if (workingMode.equals(Constants.MODE_COLLECT)) {
+
+            Intent intent = new Intent(this, ItemEditScreen.class);
+            intent.putExtra("cacheKey", Cache.getInstance().put(item));
+            openNextScreen.launch(intent);
+
+        }else{
+
+            openItemEditDialog(item);
+
+        }
 
     }
 
@@ -860,6 +880,11 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             double qty = utils.round(item.getString("quantity"),3);
             double sum = prc * qty;
             item.put("sum",utils.round(sum,2));
+
+            if (workingMode.equals(Constants.MODE_COLLECT)){
+                double collect = utils.round(item.getString("collect"),3);
+                item.put("checked", collect <= qty);
+            }
 
             contentAdapter.notifyItemChanged(getPosition(item));
         }

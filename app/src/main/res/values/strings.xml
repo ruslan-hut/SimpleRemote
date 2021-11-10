@@ -84,4 +84,6 @@
     <string name="demo_key" translatable="false">demo</string>
     <string name="warn_document_has_unchecked_items">There are unchecked items in the document</string>
     <string name="title_sum">Sum</string>
+    <string name="have_to_collect">Have to collect</string>
+    <string name="item_edit">Item edit</string>
 </resources>

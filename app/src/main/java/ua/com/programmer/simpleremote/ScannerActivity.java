@@ -182,7 +182,7 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
             confirmAddItem();
         }else {
             dataBaseItem = null;
-            textDescription.setText(R.string.no_data);
+            textDescription.setText(R.string.warn_no_barcode);
             textDescription.setTextColor(ContextCompat.getColor(this,R.color.colorAccent));
         }
 

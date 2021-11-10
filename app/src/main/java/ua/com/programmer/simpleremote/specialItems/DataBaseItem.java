@@ -98,7 +98,7 @@ public class DataBaseItem {
         if (hasValue(valueName)){
             value = itemValues.getAsDouble(valueName);
         }
-        return value;
+        return value != null ? value : 0.0;
     }
 
     public int getInt(String valueName){

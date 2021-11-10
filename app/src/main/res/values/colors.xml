@@ -18,4 +18,6 @@
     <color name="darkAccent">#FFAB00</color>
     <color name="darkBackground">#EEEEEE</color>
     <color name="darkLightBackground">#FAFAFA</color>
+
+    <color name="black">#000000</color>
 </resources>
