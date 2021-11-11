@@ -174,6 +174,12 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
         }
     }
 
+    /**
+     * Reads response from server. Response data contains user-specified options
+     *
+     * @param response array of parameters
+     * @return true if user was granted read access
+     */
     private boolean checkServerResponse(DataBaseItem response){
 
         ArrayList<DataBaseItem> catalogsList = new ArrayList<>();
@@ -188,8 +194,8 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
                 documentsList.add(new DataBaseItem(documents.getJSONObject(i)));
             }
         }catch (Exception e){
-            utils.log("e","checkServerResponse: "+e.toString());
-            utils.log("e","response: "+response.getAsJSON());
+            utils.error("checkServerResponse: "+e.toString());
+            utils.error("response: "+response.getAsJSON());
         }
         if (documentsList.size() > 0){
             DataBaseItem cacheList = new DataBaseItem();
