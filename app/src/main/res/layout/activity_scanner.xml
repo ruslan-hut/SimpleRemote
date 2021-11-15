@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:orientation="vertical">
 
-        <SurfaceView
+        <androidx.camera.view.PreviewView
             android:id="@+id/camera_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -3,45 +3,49 @@ package ua.com.programmer.simpleremote;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.MenuItem;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.BarcodeFoundListener;
+import ua.com.programmer.simpleremote.utility.BarcodeImageAnalyzer;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class ScannerActivity extends AppCompatActivity implements DataLoader.DataLoaderListener{
 
-    private BarcodeDetector detector;
-    private CameraSource cameraSource;
-    private SurfaceView cameraView;
+    private PreviewView cameraView;
+    private ListenableFuture<ProcessCameraProvider> cameraProvider;
+    private ExecutorService cameraExecutor;
+
     private TextView textValue;
     private TextView textDescription;
-    private String barcodeValue="";
     private ProgressBar progressBar;
     private DataBaseItem dataBaseItem;
     private String documentGUID;
+
+    private final Utils utils = new Utils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,38 +65,9 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
         textDescription.setText("");
         progressBar = findViewById(R.id.progress_bar);
 
+        cameraExecutor = Executors.newSingleThreadExecutor();
         cameraView = findViewById(R.id.camera_view);
-
-        detector = new BarcodeDetector.Builder(this)
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
-
-        detector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-
-            }
-
-            @Override
-            public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
-                final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-
-                if (barcodes.size() != 0) {
-                    textValue.post(() -> {
-                            cameraSource.stop();
-
-                            ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
-                            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-
-                            barcodeValue = barcodes.valueAt(0).displayValue;
-                            //barcodeFormatInt = barcodes.valueAt(0).format;
-
-                            onBarcodeReceived();
-                        });
-
-                }
-            }
-        });
+        cameraProvider = ProcessCameraProvider.getInstance(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -121,33 +96,47 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
     }
 
     private void setupCamera(){
-        if (!detector.isOperational()) {
+        if (cameraProvider == null) {
             //textView.setText(R.string.error_detector);
             return;
         }
 
-        CameraSource.Builder builder = new CameraSource.Builder(this, detector)
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
-                //.setRequestedPreviewSize(1600,1200)
-                .setAutoFocusEnabled(true)
-                .setRequestedFps(15.0f);
-
-        cameraSource = builder.build();
-
-        cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
+        BarcodeImageAnalyzer barcodeImageAnalyzer = new BarcodeImageAnalyzer(new BarcodeFoundListener() {
             @Override
-            public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                startCamera();
+            public void onBarcodeFound(String barCode, int format) {
+                onBarcodeReceived(barCode);
             }
 
             @Override
-            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) { }
-
-            @Override
-            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-                cameraSource.stop();
+            public void onCodeNotFound(String error) {
+                utils.debug("on code not found: "+error);
             }
         });
+
+        cameraProvider.addListener(() -> {
+            try {
+                ProcessCameraProvider provider = cameraProvider.get();
+                Preview preview = new Preview.Builder()
+                        .build();
+                preview.setSurfaceProvider(cameraView.getSurfaceProvider());
+
+                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                        .build();
+                imageAnalysis.setAnalyzer(cameraExecutor, barcodeImageAnalyzer);
+
+                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+                try{
+                    provider.unbindAll();
+                    provider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
+                }catch (Exception e){
+                    utils.debug("bind camera provider error; "+e.getMessage());
+                }
+
+            } catch (Exception e) {
+                utils.debug("Error starting camera " + e.getMessage());
+            }
+        }, ContextCompat.getMainExecutor(this));
 
     }
 
@@ -155,9 +144,10 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
         dataBaseItem = null;
         textValue.setText("");
         textDescription.setText("");
+        cameraProvider = null;
         try {
             textValue.setText(R.string.scanning);
-            cameraSource.start(cameraView.getHolder());
+            setupCamera();
         }catch (SecurityException se) {
             textValue.setText(R.string.error_no_permission);
         }catch (Exception e){
@@ -194,7 +184,7 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
         Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
     }
 
-    private void onBarcodeReceived(){
+    private void onBarcodeReceived(String barcodeValue){
         textValue.setText(barcodeValue);
         progressBar.setVisibility(View.VISIBLE);
 
