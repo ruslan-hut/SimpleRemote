@@ -3,6 +3,8 @@ package ua.com.programmer.simpleremote;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -96,10 +98,6 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
     }
 
     private void setupCamera(){
-        if (cameraProvider == null) {
-            //textView.setText(R.string.error_detector);
-            return;
-        }
 
         BarcodeImageAnalyzer barcodeImageAnalyzer = new BarcodeImageAnalyzer(new BarcodeFoundListener() {
             @Override
@@ -109,7 +107,7 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
 
             @Override
             public void onCodeNotFound(String error) {
-                utils.debug("on code not found: "+error);
+                utils.debug("BarcodeImageAnalyzer onCodeNotFound; "+error);
             }
         });
 
@@ -130,11 +128,11 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
                     provider.unbindAll();
                     provider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
                 }catch (Exception e){
-                    utils.debug("bind camera provider error; "+e.getMessage());
+                    utils.error("provider.bindToLifecycle; "+e.getMessage());
                 }
 
             } catch (Exception e) {
-                utils.debug("Error starting camera " + e.getMessage());
+                utils.error("cameraProvider.addListener; " + e.getMessage());
             }
         }, ContextCompat.getMainExecutor(this));
 
@@ -144,7 +142,6 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
         dataBaseItem = null;
         textValue.setText("");
         textDescription.setText("");
-        cameraProvider = null;
         try {
             textValue.setText(R.string.scanning);
             setupCamera();
@@ -152,6 +149,14 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
             textValue.setText(R.string.error_no_permission);
         }catch (Exception e){
             textValue.setText(e.toString());
+        }
+    }
+
+    private void stopCamera(){
+        try {
+            cameraProvider.get().unbindAll();
+        }catch (Exception e){
+            utils.debug("Unbind camera provider; "+e.getMessage());
         }
     }
 
@@ -185,6 +190,11 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
     }
 
     private void onBarcodeReceived(String barcodeValue){
+        stopCamera();
+
+        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP);
+
         textValue.setText(barcodeValue);
         progressBar.setVisibility(View.VISIBLE);
 
