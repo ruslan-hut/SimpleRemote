@@ -86,4 +86,7 @@
     <string name="title_sum">Сумма</string>
     <string name="have_to_collect">Нужно собрать</string>
     <string name="item_edit">Товар (редактирование)</string>
+    <string name="header_camera">Камера</string>
+    <string name="restart_camera">Перезапуск</string>
+    <string name="take_photo">Сделать фото</string>
 </resources>

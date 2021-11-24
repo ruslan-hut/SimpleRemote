@@ -10,7 +10,7 @@
 
     <uses-feature
         android:name="android.hardware.camera.any"
-        android:required="false"/>
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -31,9 +31,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
+            android:name=".CameraActivity"
+            android:screenOrientation="locked"
+            android:exported="false" />
+        <activity
             android:name=".ItemEditScreen"
             android:exported="false"
-            android:screenOrientation="locked"/>
+            android:screenOrientation="locked" />
         <activity android:name=".serviceUtils.DocumentsFilterActivity" />
         <activity
             android:name=".MainActivity"
@@ -49,13 +53,16 @@
         </activity>
         <activity
             android:name=".CatalogListActivity"
-            android:screenOrientation="locked" />
+            android:screenOrientation="locked"
+            android:exported="false" />
         <activity
             android:name=".DocumentActivity"
-            android:screenOrientation="locked" />
+            android:screenOrientation="locked"
+            android:exported="false" />
         <activity
             android:name=".ScannerActivity"
-            android:screenOrientation="locked" />
+            android:screenOrientation="locked"
+            android:exported="false" />
         <activity android:name=".settings.ConnectionSettingsActivity" />
         <activity android:name=".LoginActivity" />
     </application>

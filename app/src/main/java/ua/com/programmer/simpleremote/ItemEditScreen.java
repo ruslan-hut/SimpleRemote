@@ -1,5 +1,7 @@
 package ua.com.programmer.simpleremote;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import ua.com.programmer.simpleremote.settings.Constants;
@@ -24,6 +27,9 @@ public class ItemEditScreen extends AppCompatActivity {
     private DataBaseItem item;
     private EditText editQuantity;
     private EditText editNotes;
+
+    private final ActivityResultLauncher<Intent> openCameraScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+        result -> {});
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +67,9 @@ public class ItemEditScreen extends AppCompatActivity {
         TextView buttonOK = findViewById(R.id.button_yes);
         buttonOK.setOnClickListener((View v) -> saveValuesAndExit());
 
+        ImageView cameraButton = findViewById(R.id.camera_icon);
+        cameraButton.setOnClickListener((View v) -> openCamera());
+
     }
 
     private void setText(int id, String text){
@@ -94,5 +103,10 @@ public class ItemEditScreen extends AppCompatActivity {
         intent.putExtra("cacheKey", Cache.getInstance().put(item));
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private void openCamera(){
+        Intent intent = new Intent(this, CameraActivity.class);
+        openCameraScreen.launch(intent);
     }
 }

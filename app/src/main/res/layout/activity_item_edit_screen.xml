@@ -167,6 +167,30 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/image_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/item_notes"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@color/colorGrey" />
+
+        <ImageView
+            android:id="@+id/camera_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/baseline_add_a_photo_black_24"/>
+
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/buttons"
         android:layout_width="match_parent"
@@ -177,7 +201,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_notes">
+        app:layout_constraintTop_toBottomOf="@+id/image_line">
 
         <TextView
             android:layout_width="0dp"
