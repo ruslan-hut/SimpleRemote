@@ -36,6 +36,8 @@ public class CameraActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
     private ImageCapture imageCapture;
 
+    private File outputDirectory;
+
     private final Utils utils = new Utils();
 
     @Override
@@ -47,6 +49,8 @@ public class CameraActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setTitle(R.string.header_camera);
+
+        outputDirectory = this.getApplicationContext().getFilesDir();
 
         cameraExecutor = Executors.newSingleThreadExecutor();
         cameraView = findViewById(R.id.camera_view);
@@ -122,7 +126,7 @@ public class CameraActivity extends AppCompatActivity {
     private void takePhoto(){
 
         ImageCapture.OutputFileOptions fileOptions = new ImageCapture.OutputFileOptions.Builder(
-                new File("photo","tmp_picture.jpg")
+                new File(outputDirectory,"tmp_picture.jpg")
         ).build();
 
         ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
