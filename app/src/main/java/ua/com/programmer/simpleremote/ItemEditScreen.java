@@ -18,9 +18,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.Utils;
 
 public class ItemEditScreen extends AppCompatActivity {
 
@@ -28,9 +33,28 @@ public class ItemEditScreen extends AppCompatActivity {
     private EditText editQuantity;
     private EditText editNotes;
     private String attachImage;
+    private File outputDirectory;
+
+    private final Utils utils = new Utils();
 
     private final ActivityResultLauncher<Intent> openCameraScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-        result -> {});
+        result -> {
+            Intent data = result.getData();
+            if (data == null) return;
+            DataBaseItem dataBaseItem = Cache.getInstance().get(data.getStringExtra("cacheKey"));
+            String newImage = dataBaseItem.getString("image");
+            if (!newImage.isEmpty()){
+                if (!attachImage.isEmpty()){
+                    File file = new File(outputDirectory,attachImage);
+                    if (file.exists()){
+                        if (file.delete()) utils.debug("Item edit: File deleted: "+attachImage);
+                    }
+                }
+                item.put("image",newImage);
+                attachImage = newImage;
+                showImage();
+            }
+        });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +66,8 @@ public class ItemEditScreen extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setTitle(R.string.item_edit);
+
+        outputDirectory = this.getApplicationContext().getFilesDir();
 
         Intent intent = getIntent();
         item = Cache.getInstance().get(intent.getStringExtra("cacheKey"));
@@ -71,6 +97,8 @@ public class ItemEditScreen extends AppCompatActivity {
         ImageView cameraButton = findViewById(R.id.camera_icon);
         cameraButton.setOnClickListener((View v) -> openCamera());
 
+        attachImage = item.getString("image");
+        showImage();
     }
 
     private void setText(int id, String text){
@@ -110,5 +138,13 @@ public class ItemEditScreen extends AppCompatActivity {
         Intent intent = new Intent(this, CameraActivity.class);
         intent.putExtra("cacheKey", Cache.getInstance().put(item));
         openCameraScreen.launch(intent);
+    }
+
+    private void showImage(){
+        if (attachImage.isEmpty()) return;
+        ImageView imageView = findViewById(R.id.item_image);
+        Glide.with(this)
+                .load(new File(outputDirectory,attachImage))
+                .into(imageView);
     }
 }
