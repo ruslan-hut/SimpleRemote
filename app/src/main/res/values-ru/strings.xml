@@ -89,4 +89,5 @@
     <string name="header_camera">Камера</string>
     <string name="restart_camera">Перезапуск</string>
     <string name="take_photo">Сделать фото</string>
+    <string name="save_photo_and_exit">Сохранить фотографию и выйти?</string>
 </resources>

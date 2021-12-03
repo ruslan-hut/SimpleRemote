@@ -12,11 +12,16 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,9 +29,13 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ua.com.programmer.simpleremote.settings.Constants;
+import ua.com.programmer.simpleremote.specialItems.Cache;
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
 import ua.com.programmer.simpleremote.utility.Utils;
 
 public class CameraActivity extends AppCompatActivity {
@@ -36,7 +45,9 @@ public class CameraActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
     private ImageCapture imageCapture;
 
+    private DataBaseItem item;
     private File outputDirectory;
+    private String imageFileName;
 
     private final Utils utils = new Utils();
 
@@ -50,7 +61,12 @@ public class CameraActivity extends AppCompatActivity {
         }
         setTitle(R.string.header_camera);
 
+        Intent intent = getIntent();
+        item = Cache.getInstance().get(intent.getStringExtra("cacheKey"));
+        item.put("type", Constants.DOCUMENT_LINE);
+
         outputDirectory = this.getApplicationContext().getFilesDir();
+        imageFileName = "";
 
         cameraExecutor = Executors.newSingleThreadExecutor();
         cameraView = findViewById(R.id.camera_view);
@@ -72,6 +88,13 @@ public class CameraActivity extends AppCompatActivity {
         TextView buttonConfirm = findViewById(R.id.button_confirm);
         buttonConfirm.setOnClickListener((View v) -> takePhoto());
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupCamera(){
@@ -111,22 +134,57 @@ public class CameraActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_no_permission, Toast.LENGTH_SHORT).show();
         }catch (Exception e){
             Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
-            utils.error("start camera: "+e.getMessage());
+            utils.error("Camera: start: "+e.getMessage());
         }
     }
 
     private void stopCamera(){
-        try {
-            cameraProvider.get().unbindAll();
-        }catch (Exception e){
-            utils.error("stop camera: "+e.getMessage());
-        }
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> {
+            try {
+                cameraProvider.get().unbindAll();
+                if (!imageFileName.isEmpty()){
+                    saveAndExit();
+                }
+            }catch (Exception e){
+                utils.error("Camera: stop: "+e.toString());
+            }
+        });
+
+    }
+
+    private void saveAndExit(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.save_photo_and_exit)
+                .setTitle(R.string.action_save)
+                .setPositiveButton(getResources().getString(R.string.action_save), (dialogInterface, i) -> {
+                    item.put("image", imageFileName);
+                    Intent intent = getIntent();
+                    intent.putExtra("cacheKey", Cache.getInstance().put(item));
+                    setResult(RESULT_OK, intent);
+                    finish();
+                })
+                .setNegativeButton(getResources().getString(R.string.action_cancel), (dialogInterface, i) -> {
+                    File image = new File(outputDirectory, imageFileName);
+                    try {
+                        if (image.exists()) {
+                            if (image.delete()) utils.debug("Camera: file deleted: "+imageFileName);
+                        }
+                    }catch (Exception e){
+                        utils.error("Camera: file delete: "+e.toString());
+                    }
+                });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void takePhoto(){
 
+        imageFileName = UUID.randomUUID().toString()+".jpg";
+
         ImageCapture.OutputFileOptions fileOptions = new ImageCapture.OutputFileOptions.Builder(
-                new File(outputDirectory,"tmp_picture.jpg")
+                new File(outputDirectory,imageFileName)
         ).build();
 
         ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
@@ -135,13 +193,14 @@ public class CameraActivity extends AppCompatActivity {
         imageCapture.takePicture(fileOptions, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                utils.debug("image saved");
+                utils.debug("Camera: image saved: "+imageFileName);
                 stopCamera();
             }
 
             @Override
             public void onError(@NonNull ImageCaptureException exception) {
-                utils.error("take picture: "+exception.getMessage());
+                imageFileName = "";
+                utils.error("Camera: take picture: "+exception.getMessage());
             }
         });
 

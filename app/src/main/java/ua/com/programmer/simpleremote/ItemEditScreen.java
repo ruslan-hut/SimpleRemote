@@ -27,6 +27,7 @@ public class ItemEditScreen extends AppCompatActivity {
     private DataBaseItem item;
     private EditText editQuantity;
     private EditText editNotes;
+    private String attachImage;
 
     private final ActivityResultLauncher<Intent> openCameraScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
         result -> {});
@@ -107,6 +108,7 @@ public class ItemEditScreen extends AppCompatActivity {
 
     private void openCamera(){
         Intent intent = new Intent(this, CameraActivity.class);
+        intent.putExtra("cacheKey", Cache.getInstance().put(item));
         openCameraScreen.launch(intent);
     }
 }

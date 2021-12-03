@@ -89,4 +89,5 @@
     <string name="header_camera">Camera</string>
     <string name="restart_camera">Restart camera</string>
     <string name="take_photo">Take a photo</string>
+    <string name="save_photo_and_exit">Save photo and exit</string>
 </resources>
