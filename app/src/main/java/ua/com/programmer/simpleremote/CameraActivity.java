@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Size;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -102,6 +103,7 @@ public class CameraActivity extends AppCompatActivity {
         //View view = findViewById(R.id.camera_view);
         imageCapture = new ImageCapture.Builder()
                         //.setTargetRotation(view.getDisplay().getRotation())
+                        .setTargetResolution(new Size(768, 1024))
                         .build();
 
         cameraProvider.addListener(() -> {
