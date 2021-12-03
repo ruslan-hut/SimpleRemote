@@ -396,7 +396,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             document.put("lines", lines);
             documentDataString = document.toString();
         }catch (Exception ex){
-            utils.log("w", "Save document: "+ex.toString());
+            utils.error("Save document: "+ex.toString());
             Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show();
             return;
         }

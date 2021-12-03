@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
@@ -50,8 +53,9 @@ public class ItemEditScreen extends AppCompatActivity {
                         if (file.delete()) utils.debug("Item edit: File deleted: "+attachImage);
                     }
                 }
-                item.put("image",newImage);
                 attachImage = newImage;
+                item.put("image",newImage);
+                item.put("encodedImage",encodeImage());
                 showImage();
             }
         });
@@ -146,5 +150,24 @@ public class ItemEditScreen extends AppCompatActivity {
         Glide.with(this)
                 .load(new File(outputDirectory,attachImage))
                 .into(imageView);
+    }
+
+    private String encodeImage(){
+        if (attachImage.isEmpty()) return "";
+        String encodedImage = "";
+        File image = new File(outputDirectory, attachImage);
+        if (image.exists()){
+            byte[] imageBytes = new byte[(int) image.length()];
+            try {
+                BufferedInputStream stream = new BufferedInputStream(new FileInputStream(image));
+                if (stream.read(imageBytes, 0, imageBytes.length) == imageBytes.length){
+                    encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                }
+                stream.close();
+            }catch (Exception e){
+                utils.error("Item edit: file encode: "+e.toString());
+            }
+        }
+        return encodedImage;
     }
 }
