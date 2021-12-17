@@ -90,4 +90,5 @@
     <string name="restart_camera">Restart camera</string>
     <string name="take_photo">Take a photo</string>
     <string name="save_photo_and_exit">Save photo and exit</string>
+    <string name="multiply_sign">X</string>
 </resources>
