@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 
-import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 
 public class BarcodeImageAnalyzer implements ImageAnalysis.Analyzer {
@@ -32,11 +32,13 @@ public class BarcodeImageAnalyzer implements ImageAnalysis.Analyzer {
         if (mediaImage != null) {
             InputImage inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
             scanner.process(inputImage)
-                    .addOnSuccessListener(barcodes -> {
-                        for (Barcode barcode : barcodes) {
-                            listener.onBarcodeFound(barcode.getRawValue(),barcode.getFormat());
-                        }
-                    })
+                    .addOnSuccessListener(
+                            barcodes -> {
+                                for (Barcode barcode: barcodes){
+                                    listener.onBarcodeFound(barcode.getRawValue(), barcode.getFormat());
+                                }
+                            }
+                    )
                     .addOnFailureListener(e -> listener.onCodeNotFound(e.getMessage()))
                     .addOnCompleteListener(task -> {
                         imageProxy.close();
