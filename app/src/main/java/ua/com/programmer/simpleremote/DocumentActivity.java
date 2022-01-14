@@ -225,6 +225,16 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             documentIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24);
         }
 
+        LinearLayout contractorLine = findViewById(R.id.document_header_contractor);
+        String contractor = documentDataItem.getString("contractor");
+        if (contractor.isEmpty()) {
+            contractorLine.setVisibility(View.GONE);
+        }else{
+            contractorLine.setVisibility(View.VISIBLE);
+            TextView tvContractor = findViewById(R.id.document_contractor);
+            tvContractor.setText(contractor);
+        }
+
         field1 = new DocumentField(documentDataItem.getString("field1"));
         field2 = new DocumentField(documentDataItem.getString("field2"));
         field3 = new DocumentField(documentDataItem.getString("field3"));
