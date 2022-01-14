@@ -100,10 +100,10 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
                     }else if (type.equals(Constants.DOCUMENT_LINE)){
 
-                        contentAdapter.setItemProperties(dataBaseItem,
-                                dataBaseItem.getString("quantity"),
-                                dataBaseItem.getString("price"),
-                                dataBaseItem.getBoolean("checked"));
+                        contentAdapter.setItemProperties(dataBaseItem);
+//                                dataBaseItem.getString("quantity"),
+//                                dataBaseItem.getString("price"),
+//                                dataBaseItem.getBoolean("checked"));
                         recyclerView.scrollToPosition(contentAdapter.getPosition(dataBaseItem));
 
                         if (!contentAdapter.hasUncheckedItems()) documentDataItem.put("checked", true);
@@ -600,14 +600,15 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 .setPositiveButton(R.string.action_save, (DialogInterface dialogInterface, int i) ->
                 {
                     String enteredQuantity = editQuantity.getText().toString();
-                    if (enteredQuantity.equals("")) {
-                        enteredQuantity = item.getString("quantity");
+                    if (!enteredQuantity.isEmpty()) {
+                        item.put("quantity", utils.round(enteredQuantity, 3));
                     }
                     String enteredPrice = editPrice.getText().toString();
-                    if (enteredPrice.equals("")) {
-                        enteredPrice = item.getString("price");
+                    if (enteredPrice.isEmpty()) {
+                        item.put("price", utils.round(enteredPrice, 2));
                     }
-                    contentAdapter.setItemProperties(item,enteredQuantity,enteredPrice,checkedCheckBox.isChecked());
+                    item.put("checked", checkedCheckBox.isChecked());
+                    contentAdapter.setItemProperties(item);
                     recyclerView.scrollToPosition(contentAdapter.getPosition(item));
                 })
                 .setNegativeButton(R.string.action_cancel, (DialogInterface dialog, int i) -> {});
@@ -623,14 +624,15 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         {
             if (i == EditorInfo.IME_ACTION_NEXT || i == EditorInfo.IME_ACTION_DONE) {
                 String enteredQuantity = editQuantity.getText().toString();
-                if (enteredQuantity.equals("")) {
-                    enteredQuantity = item.getString("quantity");
+                if (!enteredQuantity.isEmpty()) {
+                    item.put("quantity", utils.round(enteredQuantity, 3));
                 }
                 String enteredPrice = editPrice.getText().toString();
-                if (enteredPrice.equals("")) {
-                    enteredPrice = item.getString("price");
+                if (enteredPrice.isEmpty()) {
+                    item.put("price", utils.round(enteredPrice, 2));
                 }
-                contentAdapter.setItemProperties(item,enteredQuantity,enteredPrice,checkedCheckBox.isChecked());
+                item.put("checked", checkedCheckBox.isChecked());
+                contentAdapter.setItemProperties(item);
                 recyclerView.scrollToPosition(contentAdapter.getPosition(item));
                 dialog.dismiss();
             }
@@ -642,6 +644,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         if (!isEditable){
             return;
         }
+        item.put("workingMode", workingMode);
 
         if (workingMode.equals(Constants.MODE_COLLECT)) {
 
@@ -732,7 +735,9 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         TextView tvLineNumber;
         TextView tvQuantity;
         TextView tvRest;
+        TextView tvCollect;
         LinearLayout tvRestTitle;
+        LinearLayout descriptionLine;
         TextView tvUnit;
         TextView tvPrice;
         TextView tvSum;
@@ -753,6 +758,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             tvNotes = view.findViewById(R.id.item_notes);
             tvQuantity = view.findViewById(R.id.item_quantity);
             tvRest = view.findViewById(R.id.item_rest);
+            tvCollect = view.findViewById(R.id.item_collect);
             tvRestTitle = view.findViewById(R.id.item_rest_title);
             tvUnit = view.findViewById(R.id.item_unit);
             tvPrice = view.findViewById(R.id.item_price);
@@ -760,6 +766,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             iconStar = view.findViewById(R.id.icon_star);
             isChecked = view.findViewById(R.id.is_checked);
             image = view.findViewById(R.id.item_image);
+            descriptionLine = view.findViewById(R.id.description_line);
         }
 
         void setCode(String str) {
@@ -801,6 +808,12 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         void setQuantity(String str) {
             str = utils.formatAsInteger(str);
             this.tvQuantity.setText(str);
+        }
+
+        void setCollect(String str) {
+            str = utils.formatAsInteger(str);
+            if (str.equals("0")) str = "--";
+            this.tvCollect.setText(str);
         }
 
         void setUnit(String str) {
@@ -870,20 +883,22 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             //notifyDataSetChanged();
         }
 
-        void setItemProperties(DataBaseItem item, String quantity, String price, boolean isChecked){
-            item.put("quantity", utils.round(quantity, 3));
-            item.put("price", utils.round(price, 2));
-            item.put("checked", isChecked);
+        void setItemProperties(DataBaseItem item){
+            //utils.debug(item.getAsJSON().toString());
+            double qty = utils.round(item.getString("quantity"),3);
             item.put("edited", 1);
 
-            double prc = utils.round(item.getString("price"),2);
-            double qty = utils.round(item.getString("quantity"),3);
-            double sum = prc * qty;
-            item.put("sum",utils.round(sum,2));
-
-            if (workingMode.equals(Constants.MODE_COLLECT)){
-                double collect = utils.round(item.getString("collect"),3);
+            if (workingMode.equals(Constants.MODE_COLLECT)) {
+                double collect = utils.round(item.getString("collect"), 3);
                 item.put("checked", collect <= qty);
+            }else{
+                //item.put("quantity", utils.round(quantity, 3));
+                //item.put("price", utils.round(price, 2));
+                //item.put("checked", isChecked);
+
+                double prc = utils.round(item.getString("price"),2);
+                double sum = prc * qty;
+                item.put("sum",utils.round(sum,2));
             }
 
             contentAdapter.notifyItemChanged(getPosition(item));
@@ -954,6 +969,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             holder.setDescription(dataBaseItem.getString("description"));
             holder.setLineNumber(dataBaseItem.getString("line"));
             holder.setQuantity(dataBaseItem.getString("quantity"));
+            holder.setCollect(dataBaseItem.getString("collect"));
             holder.setRest(rest,unit);
             holder.setUnit(unit);
             holder.setPrice(dataBaseItem.getString("price"));
@@ -970,12 +986,20 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             if (checkedFlagEnabled){
                 double restValue = utils.round(rest,3);
-                if (restValue>0 && !checked) {
-                    holder.itemView.setBackgroundColor(colorRed);
-                }else if (restValue<=0 && !checked) {
-                    holder.itemView.setBackgroundColor(colorYellow);
-                }else {
-                    holder.itemView.setBackgroundColor(colorWhite);
+                if (workingMode.equals(Constants.MODE_COLLECT)) {
+                    if (checked) {
+                        holder.descriptionLine.setBackgroundColor(colorWhite);
+                    } else {
+                        holder.descriptionLine.setBackgroundColor(colorYellow);
+                    }
+                }else{
+                    if (restValue>0 && !checked) {
+                        holder.descriptionLine.setBackgroundColor(colorRed);
+                    }else if (restValue<=0 && !checked) {
+                        holder.descriptionLine.setBackgroundColor(colorYellow);
+                    }else {
+                        holder.descriptionLine.setBackgroundColor(colorWhite);
+                    }
                 }
             }
         }

@@ -37,6 +37,7 @@ public class ItemEditScreen extends AppCompatActivity {
     private EditText editNotes;
     private String attachImage;
     private File outputDirectory;
+    private String workingMode;
 
     private final Utils utils = new Utils();
 
@@ -76,6 +77,7 @@ public class ItemEditScreen extends AppCompatActivity {
         Intent intent = getIntent();
         item = Cache.getInstance().get(intent.getStringExtra("cacheKey"));
         item.put("type", Constants.DOCUMENT_LINE);
+        workingMode = item.getString("workingMode");
 
         editQuantity = findViewById(R.id.edit_quantity);
         editQuantity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> onEditTextAction(actionId));
@@ -127,7 +129,13 @@ public class ItemEditScreen extends AppCompatActivity {
 
     private void saveValuesAndExit(){
         String enteredQuantity = editQuantity.getText().toString();
-        if (!enteredQuantity.isEmpty()) item.put("quantity", enteredQuantity);
+        if (!enteredQuantity.isEmpty()) {
+            if (workingMode.equals(Constants.MODE_COLLECT)) {
+                item.put("collect", enteredQuantity);
+            }else{
+                item.put("quantity", enteredQuantity);
+            }
+        }
 
         String enteredNotes = editNotes.getText().toString();
         item.put("notes", enteredNotes);
