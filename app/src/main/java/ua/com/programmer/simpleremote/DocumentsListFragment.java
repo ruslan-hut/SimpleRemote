@@ -133,6 +133,7 @@ public class DocumentsListFragment extends Fragment{
         TextView tvDate;
         TextView tvCompany;
         TextView tvWarehouse;
+        TextView tvContractor;
         TextView tvField1;
         TextView tvField2;
         TextView tvField3;
@@ -148,6 +149,7 @@ public class DocumentsListFragment extends Fragment{
             tvDate = view.findViewById(R.id.item_date);
             tvCompany = view.findViewById(R.id.item_company);
             tvWarehouse = view.findViewById(R.id.item_warehouse);
+            tvContractor = view.findViewById(R.id.item_contractor);
             tvField1 = view.findViewById(R.id.item_field1);
             tvField2 = view.findViewById(R.id.item_field2);
             tvField3 = view.findViewById(R.id.item_field3);
@@ -163,6 +165,14 @@ public class DocumentsListFragment extends Fragment{
             tvDate.setText(dataBaseItem.getString("date"));
             tvCompany.setText(dataBaseItem.getString("company"));
             tvWarehouse.setText(dataBaseItem.getString("warehouse"));
+
+            String contractor = dataBaseItem.getString("contractor");
+            if (contractor.isEmpty()) {
+                tvContractor.setVisibility(View.GONE);
+            }else{
+                tvContractor.setVisibility(View.VISIBLE);
+                tvContractor.setText(contractor);
+            }
 
             String currency = dataBaseItem.getString("currency");
             String textSum = dataBaseItem.getString("sum");
