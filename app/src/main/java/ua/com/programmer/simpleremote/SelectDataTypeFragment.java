@@ -53,7 +53,7 @@ public class SelectDataTypeFragment extends Fragment {
         View fragmentView = inflater.inflate(R.layout.fragment_select_data_type, container, false);
 
         RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new SelectDataTypeFragment.Adapter();

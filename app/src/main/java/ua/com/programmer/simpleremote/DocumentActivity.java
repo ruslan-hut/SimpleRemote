@@ -145,7 +145,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         currency = documentDataItem.getString("currency");
 
         recyclerView = findViewById(R.id.document_content);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         contentAdapter = new ContentAdapter();

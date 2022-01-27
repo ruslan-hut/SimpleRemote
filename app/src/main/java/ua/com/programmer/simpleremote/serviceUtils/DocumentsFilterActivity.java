@@ -54,7 +54,7 @@ public class DocumentsFilterActivity extends AppCompatActivity {
         resetButton.setOnClickListener((View v) -> onResetButtonClick());
 
         RecyclerView recyclerView = findViewById(R.id.filter_elements);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new FilterListAdapter();

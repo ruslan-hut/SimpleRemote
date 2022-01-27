@@ -50,7 +50,7 @@ public class DocumentsListFragment extends Fragment{
         swipeRefreshLayout.setOnRefreshListener(this::updateList);
 
         RecyclerView recyclerView = fragmentView.findViewById(R.id.documents_recycler);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(linearLayoutManager);
         documentsAdapter = new DocumentsAdapter();

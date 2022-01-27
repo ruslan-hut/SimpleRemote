@@ -203,7 +203,7 @@ public class AppSettings {
             }
             jsonObject.put("filter",filter);
         }catch (JSONException ex){
-            utils.log("e","getDocumentFilterAsString: "+ex.toString());
+            utils.log("e","getDocumentFilterAsString: "+ex);
         }
         return jsonObject.toString();
     }
