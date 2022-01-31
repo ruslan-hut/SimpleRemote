@@ -344,7 +344,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         try {
             Objects.requireNonNull(dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }catch (Exception ex){
-            utils.log("e","Set soft input mode: "+ex.toString());
+            utils.log("e","Set soft input mode: "+ex);
         }
         dialog.show();
     }
@@ -415,7 +415,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             document.put("lines", lines);
             documentDataString = document.toString();
         }catch (Exception ex){
-            utils.error("Save document: "+ex.toString());
+            utils.error("Save document: "+ex);
             Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -914,10 +914,6 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
                 double collect = utils.round(item.getString("collect"), 3);
                 item.put("checked", collect <= qty);
             }else{
-                //item.put("quantity", utils.round(quantity, 3));
-                //item.put("price", utils.round(price, 2));
-                //item.put("checked", isChecked);
-
                 double prc = utils.round(item.getString("price"),2);
                 double sum = prc * qty;
                 item.put("sum",utils.round(sum,2));
