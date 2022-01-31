@@ -69,7 +69,11 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
 
         cameraExecutor = Executors.newSingleThreadExecutor();
         cameraView = findViewById(R.id.camera_view);
-        cameraProvider = ProcessCameraProvider.getInstance(this);
+        try {
+            cameraProvider = ProcessCameraProvider.getInstance(this);
+        }catch (Exception e){
+            utils.debug("ScannerActivity: create camera provider: "+e);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -98,6 +102,12 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
     }
 
     private void setupCamera(){
+
+        if (cameraProvider == null){
+            Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         BarcodeImageAnalyzer barcodeImageAnalyzer = new BarcodeImageAnalyzer(new BarcodeFoundListener() {
             @Override
@@ -216,4 +226,5 @@ public class ScannerActivity extends AppCompatActivity implements DataLoader.Dat
         setResult(RESULT_OK, intent);
         finish();
     }
+
 }

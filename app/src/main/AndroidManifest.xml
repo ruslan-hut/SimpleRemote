@@ -42,7 +42,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -65,6 +64,7 @@
             android:exported="false" />
         <activity android:name=".settings.ConnectionSettingsActivity" />
         <activity android:name=".LoginActivity" />
+
     </application>
 
 </manifest>
