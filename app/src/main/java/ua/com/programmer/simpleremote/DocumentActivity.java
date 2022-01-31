@@ -369,6 +369,15 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
     }
 
+    private void showMessage(String text){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(text)
+                .setTitle(R.string.warning)
+                .setPositiveButton(R.string.ok, null)
+                .create()
+                .show();
+    }
+
     private void saveDocument(){
 
         if (contentAdapter.hasUncheckedItems()){
@@ -430,11 +439,14 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
             DataBaseItem item = dataItems.get(0);
             String savedFlag = item.getString("saved");
+            String type = item.getString(Constants.TYPE);
 
             //received goods item by barcode scanner
-            if (item.getString(Constants.TYPE).equals(Constants.GOODS)){
+            if (type.equals(Constants.GOODS)) {
                 addGoodsItem(item);
-            }else if (!item.getString(Constants.DOCUMENT_NUMBER).equals("")){
+            }else if (type.equals(Constants.MESSAGE)){
+                showMessage(item.getString("text"));
+            }else if (!item.getString(Constants.DOCUMENT_NUMBER).isEmpty()){
                 documentDataItem = item;
                 showDocumentHeader();
                 //dataItems.clear();

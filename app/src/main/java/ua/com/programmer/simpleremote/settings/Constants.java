@@ -7,6 +7,7 @@ public final class Constants {
     public final static String DOCUMENTS_LIST = "documents_list";
     public final static String CACHED_DOCUMENTS = "cached_documents";
     public final static String ACTION_SAVE_DOCUMENT = "saveDocument";
+    public final static String MESSAGE = "message";
 
     //document types
     public final static String RECEIVE = "receive";
