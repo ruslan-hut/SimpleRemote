@@ -99,8 +99,7 @@ public class DocumentsListFragment extends Fragment{
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context + " must implement OnFragmentInteractionListener");
         }
         mContext = context;
     }
@@ -142,6 +141,7 @@ public class DocumentsListFragment extends Fragment{
         TextView tvCheckedText;
         TextView tvNotes;
         ImageView icon;
+        ImageView iconRepeat;
 
         DocumentViewHolder(View view){
             super(view);
@@ -158,6 +158,7 @@ public class DocumentsListFragment extends Fragment{
             tvNotes = view.findViewById(R.id.item_notes);
             tvSum = view.findViewById(R.id.item_sum);
             icon = view.findViewById(R.id.item_icon);
+            iconRepeat = view.findViewById(R.id.icon_repeat);
         }
 
         void setItemInfo(DataBaseItem dataBaseItem){
@@ -207,7 +208,7 @@ public class DocumentsListFragment extends Fragment{
             }
 
             String notes = dataBaseItem.getString("notes");
-            if (!notes.equals("")) {
+            if (!notes.isEmpty()) {
                 tvNotes.setText(notes);
                 tvNotes.setVisibility(View.VISIBLE);
             }else {
@@ -230,6 +231,12 @@ public class DocumentsListFragment extends Fragment{
                 icon.setImageResource(R.drawable.twotone_check_box_24);
             }else {
                 icon.setImageResource(R.drawable.twotone_check_box_outline_blank_24);
+            }
+
+            if (dataBaseItem.getString("repeated").equals("1")) {
+                iconRepeat.setVisibility(View.VISIBLE);
+            }else{
+                iconRepeat.setVisibility(View.GONE);
             }
         }
     }
