@@ -81,6 +81,11 @@ class DataLoader {
 
     private void loadDataFromResponse(JSONObject response){
 
+        if (response == null) {
+            onDataProcessingError("Response is NULL");
+            return;
+        }
+
         String responseString = response.toString();
         if (responseString.length() < 500) {
             utils.debug("<<< " + responseString);
@@ -134,7 +139,7 @@ class DataLoader {
                     onDataProcessingError(response.getString("message"));
                 }
             } catch (Exception ex) {
-                Log.e("XBUG", "DataLoader.loadDataFromResponse: " + ex.toString());
+                Log.e("XBUG", "DataLoader.loadDataFromResponse: " + ex);
                 onDataProcessingError("Invalid response");
             }
         }else{
@@ -207,7 +212,7 @@ class DataLoader {
                     item.put(Constants.CACHE_GUID,cacheItem.getString("guid"));
                     items.add(item);
                 }catch (JSONException jsonException){
-                    utils.log("w","getDocuments; JSONException: "+jsonException.toString());
+                    utils.log("w","getDocuments; JSONException: "+jsonException);
                 }
             }
             listener.onDataLoaded(items);
@@ -228,7 +233,7 @@ class DataLoader {
                     items.add(new DataBaseItem(linesArray.getJSONObject(i)));
                 }
             }catch (JSONException jsonException){
-                utils.log("w","getDocumentContent; JSONException: "+jsonException.toString());
+                utils.log("w","getDocumentContent; JSONException: "+jsonException);
             }
             listener.onDataLoaded(items);
         }else {
