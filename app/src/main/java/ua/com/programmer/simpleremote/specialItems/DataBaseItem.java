@@ -32,6 +32,8 @@ public class DataBaseItem {
             columnIndex = cursor.getColumnIndex(columnName);
             switch (cursor.getType(columnIndex)){
                 case Cursor.FIELD_TYPE_STRING:
+                case Cursor.FIELD_TYPE_NULL:
+                case Cursor.FIELD_TYPE_BLOB:
                     values.put(columnName, cursor.getString(columnIndex));
                     break;
                 case Cursor.FIELD_TYPE_INTEGER:
@@ -66,7 +68,7 @@ public class DataBaseItem {
                     values.put(columnName, obj.toString());
                 }
             }catch (JSONException ex){
-                utils.log("e", "DatabaseItem init from JSON: "+ex.toString());
+                utils.log("e", "DatabaseItem init from JSON: "+ex);
             }
         }
         itemValues = values;
@@ -81,11 +83,20 @@ public class DataBaseItem {
         itemValues.put("contractor", "");
     }
 
+    /**
+     * Read string value
+     *
+     * @param valueName name of the parameter
+     * @return parameter value
+     */
     public String getString(String valueName){
         String value = "";
-        if (itemValues.containsKey(valueName) && itemValues.get(valueName) != null){
+        if (valueName == null) return value;
+        if (itemValues.containsKey(valueName)){
             value = itemValues.getAsString(valueName);
         }
+        if (value == null) value = "";
+        if (value.equals("null")) value = "";
         return value;
     }
 
@@ -95,25 +106,17 @@ public class DataBaseItem {
 
     public Double getDouble(String valueName){
         Double value = 0.0;
-        if (hasValue(valueName)){
-            value = itemValues.getAsDouble(valueName);
-        }
-        return value != null ? value : 0.0;
+        if (valueName == null) return value;
+        if (getString(valueName).isEmpty()) return value;
+        value = itemValues.getAsDouble(valueName);
+        return value;
     }
 
     public int getInt(String valueName){
         int value = 0;
-        if (hasValue(valueName)){
-            value = itemValues.getAsInteger(valueName);
-        }
-        return value;
-    }
-
-    public long getLong(String valueName){
-        long value = 0;
-        if (hasValue(valueName)){
-            value = itemValues.getAsLong(valueName);
-        }
+        if (valueName == null) return value;
+        if (getString(valueName).isEmpty()) return value;
+        value = itemValues.getAsInteger(valueName);
         return value;
     }
 
@@ -156,7 +159,7 @@ public class DataBaseItem {
                 document.put(key, itemValues.get(key));
             }
         }catch (JSONException ex){
-            utils.log("e", "DatabaseItem.getAsJSON: "+ex.toString());
+            utils.log("e", "DatabaseItem.getAsJSON: "+ex);
         }
         return document;
     }

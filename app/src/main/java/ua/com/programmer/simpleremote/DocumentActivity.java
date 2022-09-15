@@ -532,12 +532,22 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     private void addGoodsItem(DataBaseItem dataBaseItem){
         if (!contentAdapter.contains(dataBaseItem)){
             contentAdapter.addItem(dataBaseItem);
-            recyclerView.scrollToPosition(contentAdapter.getItemCount()-1);
+            //recyclerView.scrollToPosition(contentAdapter.getItemCount()-1);
         }
         DataBaseItem listItem = contentAdapter.findItem(dataBaseItem);
         if (listItem != null){
-            onListItemClick(listItem);
+            //onListItemClick(listItem);
+
+            if (workingMode.equals(Constants.MODE_COLLECT)) {
+                listItem.put("collect", listItem.getDouble("collect") + 1);
+            }else{
+                listItem.put("quantity", listItem.getDouble("quantity") + 1);
+            }
+            contentAdapter.setItemProperties(listItem);
+            recyclerView.scrollToPosition(contentAdapter.getPosition(listItem));
+
         }
+
     }
 
     private void updateContent(){

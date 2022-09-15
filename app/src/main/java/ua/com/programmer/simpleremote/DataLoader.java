@@ -61,7 +61,7 @@ class DataLoader {
         appSettings = AppSettings.getInstance(context);
         if (appSettings.demoMode()) {
             USER_PASSWORD = "Помощник:12qwaszx";
-            SERVER_URL = "http://193.0.247.122:88/simple/hs/rc";
+            SERVER_URL = "http://hoot.com.ua/simple/hs/rc";
         }else{
             USER_PASSWORD = appSettings.getUserName()+":"+appSettings.getUserPassword();
             SERVER_URL = "http://"+appSettings.getServerAddress()+"/"+appSettings.getDatabaseName()+"/hs/rc";
