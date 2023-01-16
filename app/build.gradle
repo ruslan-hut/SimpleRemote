@@ -49,19 +49,20 @@ android {
         }
     }
     buildToolsVersion '31.0.0'
+    namespace 'ua.com.programmer.simpleremote'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //volley
     implementation 'com.android.volley:volley:1.2.1'
@@ -69,12 +70,12 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 
     // CameraX dependencies
-    def camerax_version = "1.2.0-beta02"
+    def camerax_version = "1.2.0"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
 
-    implementation 'com.google.mlkit:barcode-scanning:17.0.2'
+    implementation 'com.google.mlkit:barcode-scanning:17.0.3'
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:28.4.2')
