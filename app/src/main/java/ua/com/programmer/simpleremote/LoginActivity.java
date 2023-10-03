@@ -194,7 +194,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
                 documentsList.add(new DataBaseItem(documents.getJSONObject(i)));
             }
         }catch (Exception e){
-            utils.error("checkServerResponse: "+e.toString());
+            utils.error("checkServerResponse: "+e);
             utils.error("response: "+response.getAsJSON());
         }
         if (documentsList.size() > 0){
