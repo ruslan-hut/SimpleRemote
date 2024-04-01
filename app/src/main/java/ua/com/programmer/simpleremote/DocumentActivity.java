@@ -303,7 +303,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
         TextView textViewNotes = findViewById(R.id.document_header_notes);
         String notes = documentDataItem.getString("notes");
-        if (notes.equals("")) {
+        if (notes.isEmpty()) {
             textViewNotes.setHint(R.string.notes);
         }else {
             textViewNotes.setText(notes);
@@ -351,12 +351,12 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
     private void onSaveError(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if (!documentDataString.equals("")) {
+        if (!documentDataString.isEmpty()) {
             database.cacheData(documentGUID, documentDataString);
             builder.setMessage(R.string.saved_in_cache_warn)
                     .setTitle(R.string.warning)
                     .setPositiveButton(R.string.ok, (DialogInterface di, int i) ->
-                            continueOnBackPressed())
+                            onBackPressed())
                     .create()
                     .show();
         }else {
@@ -461,16 +461,16 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
                 //if document is loaded from cache, exit
                 if (isCachedDocument) {
-                    continueOnBackPressed();
+                    onBackPressed();
                 }else {
                     updateContent();
                 }
 
-            }else if (savedFlag.length() > 0){
+            }else if (!savedFlag.isEmpty()){
                 Toast.makeText(this, getResources().getString(R.string.toast_error)+" "+item.getString("error"), Toast.LENGTH_LONG).show();
             }
 
-        } else if (dataItems.size() > 0){
+        } else if (!dataItems.isEmpty()){
             contentAdapter.loadListItems(dataItems);
         }else{
             Toast.makeText(this, R.string.no_data, Toast.LENGTH_SHORT).show();
@@ -488,28 +488,18 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     }
 
     @Override
-    protected void onResume() {
-        //updateContent();
-        super.onResume();
-    }
-
-    void continueOnBackPressed(){
-        super.onBackPressed();
-    }
-
-    @Override
     public void onBackPressed() {
         if (contentAdapter.hasEditedItems() || isModified) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.unsaved_document_warn)
                     .setTitle(R.string.warning)
                     .setPositiveButton(R.string.yes, (DialogInterface di, int i) ->
-                            continueOnBackPressed())
+                            super.onBackPressed())
                     .setNegativeButton(R.string.action_cancel, null)
                     .create()
                     .show();
-        }else {
-            continueOnBackPressed();
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -545,6 +535,8 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             }
             contentAdapter.setItemProperties(listItem);
             recyclerView.scrollToPosition(contentAdapter.getPosition(listItem));
+
+            if (!contentAdapter.hasUncheckedItems()) documentDataItem.put("checked", true);
 
         }
 
@@ -602,7 +594,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
         View view = inflater.inflate(R.layout.document_line_edit_dialog,null);
 
         String restText = item.getString("rest");
-        if (restText.equals("")) {
+        if (restText.isEmpty()) {
             LinearLayout restLine = view.findViewById(R.id.rest_line);
             restLine.setVisibility(View.INVISIBLE);
         }else {
@@ -692,6 +684,17 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
     }
 
+    private void onListItemChecked(boolean isChecked, DataBaseItem item){
+        item.put("checked", isChecked);
+        if (!contentAdapter.hasUncheckedItems()) {
+            documentDataItem.put("checked", true);
+            showDocumentHeader();
+        } else if (documentDataItem.getBoolean("checked")) {
+            documentDataItem.put("checked", false);
+            showDocumentHeader();
+        }
+    }
+
     private void onAddButtonClick(){
         if (isEditable){
             Intent intent = new Intent(this, CatalogListActivity.class);
@@ -718,7 +721,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
     }
 
     private void onBarcodeReceived() {
-        if (barcode.length() > 0) {
+        if (!barcode.isEmpty()) {
             progressBar.setVisibility(View.VISIBLE);
 
             DataBaseItem barcodeParameters = new DataBaseItem();
@@ -1007,7 +1010,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
             holder.setChecked(checked);
 
             holder.isChecked.setOnClickListener((View v) -> {
-                dataBaseItem.put("checked",holder.isChecked.isChecked());
+                onListItemChecked(holder.isChecked.isChecked(), dataBaseItem);
                 isModified = true;
                 notifyItemChanged(position);
             });
