@@ -128,7 +128,7 @@ class DataLoader {
                         DocumentField element = new DocumentField(filterElements.getJSONObject(i));
                         if (element.isReal()) elements.add(element);
                     }
-                    if (elements.size() != 0) appSettings.setDocumentFilter(elements);
+                    if (!elements.isEmpty()) appSettings.setDocumentFilter(elements);
 
                     //==============================================
                     //   return result to listener
@@ -157,7 +157,7 @@ class DataLoader {
     }
 
     private void onRequestError(VolleyError error,String type){
-        String textError = error.getLocalizedMessage();
+        String textError = error.getMessage();
         if (error.getCause() != null){
             textError = error.getCause().getLocalizedMessage();
         }
