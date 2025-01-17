@@ -1,280 +1,255 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import ua.com.programmer.simpleremote.DocumentsListFragment.DocumentViewHolder
+import ua.com.programmer.simpleremote.DocumentsListFragment.DocumentsAdapter
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.specialItems.DocumentField
+import java.lang.RuntimeException
+import java.util.ArrayList
 
-import java.util.ArrayList;
+class DocumentsListFragment : Fragment() {
+    private var mContext: Context? = null
+    private var mListener: OnFragmentInteractionListener? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var documentsAdapter: DocumentsAdapter? = null
 
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.specialItems.DocumentField;
-
-public class DocumentsListFragment extends Fragment{
-
-    private Context mContext;
-    private OnFragmentInteractionListener mListener;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private DocumentsAdapter documentsAdapter;
-
-    public DocumentsListFragment() {
-        // Required empty public constructor
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
-    static DocumentsListFragment newInstance() {
-        return new DocumentsListFragment();
-    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val fragmentView = inflater.inflate(R.layout.fragment_documents_list, container, false)
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+        swipeRefreshLayout = fragmentView.findViewById<SwipeRefreshLayout>(R.id.documents_swipe)
+        swipeRefreshLayout!!.setOnRefreshListener(OnRefreshListener { this.updateList() })
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_documents_list, container, false);
-
-        swipeRefreshLayout = fragmentView.findViewById(R.id.documents_swipe);
-        swipeRefreshLayout.setOnRefreshListener(this::updateList);
-
-        RecyclerView recyclerView = fragmentView.findViewById(R.id.documents_recycler);
+        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.documents_recycler)
         //recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        documentsAdapter = new DocumentsAdapter();
-        recyclerView.setAdapter(documentsAdapter);
+        val linearLayoutManager = LinearLayoutManager(mContext)
+        recyclerView.setLayoutManager(linearLayoutManager)
+        documentsAdapter = DocumentsAdapter()
+        recyclerView.setAdapter(documentsAdapter)
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (mListener != null){
-                    mListener.onListScrolled(dy);
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (mListener != null) {
+                    mListener!!.onListScrolled(dy)
                 }
             }
-        });
+        })
 
-        return fragmentView;
+        return fragmentView
     }
 
-    @Override
-    public void onResume() {
-        updateList();
-        super.onResume();
+    override fun onResume() {
+        updateList()
+        super.onResume()
     }
 
-    private void updateList(){
-        if (!swipeRefreshLayout.isRefreshing()){
-            swipeRefreshLayout.setRefreshing(true);
-        }
-        if(mListener != null){
-            mListener.onDataUpdateRequest();
-        }
-    }
-
-    private void onListItemClick(int position) {
-        if (swipeRefreshLayout.isRefreshing()){
-            return;
+    private fun updateList() {
+        if (!swipeRefreshLayout!!.isRefreshing) {
+            swipeRefreshLayout!!.isRefreshing = true
         }
         if (mListener != null) {
-            mListener.onFragmentInteraction(documentsAdapter.getListItem(position));
+            mListener!!.onDataUpdateRequest()
         }
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+    private fun onListItemClick(position: Int) {
+        if (swipeRefreshLayout!!.isRefreshing) {
+            return
+        }
+        if (mListener != null) {
+            mListener!!.onFragmentInteraction(documentsAdapter!!.getListItem(position))
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentInteractionListener) {
+            mListener = context as OnFragmentInteractionListener
         } else {
-            throw new RuntimeException(context + " must implement OnFragmentInteractionListener");
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
-        mContext = context;
+        mContext = context
     }
 
-    void loadListData(ArrayList<DataBaseItem> items){
-        documentsAdapter.loadListItems(items);
-        swipeRefreshLayout.setRefreshing(false);
+    fun loadListData(items: ArrayList<DataBaseItem?>) {
+        documentsAdapter!!.loadListItems(items)
+        swipeRefreshLayout!!.isRefreshing = false
     }
 
-    void loadError(String error){
-        swipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(mContext, error, Toast.LENGTH_SHORT).show();
+    fun loadError(error: String?) {
+        swipeRefreshLayout!!.isRefreshing = false
+        Toast.makeText(mContext, error, Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(DataBaseItem currentListItem);
-        void onDataUpdateRequest();
-        void onListScrolled(int dy);
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction(currentListItem: DataBaseItem?)
+        fun onDataUpdateRequest()
+        fun onListScrolled(dy: Int)
     }
 
-    static class DocumentViewHolder extends RecyclerView.ViewHolder{
+    internal class DocumentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var tvNumber: TextView = view.findViewById<TextView>(R.id.item_number)
+        var tvDate: TextView = view.findViewById<TextView>(R.id.item_date)
+        var tvCompany: TextView = view.findViewById<TextView>(R.id.item_company)
+        var tvWarehouse: TextView = view.findViewById<TextView>(R.id.item_warehouse)
+        var tvContractor: TextView = view.findViewById<TextView>(R.id.item_contractor)
+        var tvField1: TextView = view.findViewById<TextView>(R.id.item_field1)
+        var tvField2: TextView = view.findViewById<TextView>(R.id.item_field2)
+        var tvField3: TextView = view.findViewById<TextView>(R.id.item_field3)
+        var tvField4: TextView = view.findViewById<TextView>(R.id.item_field4)
+        var tvSum: TextView = view.findViewById<TextView>(R.id.item_sum)
+        var tvCheckedText: TextView = view.findViewById<TextView>(R.id.item_text_checked)
+        var tvNotes: TextView = view.findViewById<TextView>(R.id.item_notes)
+        var icon: ImageView = view.findViewById<ImageView>(R.id.item_icon)
+        var iconRepeat: ImageView = view.findViewById<ImageView>(R.id.icon_repeat)
 
-        TextView tvNumber;
-        TextView tvDate;
-        TextView tvCompany;
-        TextView tvWarehouse;
-        TextView tvContractor;
-        TextView tvField1;
-        TextView tvField2;
-        TextView tvField3;
-        TextView tvField4;
-        TextView tvSum;
-        TextView tvCheckedText;
-        TextView tvNotes;
-        ImageView icon;
-        ImageView iconRepeat;
+        fun setItemInfo(dataBaseItem: DataBaseItem) {
+            tvNumber.text = dataBaseItem.getString("number")
+            tvDate.text = dataBaseItem.getString("date")
+            tvCompany.text = dataBaseItem.getString("company")
+            tvWarehouse.text = dataBaseItem.getString("warehouse")
 
-        DocumentViewHolder(View view){
-            super(view);
-            tvNumber = view.findViewById(R.id.item_number);
-            tvDate = view.findViewById(R.id.item_date);
-            tvCompany = view.findViewById(R.id.item_company);
-            tvWarehouse = view.findViewById(R.id.item_warehouse);
-            tvContractor = view.findViewById(R.id.item_contractor);
-            tvField1 = view.findViewById(R.id.item_field1);
-            tvField2 = view.findViewById(R.id.item_field2);
-            tvField3 = view.findViewById(R.id.item_field3);
-            tvField4 = view.findViewById(R.id.item_field4);
-            tvCheckedText = view.findViewById(R.id.item_text_checked);
-            tvNotes = view.findViewById(R.id.item_notes);
-            tvSum = view.findViewById(R.id.item_sum);
-            icon = view.findViewById(R.id.item_icon);
-            iconRepeat = view.findViewById(R.id.icon_repeat);
-        }
-
-        void setItemInfo(DataBaseItem dataBaseItem){
-            tvNumber.setText(dataBaseItem.getString("number"));
-            tvDate.setText(dataBaseItem.getString("date"));
-            tvCompany.setText(dataBaseItem.getString("company"));
-            tvWarehouse.setText(dataBaseItem.getString("warehouse"));
-
-            String contractor = dataBaseItem.getString("contractor");
+            val contractor = dataBaseItem.getString("contractor")
             if (contractor.isEmpty()) {
-                tvContractor.setVisibility(View.GONE);
-            }else{
-                tvContractor.setVisibility(View.VISIBLE);
-                tvContractor.setText(contractor);
+                tvContractor.visibility = View.GONE
+            } else {
+                tvContractor.visibility = View.VISIBLE
+                tvContractor.text = contractor
             }
 
-            String currency = dataBaseItem.getString("currency");
-            String textSum = dataBaseItem.getString("sum");
-            if (!currency.isEmpty()) textSum = textSum+" "+currency;
-            tvSum.setText(textSum);
+            val currency = dataBaseItem.getString("currency")
+            var textSum = dataBaseItem.getString("sum")
+            if (!currency.isEmpty()) textSum = "$textSum $currency"
+            tvSum.text = textSum
 
-            DocumentField field1 = new DocumentField(dataBaseItem.getString("field1"));
-            tvField1.setText(field1.value);
+            val field1 = DocumentField(dataBaseItem.getString("field1"))
+            tvField1.text = field1.value
 
-            DocumentField field2 = new DocumentField(dataBaseItem.getString("field2"));
+            val field2 = DocumentField(dataBaseItem.getString("field2"))
             if (field2.hasValue()) {
-                tvField2.setText(field2.getNamedValue());
-                tvField2.setVisibility(View.VISIBLE);
-            }else{
-                tvField2.setVisibility(View.GONE);
+                tvField2.text = field2.getNamedValue()
+                tvField2.visibility = View.VISIBLE
+            } else {
+                tvField2.visibility = View.GONE
             }
 
-            DocumentField field3 = new DocumentField(dataBaseItem.getString("field3"));
+            val field3 = DocumentField(dataBaseItem.getString("field3"))
             if (field3.hasValue()) {
-                tvField3.setText(field3.getNamedValue());
-                tvField3.setVisibility(View.VISIBLE);
-            }else {
-                tvField3.setVisibility(View.GONE);
+                tvField3.text = field3.getNamedValue()
+                tvField3.visibility = View.VISIBLE
+            } else {
+                tvField3.visibility = View.GONE
             }
 
-            DocumentField field4 = new DocumentField(dataBaseItem.getString("field4"));
+            val field4 = DocumentField(dataBaseItem.getString("field4"))
             if (field4.hasValue()) {
-                tvField4.setText(field4.getNamedValue());
-                tvField4.setVisibility(View.VISIBLE);
-            }else {
-                tvField4.setVisibility(View.GONE);
+                tvField4.text = field4.getNamedValue()
+                tvField4.visibility = View.VISIBLE
+            } else {
+                tvField4.visibility = View.GONE
             }
 
-            String notes = dataBaseItem.getString("notes");
+            val notes = dataBaseItem.getString("notes")
             if (!notes.isEmpty()) {
-                tvNotes.setText(notes);
-                tvNotes.setVisibility(View.VISIBLE);
-            }else {
-                tvNotes.setVisibility(View.GONE);
+                tvNotes.text = notes
+                tvNotes.visibility = View.VISIBLE
+            } else {
+                tvNotes.visibility = View.GONE
             }
 
             if (dataBaseItem.hasValue("checked") && dataBaseItem.getBoolean("checked")) {
-                tvCheckedText.setVisibility(View.VISIBLE);
-            }else {
-                tvCheckedText.setVisibility(View.INVISIBLE);
+                tvCheckedText.visibility = View.VISIBLE
+            } else {
+                tvCheckedText.visibility = View.INVISIBLE
             }
 
-            int isProcessed = dataBaseItem.getInt("isProcessed");
-            int isDeleted = dataBaseItem.getInt("isDeleted");
-            if (dataBaseItem.hasValue(Constants.CACHE_GUID)){
-                icon.setImageResource(R.drawable.sharp_help_outline_24);
-            }else if (isDeleted == 1) {
-                icon.setImageResource(R.drawable.twotone_close_24);
-            }else if(isProcessed == 1) {
-                icon.setImageResource(R.drawable.twotone_check_box_24);
-            }else {
-                icon.setImageResource(R.drawable.twotone_check_box_outline_blank_24);
+            val isProcessed = dataBaseItem.getInt("isProcessed")
+            val isDeleted = dataBaseItem.getInt("isDeleted")
+            if (dataBaseItem.hasValue(Constants.CACHE_GUID)) {
+                icon.setImageResource(R.drawable.sharp_help_outline_24)
+            } else if (isDeleted == 1) {
+                icon.setImageResource(R.drawable.twotone_close_24)
+            } else if (isProcessed == 1) {
+                icon.setImageResource(R.drawable.twotone_check_box_24)
+            } else {
+                icon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
             }
 
-            if (dataBaseItem.getString("repeated").equals("1")) {
-                iconRepeat.setVisibility(View.VISIBLE);
-            }else{
-                iconRepeat.setVisibility(View.GONE);
+            if (dataBaseItem.getString("repeated") == "1") {
+                iconRepeat.visibility = View.VISIBLE
+            } else {
+                iconRepeat.visibility = View.GONE
             }
         }
     }
 
-    class DocumentsAdapter extends RecyclerView.Adapter<DocumentViewHolder>{
-
-        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
+    internal inner class DocumentsAdapter : RecyclerView.Adapter<DocumentViewHolder?>() {
+        private val listItems = ArrayList<DataBaseItem?>()
 
         @SuppressLint("NotifyDataSetChanged")
-        void loadListItems(ArrayList<DataBaseItem> values){
-            listItems.clear();
-            listItems.addAll(values);
-            notifyDataSetChanged();
+        fun loadListItems(values: ArrayList<DataBaseItem?>) {
+            listItems.clear()
+            listItems.addAll(values)
+            notifyDataSetChanged()
         }
 
-        DataBaseItem getListItem(int position){
-            if (position < getItemCount()){
-                return listItems.get(position);
+        fun getListItem(position: Int): DataBaseItem? {
+            if (position < itemCount) {
+                return listItems[position]
             }
-            return new DataBaseItem();
+            return DataBaseItem()
         }
 
-        @NonNull
-        @Override
-        public DocumentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.documents_list_item,parent,false);
-            return new DocumentViewHolder(view);
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.documents_list_item, parent, false)
+            return DocumentViewHolder(view)
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull DocumentViewHolder holder, int position) {
-            holder.setItemInfo(getListItem(position));
-            holder.itemView.setOnClickListener((View v) -> onListItemClick(position));
+        override fun onBindViewHolder(holder: DocumentViewHolder, position: Int) {
+            holder.setItemInfo(getListItem(position)!!)
+            holder.itemView.setOnClickListener(View.OnClickListener { v: View? ->
+                onListItemClick(
+                    position
+                )
+            })
         }
 
-        @Override
-        public int getItemCount() {
-            return listItems.size();
+        override fun getItemCount(): Int {
+            return listItems.size
+        }
+    }
+
+    companion object {
+        fun newInstance(): DocumentsListFragment {
+            return DocumentsListFragment()
         }
     }
 }

@@ -1,226 +1,229 @@
-package ua.com.programmer.simpleremote.settings;
+package ua.com.programmer.simpleremote.settings
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Base64;
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import android.util.Base64
+import com.bumptech.glide.load.model.LazyHeaders
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.specialItems.DocumentField
+import ua.com.programmer.simpleremote.utility.Utils
+import java.util.ArrayList
+import java.util.UUID
 
-import com.bumptech.glide.load.model.LazyHeaders;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.UUID;
-
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.specialItems.DocumentField;
-import ua.com.programmer.simpleremote.utility.Utils;
-
-public class AppSettings {
-
-    private static SharedPreferences sharedPreferences;
-    private static String userID = "";
-    private static boolean loadImages;
-    private static String workingMode = "";
-
-    private static final ArrayList<DataBaseItem> allowedDocuments = new ArrayList<>();
-    private static final ArrayList<DataBaseItem> allowedCatalogs = new ArrayList<>();
-    private static final ArrayList<DocumentField> documentFilter = new ArrayList<>();
-
-    private static AppSettings appSettings;
-
-    private AppSettings(){}
-
-    public static AppSettings getInstance(Context context){
-        if (appSettings == null) appSettings = new AppSettings();
-        if (sharedPreferences == null) sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return appSettings;
-    }
-
-    public String getUserID(){
-        if (userID.isEmpty()){
-            userID = sharedPreferences.getString("userID","");
+class AppSettings private constructor() {
+    fun getUserID(): String {
+        if (userID.isEmpty()) {
+            userID = sharedPreferences!!.getString("userID", "")!!
         }
-        if (userID == null || userID.isEmpty()){
+        if (userID.isEmpty()) {
             //generate new random userID
-            userID = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("userID",userID);
-            editor.apply();
+            userID = UUID.randomUUID().toString()
+            val editor = sharedPreferences!!.edit()
+            editor.putString("userID", userID)
+            editor.apply()
         }
-        if (userID.length() < 8) userID = "00000000";
-        return userID;
+        if (userID.length < 8) userID = "00000000"
+        return userID
     }
 
-    public String getAuthToken(){
-        return sharedPreferences.getString("authToken","");
+    fun getAuthToken(): String {
+        return sharedPreferences!!.getString("authToken", "")!!
     }
 
-    public void setAuthToken(String token){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("authToken", token);
-        editor.apply();
+    fun setAuthToken(token: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("authToken", token)
+        editor.apply()
     }
 
-    public void setDemoMode(boolean demoMode){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("demoMode", demoMode);
-        editor.apply();
+    fun setDemoMode(demoMode: Boolean) {
+        val editor = sharedPreferences!!.edit()
+        editor.putBoolean("demoMode", demoMode)
+        editor.apply()
     }
 
-    public void setAutoConnectMode(boolean autoConnect){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("autoConnect", autoConnect);
-        editor.apply();
+    fun setAutoConnectMode(autoConnect: Boolean) {
+        val editor = sharedPreferences!!.edit()
+        editor.putBoolean("autoConnect", autoConnect)
+        editor.apply()
     }
 
-    public boolean autoConnect() { return sharedPreferences.getBoolean("autoConnect", false); }
+    fun autoConnect(): Boolean {
+        return sharedPreferences!!.getBoolean("autoConnect", false)
+    }
 
-    public boolean demoMode(){
-        String server = getServerAddress();
-        if (server != null){
-            return server.equals("demo");
+    fun demoMode(): Boolean {
+        val server: String? = getServerAddress()
+        if (server != null) {
+            return server == "demo"
         }
-        return false;
+        return false
     }
 
-    public String getServerAddress() {
-        return sharedPreferences.getString("serverAddress", "");
+    fun getServerAddress(): String {
+        return sharedPreferences!!.getString("serverAddress", "")!!
     }
 
-    public String getDatabaseName() {
-        return sharedPreferences.getString("databaseName", "");
+    fun getDatabaseName(): String {
+        return sharedPreferences!!.getString("databaseName", "")!!
     }
 
-    public String getUserName() {
-        return sharedPreferences.getString("userName", "");
+    fun getUserName(): String {
+        return sharedPreferences!!.getString("userName", "")!!
     }
 
-    public String getUserPassword() {
-        return sharedPreferences.getString("password", "");
+    fun getUserPassword(): String {
+        return sharedPreferences!!.getString("password", "")!!
     }
 
-    public LazyHeaders getAuthHeaders(){
-        String namePass = getUserName()+":"+getUserPassword();
-        String authToken = "Basic "+ Base64.encodeToString(namePass.getBytes(), Base64.NO_WRAP);
-        return new LazyHeaders.Builder()
-                .addHeader("Authorization",authToken)
-                .build();
+    fun getAuthHeaders(): LazyHeaders {
+        val namePass = getUserName() + ":" + getUserPassword()
+        val authToken = "Basic " + Base64.encodeToString(namePass.toByteArray(), Base64.NO_WRAP)
+        return LazyHeaders.Builder()
+            .addHeader("Authorization", authToken)
+            .build()
     }
 
-    public String getBaseUrl(){
-        String server = getServerAddress();
-        String database = getDatabaseName();
-        if (demoMode()) return "http://hoot.com.ua/simple/";
-        return "http://"+server+"/"+database+"/";
+    fun getBaseUrl(): String {
+        val server = getServerAddress()
+        val database = getDatabaseName()
+        if (demoMode()) return "http://hoot.com.ua/simple/"
+        return "http://$server/$database/"
     }
 
-    public String getBaseImageUrl(){
-        return getBaseUrl()+"hs/rc/image/";
+    fun getBaseImageUrl(): String {
+        return getBaseUrl() + "hs/rc/image/"
     }
 
-    public int getConnectionID() {
-        return sharedPreferences.getInt("connectionID", 0);
+    fun getConnectionID(): Int {
+        return sharedPreferences!!.getInt("connectionID", 0)
     }
 
-    public void setConnectionID(int id){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("connectionID", id);
-        editor.apply();
+    fun setConnectionID(id: Int) {
+        val editor = sharedPreferences!!.edit()
+        editor.putInt("connectionID", id)
+        editor.apply()
     }
 
-    public String getCurrentConnectionAlias() {
-        return sharedPreferences.getString("currentConnection", "");
+    fun getCurrentConnectionAlias(): String {
+        return sharedPreferences!!.getString("currentConnection", "")!!
     }
 
-    public void setCurrentConnectionAlias(String alias){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("currentConnection", alias);
-        editor.apply();
+    fun setCurrentConnectionAlias(alias: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("currentConnection", alias)
+        editor.apply()
     }
 
-    public void setDatabaseName(String databaseName){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("databaseName", databaseName);
-        editor.apply();
+    fun setDatabaseName(databaseName: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("databaseName", databaseName)
+        editor.apply()
     }
 
-    public void setServerAddress(String serverAddress){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("serverAddress", serverAddress);
-        editor.apply();
+    fun setServerAddress(serverAddress: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("serverAddress", serverAddress)
+        editor.apply()
     }
 
-    public void setUserName(String userName){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("userName", userName);
-        editor.apply();
+    fun setUserName(userName: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("userName", userName)
+        editor.apply()
     }
 
-    public void setPassword(String password){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("password", password);
-        editor.apply();
+    fun setPassword(password: String?) {
+        val editor = sharedPreferences!!.edit()
+        editor.putString("password", password)
+        editor.apply()
     }
 
-    public void setAllowedDocuments(ArrayList<DataBaseItem> arrayList){
-        allowedDocuments.clear();
-        allowedDocuments.addAll(arrayList);
+    fun setAllowedDocuments(arrayList: ArrayList<DataBaseItem?>) {
+        allowedDocuments.clear()
+        allowedDocuments.addAll(arrayList)
     }
 
-    public void setAllowedCatalogs(ArrayList<DataBaseItem> arrayList){
-        allowedCatalogs.clear();
-        allowedCatalogs.addAll(arrayList);
+    fun setAllowedCatalogs(arrayList: ArrayList<DataBaseItem?>) {
+        allowedCatalogs.clear()
+        allowedCatalogs.addAll(arrayList)
     }
 
-    public static ArrayList<DataBaseItem> getAllowedDocuments(){
-        return allowedDocuments;
+    fun setDocumentFilter(elements: ArrayList<DocumentField?>) {
+        documentFilter.clear()
+        val items = ArrayList<DocumentField>()
+        for (element in elements) {
+            items.add(element!!)
+        }
+        documentFilter.addAll(items)
     }
 
-    public static ArrayList<DataBaseItem> getAllowedCatalogs() {
-        return allowedCatalogs;
-    }
-
-    public void setDocumentFilter(ArrayList<DocumentField> elements){
-        documentFilter.clear();
-        documentFilter.addAll(elements);
-    }
-
-    public static ArrayList<DocumentField> getDocumentFilter(){
-        return documentFilter;
-    }
-
-    public String getDocumentFilterAsString(){
-        Utils utils = new Utils();
-        JSONObject jsonObject = new JSONObject();
-        JSONArray filter = new JSONArray();
+    fun getDocumentFilterAsString(): String {
+        val utils = Utils()
+        val jsonObject = JSONObject()
+        val filter = JSONArray()
         try {
-            for (int i = 0; i < documentFilter.size(); i++) {
-                JSONObject element = new JSONObject(documentFilter.get(i).asString());
-                filter.put(element);
+            for (i in documentFilter.indices) {
+                val element = JSONObject(documentFilter.get(i)!!.asString())
+                filter.put(element)
             }
-            jsonObject.put("filter",filter);
-        }catch (JSONException ex){
-            utils.log("e","getDocumentFilterAsString: "+ex);
+            jsonObject.put("filter", filter)
+        } catch (ex: JSONException) {
+            utils.log("e", "getDocumentFilterAsString: " + ex)
         }
-        return jsonObject.toString();
+        return jsonObject.toString()
     }
 
-    public void setLoadImages(boolean value){
-        loadImages = value;
+    fun setLoadImages(value: Boolean) {
+        loadImages = value
     }
 
-    public boolean isLoadImages(){
-        return loadImages;
+    fun isLoadImages(): Boolean {
+        return loadImages
     }
 
-    public void setWorkingMode(String mode){
-        workingMode = mode;
+    fun setWorkingMode(mode: String?) {
+        workingMode = mode
     }
 
-    public String getWorkingMode(){
-        return workingMode;
+    fun getWorkingMode(): String {
+        return workingMode ?: ""
+    }
+
+    companion object {
+        private var sharedPreferences: SharedPreferences? = null
+        private var userID = ""
+        private var loadImages = false
+        private var workingMode: String? = ""
+
+        private val allowedDocuments = ArrayList<DataBaseItem?>()
+        private val allowedCatalogs = ArrayList<DataBaseItem?>()
+        private val documentFilter = ArrayList<DocumentField>()
+
+        private var appSettings: AppSettings? = null
+
+        @JvmStatic
+        fun getInstance(context: Context?): AppSettings? {
+            if (appSettings == null) appSettings = AppSettings()
+            if (sharedPreferences == null) sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context)
+            return appSettings
+        }
+
+        fun getAllowedDocuments(): ArrayList<DataBaseItem?> {
+            return allowedDocuments
+        }
+
+        fun getAllowedCatalogs(): ArrayList<DataBaseItem?> {
+            return allowedCatalogs
+        }
+
+        fun getDocumentFilter(): ArrayList<DocumentField> {
+            return documentFilter
+        }
     }
 }

@@ -1,176 +1,175 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.content.Context;
-import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.CompoundButton
+import android.widget.ProgressBar
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import org.json.JSONArray
+import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.LoginActivity.ConnectionsSpinnerAdapter
+import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.settings.AppSettings
+import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.Cache
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.specialItems.DocumentField
+import ua.com.programmer.simpleremote.utility.Utils
+import java.lang.Exception
+import java.util.ArrayList
 
-import com.bumptech.glide.Glide;
+class LoginActivity : AppCompatActivity(), DataLoaderListener, AdapterView.OnItemSelectedListener {
+    private var appSettings: AppSettings? = null
+    private var connectionsSpinner: Spinner? = null
+    private var adapter: ConnectionsSpinnerAdapter? = null
+    private var progressBar: ProgressBar? = null
 
-import org.json.JSONArray;
+    private val utils = Utils()
 
-import java.util.ArrayList;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
 
-import ua.com.programmer.simpleremote.settings.AppSettings;
-import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity;
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.Cache;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.Utils;
+        setResult(0)
+        Cache.getInstance().clear()
+        imageCacheCleaner()
 
-public class LoginActivity extends AppCompatActivity implements DataLoader.DataLoaderListener, AdapterView.OnItemSelectedListener{
+        appSettings = AppSettings.getInstance(this)
 
-    private AppSettings appSettings;
-    private Spinner connectionsSpinner;
-    private ConnectionsSpinnerAdapter adapter;
-    private ProgressBar progressBar;
+        val autoConnect = findViewById<CheckBox>(R.id.autoconnect)
+        autoConnect.isChecked = appSettings!!.autoConnect()
+        autoConnect.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { b: CompoundButton?, isChecked: Boolean ->
+            appSettings!!.setAutoConnectMode(
+                isChecked
+            )
+        })
 
-    private final Utils utils = new Utils();
+        val textVersion =
+            BuildConfig.VERSION_NAME + " : " + appSettings!!.getUserID().substring(0, 8)
+        val version = findViewById<TextView>(R.id.version)
+        version.text = textVersion
+        version.setOnClickListener(View.OnClickListener { view: View? ->
+            val logContent = utils.readLogs().toString()
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_TEXT, logContent)
+            intent.type = "text/plain"
+            startActivity(intent)
+        })
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        val loginButton = findViewById<TextView>(R.id.login_button)
+        loginButton.setOnClickListener(View.OnClickListener { v: View? -> connect() })
+        val editButton = findViewById<TextView>(R.id.edit_button)
+        editButton.setOnClickListener(View.OnClickListener { v: View? -> editConnection() })
 
-        setResult(0);
-        Cache.getInstance().clear();
-        imageCacheCleaner();
+        adapter = ConnectionsSpinnerAdapter(this, android.R.layout.simple_spinner_item)
+        connectionsSpinner = findViewById<Spinner>(R.id.current_connection)
+        connectionsSpinner!!.adapter = adapter
+        connectionsSpinner!!.onItemSelectedListener = this
 
-        appSettings = AppSettings.getInstance(this);
-
-        CheckBox autoConnect = findViewById(R.id.autoconnect);
-        autoConnect.setChecked(appSettings.autoConnect());
-        autoConnect.setOnCheckedChangeListener((CompoundButton b, boolean isChecked) ->
-            appSettings.setAutoConnectMode(isChecked));
-
-        String textVersion = BuildConfig.VERSION_NAME+" : "+appSettings.getUserID().substring(0,8);
-        TextView version = findViewById(R.id.version);
-        version.setText(textVersion);
-        version.setOnClickListener((View view) -> {
-            String logContent = utils.readLogs().toString();
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, logContent);
-            intent.setType("text/plain");
-            startActivity(intent);
-        });
-
-        TextView loginButton = findViewById(R.id.login_button);
-        loginButton.setOnClickListener((View v) -> connect());
-        TextView editButton = findViewById(R.id.edit_button);
-        editButton.setOnClickListener((View v) -> editConnection());
-
-        adapter = new ConnectionsSpinnerAdapter(this, android.R.layout.simple_spinner_item);
-        connectionsSpinner = findViewById(R.id.current_connection);
-        connectionsSpinner.setAdapter(adapter);
-        connectionsSpinner.setOnItemSelectedListener(this);
-
-        progressBar = findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
+        progressBar!!.visibility = View.INVISIBLE
     }
 
-    private void editConnection(){
-        Intent intent = new Intent(this, ConnectionSettingsActivity.class);
-        startActivity(intent);
+    private fun editConnection() {
+        val intent = Intent(this, ConnectionSettingsActivity::class.java)
+        startActivity(intent)
     }
 
-    @Override
-    protected void onResume() {
-        setSpinnerItems();
-        if (appSettings.autoConnect()){
-            connect();
+    override fun onResume() {
+        setSpinnerItems()
+        if (appSettings!!.autoConnect()) {
+            connect()
         }
-        super.onResume();
+        super.onResume()
     }
 
-    @Override
-    public void onDataLoaded(ArrayList<DataBaseItem> dataItems) {
-        progressBar.setVisibility(View.INVISIBLE);
+    override fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?) {
+        progressBar!!.visibility = View.INVISIBLE
+        if (dataItems == null) {
+            Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (!dataItems.isEmpty()) {
-            if (checkServerResponse(dataItems.get(0))) {
-                setResult(1);
-                finish();
-            }else{
-                Toast.makeText(this, R.string.error_access_denied, Toast.LENGTH_SHORT).show();
+            if (checkServerResponse(dataItems[0]!!)) {
+                setResult(1)
+                finish()
+            } else {
+                Toast.makeText(this, R.string.error_access_denied, Toast.LENGTH_SHORT).show()
             }
-
-        }else {
-            Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show()
         }
     }
 
-    @Override
-    public void onDataLoaderError(String error) {
-        progressBar.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    override fun onDataLoaderError(error: String?) {
+        progressBar!!.visibility = View.INVISIBLE
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
         //Toast.makeText(this, "Selected "+i, Toast.LENGTH_SHORT).show();
-        DataBaseItem selectedItem = (DataBaseItem) connectionsSpinner.getSelectedItem();
-        if (selectedItem != null){
-            if (appSettings.getCurrentConnectionAlias().equals(selectedItem.getString("alias"))){
-                return;
+        val selectedItem = connectionsSpinner!!.selectedItem as DataBaseItem?
+        if (selectedItem != null) {
+            if (appSettings!!.getCurrentConnectionAlias() == selectedItem.getString("alias")) {
+                return
             }
-            if (selectedItem.getString("action").equals("addNew")) {
-                appSettings.setCurrentConnectionAlias("");
-                appSettings.setServerAddress("");
-                appSettings.setDatabaseName("");
-                appSettings.setUserName("");
-                appSettings.setPassword("");
-            }else {
-                appSettings.setCurrentConnectionAlias(selectedItem.getString("alias"));
-                appSettings.setServerAddress(selectedItem.getString("server_address"));
-                appSettings.setDatabaseName(selectedItem.getString("database_name"));
-                appSettings.setUserName(selectedItem.getString("user_name"));
-                appSettings.setPassword(selectedItem.getString("user_password"));
-                appSettings.setConnectionID(selectedItem.getInt("_id"));
+            if (selectedItem.getString("action") == "addNew") {
+                appSettings!!.setCurrentConnectionAlias("")
+                appSettings!!.setServerAddress("")
+                appSettings!!.setDatabaseName("")
+                appSettings!!.setUserName("")
+                appSettings!!.setPassword("")
+            } else {
+                appSettings!!.setCurrentConnectionAlias(selectedItem.getString("alias"))
+                appSettings!!.setServerAddress(selectedItem.getString("server_address"))
+                appSettings!!.setDatabaseName(selectedItem.getString("database_name"))
+                appSettings!!.setUserName(selectedItem.getString("user_name"))
+                appSettings!!.setPassword(selectedItem.getString("user_password"))
+                appSettings!!.setConnectionID(selectedItem.getInt("_id"))
             }
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {}
+    override fun onNothingSelected(adapterView: AdapterView<*>?) {}
 
-    private void setSpinnerItems(){
-        String currentAlias = appSettings.getCurrentConnectionAlias();
-        adapter.clear();
+    private fun setSpinnerItems() {
+        val currentAlias = appSettings!!.getCurrentConnectionAlias()
+        adapter!!.clear()
 
-        adapter.addAll(SqliteDB.getInstance(this).getConnections());
+        adapter!!.addAll(getInstance(this)!!.getConnections())
 
-        DataBaseItem specialItem = new DataBaseItem();
-        specialItem.put("alias", getResources().getString(R.string.alias_add_new));
-        specialItem.put("server_address", getResources().getString(R.string.alias_add_new_hint));
-        specialItem.put("action", "addNew");
-        adapter.add(specialItem);
-        adapter.notifyDataSetChanged();
+        val specialItem = DataBaseItem()
+        specialItem.put("alias", getResources().getString(R.string.alias_add_new))
+        specialItem.put("server_address", getResources().getString(R.string.alias_add_new_hint))
+        specialItem.put("action", "addNew")
+        adapter!!.add(specialItem)
+        adapter!!.notifyDataSetChanged()
 
-        int position = adapter.aliasPosition(currentAlias);
-        if (position >= 0){
-            connectionsSpinner.setSelection(position);
+        val position = adapter!!.aliasPosition(currentAlias)
+        if (position >= 0) {
+            connectionsSpinner!!.setSelection(position)
         }
     }
 
-    private void connect(){
-        if (appSettings.getServerAddress().isEmpty()) {
-            Toast.makeText(this, R.string.error_no_address, Toast.LENGTH_SHORT).show();
-        }else {
-            progressBar.setVisibility(View.VISIBLE);
-            DataLoader dataLoader = new DataLoader(this);
-            dataLoader.checkConnection();
+    private fun connect() {
+        if (appSettings!!.getServerAddress().isEmpty()) {
+            Toast.makeText(this, R.string.error_no_address, Toast.LENGTH_SHORT).show()
+        } else {
+            progressBar!!.visibility = View.VISIBLE
+            val dataLoader = DataLoader(this)
+            dataLoader.checkConnection()
         }
     }
 
@@ -180,94 +179,84 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
      * @param response array of parameters
      * @return true if user was granted read access
      */
-    private boolean checkServerResponse(DataBaseItem response){
-
-        ArrayList<DataBaseItem> catalogsList = new ArrayList<>();
-        ArrayList<DataBaseItem> documentsList = new ArrayList<>();
+    private fun checkServerResponse(response: DataBaseItem): Boolean {
+        val catalogsList = ArrayList<DataBaseItem?>()
+        val documentsList = ArrayList<DataBaseItem?>()
         try {
-            JSONArray catalogs = new JSONArray(response.getString("catalog"));
-            for (int i=0; i<catalogs.length(); i++){
-                catalogsList.add(new DataBaseItem(catalogs.getJSONObject(i)));
+            val catalogs = JSONArray(response.getString("catalog"))
+            for (i in 0 until catalogs.length()) {
+                catalogsList.add(DataBaseItem(catalogs.getJSONObject(i)))
             }
-            JSONArray documents = new JSONArray(response.getString("document"));
-            for (int i=0; i<documents.length(); i++){
-                documentsList.add(new DataBaseItem(documents.getJSONObject(i)));
+            val documents = JSONArray(response.getString("document"))
+            for (i in 0 until documents.length()) {
+                documentsList.add(DataBaseItem(documents.getJSONObject(i)))
             }
-        }catch (Exception e){
-            utils.error("checkServerResponse: "+e);
-            utils.error("response: "+response.getAsJSON());
+        } catch (e: Exception) {
+            utils.error("checkServerResponse: $e")
+            utils.error("response: " + response.getAsJSON())
         }
-        if (!documentsList.isEmpty()){
-            DataBaseItem cacheList = new DataBaseItem();
-            cacheList.put("description",getResources().getString(R.string.cached_list));
-            cacheList.put("code", Constants.CACHED_DOCUMENTS);
-            documentsList.add(cacheList);
+        if (!documentsList.isEmpty()) {
+            val cacheList = DataBaseItem()
+            cacheList.put("description", getResources().getString(R.string.cached_list))
+            cacheList.put("code", Constants.CACHED_DOCUMENTS)
+            documentsList.add(cacheList)
         }
-        appSettings.setAllowedCatalogs(catalogsList);
-        appSettings.setAllowedDocuments(documentsList);
+        appSettings!!.setAllowedCatalogs(catalogsList)
+        appSettings!!.setAllowedDocuments(documentsList)
 
         //reset documents filter
-        appSettings.setDocumentFilter(new ArrayList<>());
+        appSettings!!.setDocumentFilter(ArrayList<DocumentField?>())
 
-        appSettings.setLoadImages(response.getBoolean("loadImages"));
+        appSettings!!.setLoadImages(response.getBoolean("loadImages"))
 
-        String workingMode = response.getString("mode");
-        if (workingMode.isEmpty()) workingMode = Constants.MODE_FULL;
-        appSettings.setWorkingMode(workingMode);
+        var workingMode = response.getString("mode")
+        if (workingMode.isEmpty()) workingMode = Constants.MODE_FULL
+        appSettings!!.setWorkingMode(workingMode)
 
-        return response.getBoolean("read");
+        return response.getBoolean("read")
     }
 
-    private class ConnectionsSpinnerAdapter extends ArrayAdapter<DataBaseItem>{
-
-        ConnectionsSpinnerAdapter(Context context, int resID){
-            super(context, resID);
-        }
-
-        int aliasPosition(String alias){
-            for (int i=0; i<getCount(); i++){
-                DataBaseItem item = getItem(i);
-                if (item != null && item.getString("alias").equals(alias)){
-                    return i;
+    private inner class ConnectionsSpinnerAdapter(context: Context, resID: Int) :
+        ArrayAdapter<DataBaseItem?>(context, resID) {
+        fun aliasPosition(alias: String?): Int {
+            for (i in 0 until count) {
+                val item = getItem(i)
+                if (item != null && item.getString("alias") == alias) {
+                    return i
                 }
             }
-            return -1;
+            return -1
         }
 
-        private View getItemView(int position, @NonNull ViewGroup parent){
-            LayoutInflater inflater = getLayoutInflater();
-            View view = inflater.inflate(R.layout.spinner_item, parent, false);
+        fun getItemView(position: Int, parent: ViewGroup): View {
+            val inflater = layoutInflater
+            val view = inflater.inflate(R.layout.spinner_item, parent, false)
 
-            DataBaseItem item = super.getItem(position);
+            val item = super.getItem(position)
 
-            if (item != null){
-                TextView tvAlias = view.findViewById(R.id.alias);
-                tvAlias.setText(item.getString("alias"));
-                TextView tvServer = view.findViewById(R.id.server_address);
-                tvServer.setText(item.getString("server_address"));
+            if (item != null) {
+                val tvAlias = view.findViewById<TextView>(R.id.alias)
+                tvAlias.text = item.getString("alias")
+                val tvServer = view.findViewById<TextView>(R.id.server_address)
+                tvServer.text = item.getString("server_address")
             }
 
-            return view;
+            return view
         }
 
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return getItemView(position, parent);
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return getItemView(position, parent)
         }
 
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return getItemView(position, parent);
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return getItemView(position, parent)
         }
     }
 
-    private void imageCacheCleaner(){
+    private fun imageCacheCleaner() {
+        val context = applicationContext
 
-        Context context = getApplicationContext();
-
-        Thread thread = new Thread(() -> Glide.get(context).clearDiskCache());
-        thread.start();
-
+        val thread = Thread(Runnable { Glide.get(context).clearDiskCache() })
+        thread.start()
     }
 }

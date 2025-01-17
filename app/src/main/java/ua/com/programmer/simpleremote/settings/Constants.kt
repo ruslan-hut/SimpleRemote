@@ -1,37 +1,36 @@
-package ua.com.programmer.simpleremote.settings;
+package ua.com.programmer.simpleremote.settings
 
-public final class Constants {
-
-    public final static String DOCUMENTS = "documents";
-    public final static String CATALOGS = "catalogs";
-    public final static String DOCUMENTS_LIST = "documents_list";
-    public final static String CACHED_DOCUMENTS = "cached_documents";
-    public final static String ACTION_SAVE_DOCUMENT = "saveDocument";
-    public final static String MESSAGE = "message";
+object Constants {
+    const val DOCUMENTS: String = "documents"
+    const val CATALOGS: String = "catalogs"
+    const val DOCUMENTS_LIST: String = "documents_list"
+    const val CACHED_DOCUMENTS: String = "cached_documents"
+    const val ACTION_SAVE_DOCUMENT: String = "saveDocument"
+    const val MESSAGE: String = "message"
 
     //document types
-    public final static String RECEIVE = "receive";
-    public final static String SHIP = "ship";
-    public final static String INVENTORY = "inventory";
+    const val RECEIVE: String = "receive"
+    const val SHIP: String = "ship"
+    const val INVENTORY: String = "inventory"
 
     //catalog types
-    public final static String CONTRACTORS = "contractors";
-    public final static String GOODS = "goods";
-    public final static String STORES = "stores";
+    const val CONTRACTORS: String = "contractors"
+    const val GOODS: String = "goods"
+    const val STORES: String = "stores"
 
     //common fields
-    public final static String TYPE = "type";
-    public final static String GUID = "guid";
+    const val TYPE: String = "type"
+    const val GUID: String = "guid"
 
     //document fields names
-    public final static String CACHE_GUID = "cacheGUID"; //field name for document data object
-    public final static String DOCUMENT_NUMBER = "number";
-    public final static String DOCUMENT_DATE = "date";
-    public final static String DOCUMENT_IS_DELETED = "isDeleted";
-    public final static String DOCUMENT_IS_PROCESSED = "isProcessed";
-    public final static String DOCUMENT_LINE = "documentLine";
+    const val CACHE_GUID: String = "cacheGUID" //field name for document data object
+    const val DOCUMENT_NUMBER: String = "number"
+    const val DOCUMENT_DATE: String = "date"
+    const val DOCUMENT_IS_DELETED: String = "isDeleted"
+    const val DOCUMENT_IS_PROCESSED: String = "isProcessed"
+    const val DOCUMENT_LINE: String = "documentLine"
 
     //working modes
-    public final static String MODE_FULL = "full";
-    public final static String MODE_COLLECT = "collect";
+    const val MODE_FULL: String = "full"
+    const val MODE_COLLECT: String = "collect"
 }

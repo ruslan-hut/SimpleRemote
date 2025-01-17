@@ -1,210 +1,193 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
+import android.Manifest
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Size
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.OnImageSavedCallback
+import androidx.camera.core.ImageCapture.OutputFileOptions
+import androidx.camera.core.ImageCapture.OutputFileResults
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import com.google.common.util.concurrent.ListenableFuture
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.Cache
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.utility.Utils
+import java.io.File
+import java.lang.Exception
+import java.util.UUID
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Size;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+class CameraActivity : AppCompatActivity() {
+    private var cameraView: PreviewView? = null
+    private var cameraProvider: ListenableFuture<ProcessCameraProvider>? = null
+    private var cameraExecutor: ExecutorService? = null
+    private var imageCapture: ImageCapture? = null
 
-import com.google.common.util.concurrent.ListenableFuture;
+    private var item: DataBaseItem? = null
+    private var outputDirectory: File? = null
+    private var imageFileName: String? = null
 
-import java.io.File;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+    private val utils = Utils()
 
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.Cache;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.Utils;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_camera)
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.header_camera)
 
-public class CameraActivity extends AppCompatActivity {
+        val intent = getIntent()
+        item = Cache.getInstance().get(intent.getStringExtra("cacheKey"))
+        item!!.put("type", Constants.DOCUMENT_LINE)
 
-    private PreviewView cameraView;
-    private ListenableFuture<ProcessCameraProvider> cameraProvider;
-    private ExecutorService cameraExecutor;
-    private ImageCapture imageCapture;
+        outputDirectory = this.getApplicationContext().getFilesDir()
+        imageFileName = ""
 
-    private DataBaseItem item;
-    private File outputDirectory;
-    private String imageFileName;
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        cameraView = findViewById<PreviewView>(R.id.camera_view)
+        cameraProvider = ProcessCameraProvider.getInstance(this)
 
-    private final Utils utils = new Utils();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        setTitle(R.string.header_camera);
-
-        Intent intent = getIntent();
-        item = Cache.getInstance().get(intent.getStringExtra("cacheKey"));
-        item.put("type", Constants.DOCUMENT_LINE);
-
-        outputDirectory = this.getApplicationContext().getFilesDir();
-        imageFileName = "";
-
-        cameraExecutor = Executors.newSingleThreadExecutor();
-        cameraView = findViewById(R.id.camera_view);
-        cameraProvider = ProcessCameraProvider.getInstance(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-            }else {
-                setupCamera();
-            }
-        }else {
-            setupCamera();
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf<String>(Manifest.permission.CAMERA), 1)
+        } else {
+            setupCamera()
         }
 
-        TextView buttonRepeat = findViewById(R.id.button_repeat);
-        buttonRepeat.setOnClickListener((View v) -> startCamera());
+        val buttonRepeat = findViewById<TextView>(R.id.button_repeat)
+        buttonRepeat.setOnClickListener(View.OnClickListener { v: View? -> startCamera() })
 
-        TextView buttonConfirm = findViewById(R.id.button_confirm);
-        buttonConfirm.setOnClickListener((View v) -> takePhoto());
-
+        val buttonConfirm = findViewById<TextView>(R.id.button_confirm)
+        buttonConfirm.setOnClickListener(View.OnClickListener { v: View? -> takePhoto() })
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) onBackPressed();
-        return super.onOptionsItemSelected(item);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
 
-    private void setupCamera(){
-
+    private fun setupCamera() {
         //View view = findViewById(R.id.camera_view);
-        imageCapture = new ImageCapture.Builder()
-                        //.setTargetRotation(view.getDisplay().getRotation())
-                        .setTargetResolution(new Size(768, 1024))
-                        .build();
 
-        cameraProvider.addListener(() -> {
+        imageCapture = ImageCapture.Builder() //.setTargetRotation(view.getDisplay().getRotation())
+            .setTargetResolution(Size(768, 1024))
+            .build()
+
+        cameraProvider!!.addListener(Runnable {
             try {
-                ProcessCameraProvider provider = cameraProvider.get();
-                Preview preview = new Preview.Builder()
-                        .build();
-                preview.setSurfaceProvider(cameraView.getSurfaceProvider());
+                val provider = cameraProvider!!.get()
+                val preview = Preview.Builder()
+                    .build()
+                preview.setSurfaceProvider(cameraView!!.getSurfaceProvider())
 
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                try{
-                    provider.unbindAll();
-                    provider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
-                }catch (Exception e){
-                    utils.error("provider.bindToLifecycle; "+e.getMessage());
+                try {
+                    provider.unbindAll()
+                    provider.bindToLifecycle(this, cameraSelector, imageCapture, preview)
+                } catch (e: Exception) {
+                    utils.error("provider.bindToLifecycle; " + e.message)
                 }
-
-            } catch (Exception e) {
-                utils.error("cameraProvider.addListener; " + e.getMessage());
+            } catch (e: Exception) {
+                utils.error("cameraProvider.addListener; " + e.message)
             }
-        }, ContextCompat.getMainExecutor(this));
-
+        }, ContextCompat.getMainExecutor(this))
     }
 
-    private void startCamera(){
+    private fun startCamera() {
         try {
-            setupCamera();
-        }catch (SecurityException se) {
-            Toast.makeText(this, R.string.error_no_permission, Toast.LENGTH_SHORT).show();
-        }catch (Exception e){
-            Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
-            utils.error("Camera: start: "+e.getMessage());
+            setupCamera()
+        } catch (se: SecurityException) {
+            Toast.makeText(this, R.string.error_no_permission, Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show()
+            utils.error("Camera: start: " + e.message)
         }
     }
 
-    private void stopCamera(){
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> {
+    private fun stopCamera() {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post(Runnable {
             try {
-                cameraProvider.get().unbindAll();
-                if (!imageFileName.isEmpty()){
-                    saveAndExit();
+                cameraProvider!!.get().unbindAll()
+                if (!imageFileName!!.isEmpty()) {
+                    saveAndExit()
                 }
-            }catch (Exception e){
-                utils.error("Camera: stop: "+e.toString());
+            } catch (e: Exception) {
+                utils.error("Camera: stop: $e")
             }
-        });
-
+        })
     }
 
-    private void saveAndExit(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    private fun saveAndExit() {
+        val builder = AlertDialog.Builder(this)
         builder.setMessage(R.string.save_photo_and_exit)
-                .setTitle(R.string.action_save)
-                .setPositiveButton(getResources().getString(R.string.action_save), (dialogInterface, i) -> {
-                    item.put("image", imageFileName);
-                    Intent intent = getIntent();
-                    intent.putExtra("cacheKey", Cache.getInstance().put(item));
-                    setResult(RESULT_OK, intent);
-                    finish();
+            .setTitle(R.string.action_save)
+            .setPositiveButton(
+                getResources().getString(R.string.action_save),
+                DialogInterface.OnClickListener { dialogInterface: DialogInterface?, i: Int ->
+                    item!!.put("image", imageFileName)
+                    val intent = getIntent()
+                    intent.putExtra("cacheKey", Cache.getInstance().put(item))
+                    setResult(RESULT_OK, intent)
+                    finish()
                 })
-                .setNegativeButton(getResources().getString(R.string.action_cancel), (dialogInterface, i) -> {
-                    File image = new File(outputDirectory, imageFileName);
+            .setNegativeButton(
+                getResources().getString(R.string.action_cancel),
+                DialogInterface.OnClickListener { dialogInterface: DialogInterface?, i: Int ->
+                    val image = File(outputDirectory, imageFileName ?: "image.jpg")
                     try {
                         if (image.exists()) {
-                            if (image.delete()) utils.debug("Camera: file deleted: "+imageFileName);
+                            if (image.delete()) utils.debug("Camera: file deleted: $imageFileName")
                         }
-                    }catch (Exception e){
-                        utils.error("Camera: file delete: "+e.toString());
+                    } catch (e: Exception) {
+                        utils.error("Camera: file delete: $e")
                     }
-                });
-        final AlertDialog dialog = builder.create();
-        dialog.show();
+                })
+        val dialog = builder.create()
+        dialog.show()
     }
 
-    private void takePhoto(){
+    private fun takePhoto() {
+        imageFileName = UUID.randomUUID().toString() + ".jpg"
 
-        imageFileName = UUID.randomUUID().toString()+".jpg";
+        val fileOptions = OutputFileOptions.Builder(
+            File(outputDirectory, imageFileName ?: "image.jpg")
+        ).build()
 
-        ImageCapture.OutputFileOptions fileOptions = new ImageCapture.OutputFileOptions.Builder(
-                new File(outputDirectory,imageFileName)
-        ).build();
+        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
 
-        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
-        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP);
-
-        imageCapture.takePicture(fileOptions, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                utils.debug("Camera: image saved: "+imageFileName);
-                stopCamera();
+        imageCapture!!.takePicture(fileOptions, cameraExecutor!!, object : OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: OutputFileResults) {
+                utils.debug("Camera: image saved: $imageFileName")
+                stopCamera()
             }
 
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                imageFileName = "";
-                utils.error("Camera: take picture: "+exception.getMessage());
+            override fun onError(exception: ImageCaptureException) {
+                imageFileName = ""
+                utils.error("Camera: take picture: " + exception.message)
             }
-        });
-
+        })
     }
 }

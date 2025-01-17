@@ -1,131 +1,121 @@
-package ua.com.programmer.simpleremote.settings;
+package ua.com.programmer.simpleremote.settings
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Switch;
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import android.widget.Switch
+import androidx.appcompat.app.AppCompatActivity
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.SqliteDB
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
 
-import ua.com.programmer.simpleremote.R;
-import ua.com.programmer.simpleremote.SqliteDB;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+class ConnectionSettingsActivity : AppCompatActivity() {
+    private var appSettings: AppSettings? = null
 
-public class ConnectionSettingsActivity extends AppCompatActivity {
+    var alias: EditText? = null
+    var serverAddress: EditText? = null
+    var databaseName: EditText? = null
+    var userName: EditText? = null
+    var password: EditText? = null
+    var demo: Switch? = null
 
-    private AppSettings appSettings;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_connection_settings)
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.action_connection_settings)
 
-    EditText alias;
-    EditText serverAddress;
-    EditText databaseName;
-    EditText userName;
-    EditText password;
-    Switch demo;
+        appSettings = AppSettings.getInstance(this)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connection_settings);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        setTitle(R.string.action_connection_settings);
+        alias = findViewById<EditText>(R.id.pref_alias)
+        alias!!.setText(appSettings!!.getCurrentConnectionAlias())
+        serverAddress = findViewById<EditText>(R.id.pref_server_address)
+        serverAddress!!.setText(appSettings!!.getServerAddress())
+        databaseName = findViewById<EditText>(R.id.pref_database)
+        databaseName!!.setText(appSettings!!.getDatabaseName())
+        userName = findViewById<EditText>(R.id.pref_user)
+        userName!!.setText(appSettings!!.getUserName())
+        password = findViewById<EditText>(R.id.pref_password)
+        password!!.setText(appSettings!!.getUserPassword())
 
-        appSettings = AppSettings.getInstance(this);
+        val demoMode = appSettings!!.getServerAddress() == "demo"
+        demo = findViewById<Switch>(R.id.demo)
+        demo!!.setChecked(demoMode)
+        onDemoModeChecked()
 
-        alias = findViewById(R.id.pref_alias);
-        alias.setText(appSettings.getCurrentConnectionAlias());
-        serverAddress = findViewById(R.id.pref_server_address);
-        serverAddress.setText(appSettings.getServerAddress());
-        databaseName = findViewById(R.id.pref_database);
-        databaseName.setText(appSettings.getDatabaseName());
-        userName = findViewById(R.id.pref_user);
-        userName.setText(appSettings.getUserName());
-        password = findViewById(R.id.pref_password);
-        password.setText(appSettings.getUserPassword());
-
-        boolean demoMode = appSettings.getServerAddress().equals("demo");
-        demo = findViewById(R.id.demo);
-        demo.setChecked(demoMode);
-        onDemoModeChecked();
-
-        demo.setOnClickListener((View v) -> onDemoModeChecked());
-
+        demo!!.setOnClickListener(View.OnClickListener { v: View? -> onDemoModeChecked() })
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.connection_settings_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        getMenuInflater().inflate(R.menu.connection_settings_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
-    private void onDemoModeChecked(){
-        boolean demoMode = demo.isChecked();
-        serverAddress.setEnabled(!demoMode);
-        databaseName.setEnabled(!demoMode);
-        userName.setEnabled(!demoMode);
-        password.setEnabled(!demoMode);
-        if (demoMode){
-            serverAddress.setText(R.string.demo_key);
-            if (alias.getText().toString().equals("")){
-                alias.setText(R.string.pref_demo_mode);
+    private fun onDemoModeChecked() {
+        val demoMode = demo!!.isChecked()
+        serverAddress!!.setEnabled(!demoMode)
+        databaseName!!.setEnabled(!demoMode)
+        userName!!.setEnabled(!demoMode)
+        password!!.setEnabled(!demoMode)
+        if (demoMode) {
+            serverAddress!!.setText(R.string.demo_key)
+            if (alias!!.getText().toString() == "") {
+                alias!!.setText(R.string.pref_demo_mode)
             }
-            databaseName.setText("");
-            userName.setText("");
-            password.setText("");
+            databaseName!!.setText("")
+            userName!!.setText("")
+            password!!.setText("")
         }
     }
 
-    private void saveSettings(){
-        Switch demo = findViewById(R.id.demo);
-        appSettings.setDemoMode(demo.isChecked());
+    private fun saveSettings() {
+        val demo = findViewById<Switch>(R.id.demo)
+        appSettings!!.setDemoMode(demo.isChecked())
 
-        appSettings.setCurrentConnectionAlias(alias.getText().toString());
-        appSettings.setServerAddress(serverAddress.getText().toString());
-        appSettings.setDatabaseName(databaseName.getText().toString());
-        appSettings.setUserName(userName.getText().toString());
-        appSettings.setPassword(password.getText().toString());
+        appSettings!!.setCurrentConnectionAlias(alias!!.getText().toString())
+        appSettings!!.setServerAddress(serverAddress!!.getText().toString())
+        appSettings!!.setDatabaseName(databaseName!!.getText().toString())
+        appSettings!!.setUserName(userName!!.getText().toString())
+        appSettings!!.setPassword(password!!.getText().toString())
 
-        DataBaseItem dataBaseItem = new DataBaseItem();
-        dataBaseItem.put("alias", alias.getText().toString());
-        dataBaseItem.put("server_address", serverAddress.getText().toString());
-        dataBaseItem.put("database_name", databaseName.getText().toString());
-        dataBaseItem.put("user_name", userName.getText().toString());
-        dataBaseItem.put("user_password", password.getText().toString());
-        SqliteDB.getInstance(this).updateSettings(dataBaseItem);
+        val dataBaseItem = DataBaseItem()
+        dataBaseItem.put("alias", alias!!.getText().toString())
+        dataBaseItem.put("server_address", serverAddress!!.getText().toString())
+        dataBaseItem.put("database_name", databaseName!!.getText().toString())
+        dataBaseItem.put("user_name", userName!!.getText().toString())
+        dataBaseItem.put("user_password", password!!.getText().toString())
+        SqliteDB.getInstance(this)!!.updateSettings(dataBaseItem)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) onBackPressed();
-        if (id == R.id.delete) deleteSettings();
-        return super.onOptionsItemSelected(item);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.getItemId()
+        if (id == android.R.id.home) onBackPressed()
+        if (id == R.id.delete) deleteSettings()
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public void onBackPressed() {
-        saveSettings();
-        super.onBackPressed();
+    @Deprecated("")
+    override fun onBackPressed() {
+        saveSettings()
+        super.onBackPressed()
     }
 
-    void deleteSettings(){
-        String connectionAlias = alias.getText().toString();
-        if (!connectionAlias.equals("")){
+    fun deleteSettings() {
+        val connectionAlias = alias!!.text.toString()
+        if (connectionAlias != "") {
+            SqliteDB.getInstance(this)!!.deleteSettings(connectionAlias)
 
-            SqliteDB.getInstance(this).deleteSettings(connectionAlias);
+            appSettings!!.setDemoMode(false)
+            appSettings!!.setCurrentConnectionAlias("")
+            appSettings!!.setServerAddress("")
+            appSettings!!.setDatabaseName("")
+            appSettings!!.setUserName("")
+            appSettings!!.setPassword("")
 
-            appSettings.setDemoMode(false);
-            appSettings.setCurrentConnectionAlias("");
-            appSettings.setServerAddress("");
-            appSettings.setDatabaseName("");
-            appSettings.setUserName("");
-            appSettings.setPassword("");
-
-            finish();
+            finish()
         }
     }
 }

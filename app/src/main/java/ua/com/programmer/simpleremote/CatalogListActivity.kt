@@ -1,315 +1,303 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import ua.com.programmer.simpleremote.CatalogListActivity.CatalogListAdapter
+import ua.com.programmer.simpleremote.CatalogListActivity.CatalogViewHolder
+import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.Cache
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.utility.Utils
+import java.util.ArrayList
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-import java.util.ArrayList;
+class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var catalogListAdapter: CatalogListAdapter? = null
+    private val utils = Utils()
+    private var catalogType: String? = null
+    private var currentGroup: String? = ""
+    private var currentGroupName: String? = ""
+    private var searchFilter = ""
+    private var noDataText: TextView? = null
+    private var itemSelectionMode: Boolean? = null
+    private var documentGUID: String? = null
 
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.Cache;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.Utils;
+    private val openNextScreen =
+        registerForActivityResult<Intent?, ActivityResult?>(StartActivityForResult(),
+            ActivityResultCallback { result: ActivityResult? -> })
 
-public class CatalogListActivity extends AppCompatActivity implements DataLoader.DataLoaderListener{
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private CatalogListAdapter catalogListAdapter;
-    private final Utils utils = new Utils();
-    private String catalogType;
-    private String currentGroup = "";
-    private String currentGroupName = "";
-    private String searchFilter = "";
-    private TextView noDataText;
-    private Boolean itemSelectionMode;
-    private String documentGUID;
-
-    private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_catalog_list);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_catalog_list)
+        val actionBar = getSupportActionBar()
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
-        noDataText = findViewById(R.id.text_no_data);
-        noDataText.setVisibility(View.GONE);
+        noDataText = findViewById<TextView>(R.id.text_no_data)
+        noDataText!!.setVisibility(View.GONE)
 
-        EditText editText = findViewById(R.id.edit_search);
-        editText.setVisibility(View.GONE);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        val editText = findViewById<EditText>(R.id.edit_search)
+        editText.setVisibility(View.GONE)
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchFilter = "";
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                searchFilter = ""
                 if (count > 0) {
-                    searchFilter = s.toString();
+                    searchFilter = s.toString()
                 }
-                updateList();
+                updateList()
             }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
+            override fun afterTextChanged(s: Editable?) {
             }
-        });
+        })
 
-        Intent intent = getIntent();
-        catalogType = intent.getStringExtra("catalogType");
-        currentGroup = intent.getStringExtra("currentGroup");
-        currentGroupName = intent.getStringExtra("currentGroupName");
-        if (currentGroup == null) currentGroup = "";
+        val intent = getIntent()
+        catalogType = intent.getStringExtra("catalogType")
+        currentGroup = intent.getStringExtra("currentGroup")
+        currentGroupName = intent.getStringExtra("currentGroupName")
+        if (currentGroup == null) currentGroup = ""
 
-        itemSelectionMode = intent.getBooleanExtra("itemSelectionMode", false);
-        documentGUID = intent.getStringExtra("documentGUID");
+        itemSelectionMode = intent.getBooleanExtra("itemSelectionMode", false)
+        documentGUID = intent.getStringExtra("documentGUID")
 
-        swipeRefreshLayout = findViewById(R.id.catalog_swipe);
-        swipeRefreshLayout.setOnRefreshListener(this::updateList);
+        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.catalog_swipe)
+        swipeRefreshLayout!!.setOnRefreshListener(OnRefreshListener { this.updateList() })
 
-        RecyclerView recyclerView = findViewById(R.id.catalog_recycler);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        catalogListAdapter = new CatalogListAdapter();
-        recyclerView.setAdapter(catalogListAdapter);
-
+        val recyclerView = findViewById<RecyclerView>(R.id.catalog_recycler)
+        recyclerView.setHasFixedSize(true)
+        val linearLayoutManager = LinearLayoutManager(this)
+        recyclerView.setLayoutManager(linearLayoutManager)
+        catalogListAdapter = CatalogListAdapter()
+        recyclerView.setAdapter(catalogListAdapter)
     }
 
-    private void updateList(){
-        noDataText.setVisibility(View.GONE);
-        if (!searchFilter.equals("") || catalogListAdapter.getItemCount() == 0){
-            swipeRefreshLayout.setRefreshing(true);
+    private fun updateList() {
+        noDataText!!.setVisibility(View.GONE)
+        if (searchFilter != "" || catalogListAdapter!!.getItemCount() == 0) {
+            swipeRefreshLayout!!.setRefreshing(true)
         }
         /*
         setting activity title
          */
         if (currentGroupName != null) {
-            setTitle(currentGroupName);
-        }else if (utils.getPageTitleID(catalogType) != R.string.app_name) {
-            setTitle(utils.getPageTitleID(catalogType));
-        }else{
-            setTitle(catalogType);
+            setTitle(currentGroupName)
+        } else if (utils.getPageTitleID(catalogType) != R.string.app_name) {
+            setTitle(utils.getPageTitleID(catalogType))
+        } else {
+            setTitle(catalogType)
         }
-        DataLoader dataLoader = new DataLoader(this);
-        dataLoader.getCatalogData(catalogType, currentGroup, searchFilter,documentGUID);
+        val dataLoader = DataLoader(this)
+        dataLoader.getCatalogData(catalogType, currentGroup, searchFilter, documentGUID)
     }
 
-    @Override
-    public void onDataLoaded(ArrayList<DataBaseItem> dataBaseItems){
-        catalogListAdapter.loadListItems(dataBaseItems);
-        swipeRefreshLayout.setRefreshing(false);
-        if (dataBaseItems.isEmpty()) {
-            noDataText.setVisibility(View.VISIBLE);
-        }else {
-            noDataText.setVisibility(View.GONE);
+    override fun onDataLoaded(dataBaseItems: ArrayList<DataBaseItem?>?) {
+        noDataText!!.visibility = View.VISIBLE
+        swipeRefreshLayout!!.isRefreshing = false
+        dataBaseItems?.let {
+            if (it.isNotEmpty()) {
+                noDataText!!.visibility = View.GONE
+            }
+            val items : ArrayList<DataBaseItem> = ArrayList()
+            for (item in it) {
+                if (item != null) {
+                    items.add(item)
+                }
+            }
+            catalogListAdapter!!.loadListItems(items)
         }
     }
 
-    @Override
-    public void onDataLoaderError(String error) {
-        swipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    override fun onDataLoaderError(error: String?) {
+        swipeRefreshLayout!!.isRefreshing = false
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    protected void onResume() {
-        updateList();
-        super.onResume();
+    override fun onResume() {
+        updateList()
+        super.onResume()
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
 
-        if (id == android.R.id.home) onBackPressed();
+        if (id == android.R.id.home) onBackPressed()
 
-        if (id == R.id.action_search){
-            EditText editText = findViewById(R.id.edit_search);
-            if (editText.getVisibility() == View.VISIBLE) {
-                editText.setVisibility(View.GONE);
-                searchFilter = "";
-                updateList();
-            }else {
-                editText.setVisibility(View.VISIBLE);
+        if (id == R.id.action_search) {
+            val editText = findViewById<EditText>(R.id.edit_search)
+            if (editText.visibility == View.VISIBLE) {
+                editText.visibility = View.GONE
+                searchFilter = ""
+                updateList()
+            } else {
+                editText.setVisibility(View.VISIBLE)
             }
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.catalog_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        getMenuInflater().inflate(R.menu.catalog_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
-    private void onListItemClick(int position){
-        DataBaseItem dataBaseItem = catalogListAdapter.getListItem(position);
+    private fun onListItemClick(position: Int) {
+        val dataBaseItem = catalogListAdapter!!.getListItem(position)
         if (dataBaseItem.getInt("isGroup") == 1) {
-            Intent intent = new Intent(this, CatalogListActivity.class);
-            intent.putExtra("catalogType", catalogType);
-            intent.putExtra("currentGroup", dataBaseItem.getString("code"));
-            intent.putExtra("currentGroupName", dataBaseItem.getString("description"));
-            intent.putExtra("itemSelectionMode", itemSelectionMode);
-            if (itemSelectionMode) {
-                openNextScreen.launch(intent);
-            }else {
-                startActivity(intent);
+            val intent = Intent(this, CatalogListActivity::class.java)
+            intent.putExtra("catalogType", catalogType)
+            intent.putExtra("currentGroup", dataBaseItem.getString("code"))
+            intent.putExtra("currentGroupName", dataBaseItem.getString("description"))
+            intent.putExtra("itemSelectionMode", itemSelectionMode)
+            if (itemSelectionMode == true) {
+                openNextScreen.launch(intent)
+            } else {
+                startActivity(intent)
             }
-        }else if (itemSelectionMode){
-            Cache cache = Cache.getInstance();
-            Intent intent = getIntent();
-            intent.putExtra("cacheKey", cache.put(dataBaseItem));
-            setResult(RESULT_OK, intent);
-            finish();
+        } else if (itemSelectionMode == true) {
+            val cache = Cache.getInstance()
+            val intent = getIntent()
+            intent.putExtra("cacheKey", cache.put(dataBaseItem))
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null){
-            Intent intent = getIntent();
-            intent.putExtra("cacheKey", data.getStringExtra("cacheKey"));
-            setResult(RESULT_OK, intent);
-            finish();
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (data != null) {
+            val intent = getIntent()
+            intent.putExtra("cacheKey", data.getStringExtra("cacheKey"))
+            setResult(RESULT_OK, intent)
+            finish()
         }
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     ///////// Recycler Adapter //////////////////////////////////////
+    internal inner class CatalogViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var tvCode: TextView
+        var tvDescription: TextView
+        var ivIcon: ImageView?
+        var tvRestTitle: TextView
+        var tvRestValue: TextView
+        var tvPriceValue: TextView
+        var tvGroupDescription: TextView
+        var cardView: CardView?
 
-    class CatalogViewHolder extends RecyclerView.ViewHolder{
-
-        TextView tvCode;
-        TextView tvDescription;
-        ImageView ivIcon;
-        TextView tvRestTitle;
-        TextView tvRestValue;
-        TextView tvPriceValue;
-        TextView tvGroupDescription;
-        CardView cardView;
-
-        CatalogViewHolder(View view){
-            super(view);
-            cardView = view.findViewById(R.id.item_card);
-            tvCode = view.findViewById(R.id.item_code);
-            tvDescription = view.findViewById(R.id.item_description);
-            ivIcon = view.findViewById(R.id.item_icon);
-            tvGroupDescription = view.findViewById(R.id.group_description);
-            tvRestTitle = view.findViewById(R.id.rest_title);
-            tvRestValue = view.findViewById(R.id.rest_value);
-            tvPriceValue = view.findViewById(R.id.item_price);
+        init {
+            cardView = view.findViewById<CardView?>(R.id.item_card)
+            tvCode = view.findViewById<TextView>(R.id.item_code)
+            tvDescription = view.findViewById<TextView>(R.id.item_description)
+            ivIcon = view.findViewById<ImageView?>(R.id.item_icon)
+            tvGroupDescription = view.findViewById<TextView>(R.id.group_description)
+            tvRestTitle = view.findViewById<TextView>(R.id.rest_title)
+            tvRestValue = view.findViewById<TextView>(R.id.rest_value)
+            tvPriceValue = view.findViewById<TextView>(R.id.item_price)
         }
 
-        void setHolderInfo(DataBaseItem dataBaseItem){
-            tvDescription.setText(dataBaseItem.getString("description"));
+        fun setHolderInfo(dataBaseItem: DataBaseItem) {
+            tvDescription.setText(dataBaseItem.getString("description"))
 
-            int isGroup = dataBaseItem.getInt("isGroup");
+            val isGroup = dataBaseItem.getInt("isGroup")
             if (isGroup == 0) {
+                if (catalogType == Constants.GOODS) {
+                    tvCode.setText(dataBaseItem.getString("art"))
+                    tvGroupDescription.setText(dataBaseItem.getString("groupName"))
 
-                if (catalogType.equals(Constants.GOODS)) {
-                    tvCode.setText(dataBaseItem.getString("art"));
-                    tvGroupDescription.setText(dataBaseItem.getString("groupName"));
-
-                    String restValue = dataBaseItem.getString("rest");
-                    if (restValue.isEmpty() || restValue.equals("0")) {
-                        tvRestTitle.setVisibility(View.INVISIBLE);
-                        tvRestValue.setVisibility(View.INVISIBLE);
+                    val restValue = dataBaseItem.getString("rest")
+                    if (restValue.isEmpty() || restValue == "0") {
+                        tvRestTitle.setVisibility(View.INVISIBLE)
+                        tvRestValue.setVisibility(View.INVISIBLE)
                     } else {
-                        tvRestTitle.setVisibility(View.VISIBLE);
-                        tvRestValue.setVisibility(View.VISIBLE);
-                        tvRestValue.setText(restValue);
+                        tvRestTitle.setVisibility(View.VISIBLE)
+                        tvRestValue.setVisibility(View.VISIBLE)
+                        tvRestValue.setText(restValue)
                     }
-                    String price = dataBaseItem.getString("price");
-                    if (price.isEmpty() || price.equals("0")) {
-                        tvPriceValue.setVisibility(View.INVISIBLE);
-                    }else{
-                        price = utils.format(dataBaseItem.getDouble("price"),2);
-                        tvPriceValue.setVisibility(View.VISIBLE);
-                        tvPriceValue.setText(price);
+                    var price = dataBaseItem.getString("price")
+                    if (price.isEmpty() || price == "0") {
+                        tvPriceValue.setVisibility(View.INVISIBLE)
+                    } else {
+                        price = utils.format(dataBaseItem.getDouble("price"), 2)
+                        tvPriceValue.setVisibility(View.VISIBLE)
+                        tvPriceValue.setText(price)
                     }
-                }else{
-                    tvCode.setText(dataBaseItem.getString("code"));
+                } else {
+                    tvCode.setText(dataBaseItem.getString("code"))
                 }
-
             }
         }
     }
 
-    class CatalogListAdapter extends RecyclerView.Adapter<CatalogViewHolder>{
-
-        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
+    internal inner class CatalogListAdapter : RecyclerView.Adapter<CatalogViewHolder?>() {
+        private val listItems = ArrayList<DataBaseItem>()
 
         @SuppressLint("NotifyDataSetChanged")
-        void loadListItems(ArrayList<DataBaseItem> values){
-            listItems.clear();
-            listItems.addAll(values);
-            notifyDataSetChanged();
+        fun loadListItems(values: ArrayList<DataBaseItem>) {
+            listItems.clear()
+            listItems.addAll(values)
+            notifyDataSetChanged()
         }
 
-        DataBaseItem getListItem(int position){
-            if (position < getItemCount()){
-                return listItems.get(position);
+        fun getListItem(position: Int): DataBaseItem {
+            if (position < itemCount) {
+                return listItems[position]
             }
-            return new DataBaseItem();
+            return DataBaseItem()
         }
 
-        @Override
-        public int getItemViewType(int position) {
-            DataBaseItem dataBaseItem = getListItem(position);
+        override fun getItemViewType(position: Int): Int {
+            val dataBaseItem = getListItem(position)
             if (dataBaseItem.getInt("isGroup") == 1) {
-                return R.layout.catalog_list_item_group;
-            }else if (catalogType.equals(Constants.GOODS)) {
-                return R.layout.catalog_list_item_goods;
-            }else {
-                return R.layout.catalog_list_item_contractors;
+                return R.layout.catalog_list_item_group
+            } else if (catalogType == Constants.GOODS) {
+                return R.layout.catalog_list_item_goods
+            } else {
+                return R.layout.catalog_list_item_contractors
             }
         }
 
-        @NonNull
-        @Override
-        public CatalogViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View view = LayoutInflater.from(parent.getContext()).inflate(viewType,parent,false);
-            return new CatalogViewHolder(view);
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
+            val view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false)
+            return CatalogViewHolder(view)
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull CatalogViewHolder holder, int position) {
-            holder.setHolderInfo(getListItem(position));
-            holder.itemView.setOnClickListener((View v) -> onListItemClick(position));
+        override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {
+            holder.setHolderInfo(getListItem(position))
+            holder.itemView.setOnClickListener(View.OnClickListener { v: View? ->
+                onListItemClick(
+                    position
+                )
+            })
         }
 
-        @Override
-        public int getItemCount() {
-            return listItems.size();
+        override fun getItemCount(): Int {
+            return listItems.size
         }
     }
 }

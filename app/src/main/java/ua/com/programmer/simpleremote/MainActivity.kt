@@ -1,323 +1,306 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.content.Intent;
-import android.os.Bundle;
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
+import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.SelectDataTypeFragment.Companion.newInstance
+import ua.com.programmer.simpleremote.serviceUtils.DocumentsFilterActivity
+import ua.com.programmer.simpleremote.settings.AppSettings
+import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.Cache
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.utility.Utils
+import java.util.ArrayList
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import android.view.View;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
+    DocumentsListFragment.OnFragmentInteractionListener,
+    SelectDataTypeFragment.OnFragmentInteractionListener, DataLoaderListener {
+    private var backPressedTime: Long = 0
+    private var fragment: Fragment? = null
+    private var fragmentTAG: String? = ""
+    private var documentType: String? = ""
+    private var pageTitle: String? = null
+    private var floatingActionButton: FloatingActionButton? = null
+    private val utils = Utils()
+    private val cache: Cache = Cache.getInstance()
 
-import java.util.ArrayList;
+    private val openNextScreen =
+        registerForActivityResult<Intent?, ActivityResult?>(StartActivityForResult(),
+            ActivityResultCallback { result: ActivityResult? -> })
 
-import ua.com.programmer.simpleremote.serviceUtils.DocumentsFilterActivity;
-import ua.com.programmer.simpleremote.settings.AppSettings;
-import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity;
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.Cache;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.Utils;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val toolbar = findViewById<Toolbar?>(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-            DocumentsListFragment.OnFragmentInteractionListener,
-            SelectDataTypeFragment.OnFragmentInteractionListener,
-            DataLoader.DataLoaderListener{
+        floatingActionButton = findViewById<FloatingActionButton>(R.id.fab)
+        floatingActionButton!!.setOnClickListener(View.OnClickListener { v: View? -> fabOnClickAction() })
+        floatingActionButton!!.show()
 
-    private long backPressedTime;
-    private Fragment fragment;
-    private String fragmentTAG = "";
-    private String documentType = "";
-    private String pageTitle;
-    private FloatingActionButton floatingActionButton;
-    private final Utils utils = new Utils();
-    private final Cache cache = Cache.getInstance();
+        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toggle = ActionBarDrawerToggle(
+            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawer.addDrawerListener(toggle)
+        toggle.syncState()
 
-    private final ActivityResultLauncher<Intent> openNextScreen = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        val navHeaderView = navigationView.getHeaderView(0)
+        val appNameText = navHeaderView.findViewById<TextView>(R.id.nav_header_app_title)
+        appNameText.setOnClickListener(View.OnClickListener { v: View? ->
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_TEXT, utils.readLogs().toString())
+            intent.type = "text/plain"
+            startActivity(intent)
+        })
 
-        floatingActionButton = findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(v -> fabOnClickAction());
-        floatingActionButton.show();
+        val userID = AppSettings.getInstance(this)?.getUserID() ?: "0000000000"
+        val version = BuildConfig.VERSION_NAME + " (" + userID.substring(0, 8) + ")"
+        val navText1 = navHeaderView.findViewById<TextView>(R.id.nav_header_text1)
+        navText1.text = version
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View navHeaderView = navigationView.getHeaderView(0);
-        TextView appNameText = navHeaderView.findViewById(R.id.nav_header_app_title);
-        appNameText.setOnClickListener((View v) -> {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, utils.readLogs().toString());
-            intent.setType("text/plain");
-            startActivity(intent);
-        });
-
-        String userID = AppSettings.getInstance(this).getUserID();
-        String version = BuildConfig.VERSION_NAME+" ("+userID.substring(0, 8)+")";
-        TextView navText1 = navHeaderView.findViewById(R.id.nav_header_text1);
-        navText1.setText(version);
-
-        checkStateAndLogin(false);
+        checkStateAndLogin(false)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setPageTitle();
+    override fun onResume() {
+        super.onResume()
+        setPageTitle()
     }
 
-    private void setPageTitle(){
+    private fun setPageTitle() {
         if (pageTitle != null) {
-            setTitle(pageTitle);
-        }else if (utils.getPageTitleID(fragmentTAG) != R.string.app_name) {
-            setTitle(utils.getPageTitleID(fragmentTAG));
-        }else{
-            setTitle(fragmentTAG);
+            title = pageTitle
+        } else if (utils.getPageTitleID(fragmentTAG) != R.string.app_name) {
+            setTitle(utils.getPageTitleID(fragmentTAG))
+        } else {
+            title = fragmentTAG
         }
     }
 
-    private void checkStateAndLogin(boolean disableAutoLogin){
-        if (disableAutoLogin){
-            AppSettings.getInstance(this).setAutoConnectMode(false);
+    private fun checkStateAndLogin(disableAutoLogin: Boolean) {
+        if (disableAutoLogin) {
+            AppSettings.getInstance(this)?.setAutoConnectMode(false)
         }
-        Intent intent = new Intent(this, LoginActivity.class);
-        openNextScreen.launch(intent);
+        val intent = Intent(this, LoginActivity::class.java)
+        openNextScreen.launch(intent)
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == 1) {
             //on successful connection with server
-            if (fragmentTAG == null || fragmentTAG.equals("")){
-                attachFragment(Constants.DOCUMENTS);
+            if (fragmentTAG == null || fragmentTAG == "") {
+                attachFragment(Constants.DOCUMENTS)
             }
-        }else {
-            //connection failed
-            finish();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }else if (fragmentTAG.equals(Constants.DOCUMENTS_LIST)){
-            attachFragment(Constants.DOCUMENTS);
         } else {
-            if (backPressedTime+2000>System.currentTimeMillis()) {
-                super.onBackPressed();
-            }else {
-                Toast.makeText(this, R.string.hint_press_back, Toast.LENGTH_SHORT).show();
-                backPressedTime = System.currentTimeMillis();
+            //connection failed
+            finish()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START)
+        } else if (fragmentTAG == Constants.DOCUMENTS_LIST) {
+            attachFragment(Constants.DOCUMENTS)
+        } else {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                super.onBackPressed()
+            } else {
+                Toast.makeText(this, R.string.hint_press_back, Toast.LENGTH_SHORT).show()
+                backPressedTime = System.currentTimeMillis()
             }
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
         if (id == R.id.action_filter) {
-            if (fragmentTAG.equals(Constants.DOCUMENTS_LIST)){
-                Intent intent = new Intent(this, DocumentsFilterActivity.class);
-                startActivity(intent);
-                return true;
+            if (fragmentTAG == Constants.DOCUMENTS_LIST) {
+                val intent = Intent(this, DocumentsFilterActivity::class.java)
+                startActivity(intent)
+                return true
             }
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_logoff) checkStateAndLogin(true);
-        if (id == R.id.nav_documents) attachFragment(Constants.DOCUMENTS);
-        if (id == R.id.nav_catalogs) attachFragment(Constants.CATALOGS);
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.nav_logoff) checkStateAndLogin(true)
+        if (id == R.id.nav_documents) attachFragment(Constants.DOCUMENTS)
+        if (id == R.id.nav_catalogs) attachFragment(Constants.CATALOGS)
         if (id == R.id.nav_settings_connection) {
-            Intent intentConnection = new Intent(this, ConnectionSettingsActivity.class);
-            startActivity(intentConnection);
+            val intentConnection = Intent(this, ConnectionSettingsActivity::class.java)
+            startActivity(intentConnection)
         }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawer.closeDrawer(GravityCompat.START)
+        return true
     }
 
-    private void makeFragmentAttach(){
-        if(fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
+    private fun makeFragmentAttach() {
+        if (fragment != null) {
+            val fragmentManager = supportFragmentManager
             fragmentManager.beginTransaction()
-                    .replace(R.id.main_screen_container, fragment)
-                    .commitAllowingStateLoss();
+                .replace(R.id.main_screen_container, fragment!!)
+                .commitAllowingStateLoss()
         }
     }
 
     //fragment for choosing list data type
-    private void attachFragment(String tag){
-        floatingActionButton.hide();
-        if (tag == null){
-            return;
+    private fun attachFragment(tag: String?) {
+        floatingActionButton!!.hide()
+        if (tag == null) {
+            return
         }
 
-        cache.setFragmentTAG(tag);
-        fragmentTAG = tag;
-        fragment = SelectDataTypeFragment.newInstance(tag);
+        cache.setFragmentTAG(tag)
+        fragmentTAG = tag
+        fragment = newInstance(tag)
 
-        makeFragmentAttach();
+        makeFragmentAttach()
 
-        pageTitle = getString(utils.getPageTitleID(fragmentTAG));
-        setPageTitle();
+        pageTitle = getString(utils.getPageTitleID(fragmentTAG))
+        setPageTitle()
     }
 
     //attaches fragment with documents list
-    private void attachDocumentListFragment(String tag){
-        if (tag == null){
-            return;
+    private fun attachDocumentListFragment(tag: String?) {
+        if (tag == null) {
+            return
         }
-        fragmentTAG = Constants.DOCUMENTS_LIST;
-        cache.setFragmentTAG(fragmentTAG);
-        documentType = tag;
-        fragment = DocumentsListFragment.newInstance();
-        makeFragmentAttach();
+        fragmentTAG = Constants.DOCUMENTS_LIST
+        cache.setFragmentTAG(fragmentTAG)
+        documentType = tag
+        fragment = DocumentsListFragment.newInstance()
+        makeFragmentAttach()
     }
 
-    @Override
-    public void onFragmentInteraction(DataBaseItem currentListItem) {
-        String type = currentListItem.getString("specialType");
+    override fun onFragmentInteraction(currentListItem: DataBaseItem?) {
+        var type = currentListItem?.getString("specialType") ?: ""
         if (type.isEmpty()) {
-            type = currentListItem.getString("code");
+            type = currentListItem?.getString("code").toString()
         }
-        String description = currentListItem.getString("description");
-        if (description != null && !description.equals("")) {
-            pageTitle = description;
-            setPageTitle();
+        val description = currentListItem?.getString("description")
+        if (description != null && description != "") {
+            pageTitle = description
+            setPageTitle()
         }
-        switch (fragmentTAG){
-            case Constants.DOCUMENTS:
-                //*******************************************
+        when (fragmentTAG) {
+            Constants.DOCUMENTS ->                 //*******************************************
                 //invoke selected document type list opening
                 //*******************************************
-                attachDocumentListFragment(type);
-                break;
-            case Constants.CATALOGS:
+                attachDocumentListFragment(type)
+
+            Constants.CATALOGS -> {
                 //*******************************************
                 //invoke selected catalog type list opening
                 //*******************************************
-                Intent intentCatalog = new Intent(this, CatalogListActivity.class);
-                intentCatalog.putExtra("catalogType", type);
-                startActivity(intentCatalog);
-                break;
-            case Constants.DOCUMENTS_LIST:
+                val intentCatalog = Intent(this, CatalogListActivity::class.java)
+                intentCatalog.putExtra("catalogType", type)
+                startActivity(intentCatalog)
+            }
+
+            Constants.DOCUMENTS_LIST -> {
                 //*******************************************
                 //open selected document
                 //*******************************************
-                if (!currentListItem.hasValue("type")){
-                    currentListItem.put("type", documentType);
+                currentListItem?.hasValue("type")?.let {
+                    if (!it) {
+                        currentListItem.put("type", documentType)
+                    }
                 }
-                Intent intent = new Intent(this, DocumentActivity.class);
-                intent.putExtra("cacheKey", cache.put(currentListItem));
-                intent.putExtra("guid",currentListItem.getString("guid"));
-                startActivity(intent);
-                break;
-        }
-    }
-
-    @Override
-    public void onDataUpdateRequest() {
-        DataLoader dataLoader = new DataLoader(this);
-        switch (fragmentTAG){
-            case Constants.DOCUMENTS:
-                //dataLoader.getAllowedDocumentsTypes();
-                break;
-            case Constants.DOCUMENTS_LIST:
-                dataLoader.getDocuments(documentType);
-                break;
-            case Constants.CATALOGS:
-                dataLoader.getAllowedCatalogsTypes();
-                break;
-        }
-    }
-
-    @Override
-    public void onDataLoaded(ArrayList<DataBaseItem> dataItems) {
-        if (dataItems.size() == 0 && !documentType.equals(Constants.CACHED_DOCUMENTS)){
-            Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show();
-        }
-        if (fragment instanceof DocumentsListFragment){
-            DocumentsListFragment documentsListFragment = (DocumentsListFragment) fragment;
-            documentsListFragment.loadListData(dataItems);
-            if (documentType.equals(Constants.CACHED_DOCUMENTS)) {
-                floatingActionButton.hide();
-            }else {
-                floatingActionButton.show();
+                val intent = Intent(this, DocumentActivity::class.java)
+                intent.putExtra("cacheKey", cache.put(currentListItem))
+                intent.putExtra("guid", currentListItem?.getString("guid"))
+                startActivity(intent)
             }
         }
-        if (fragment instanceof SelectDataTypeFragment){
-            SelectDataTypeFragment selectDataTypeFragment = (SelectDataTypeFragment) fragment;
-            selectDataTypeFragment.loadListData(dataItems);
+    }
+
+    override fun onDataUpdateRequest() {
+        val dataLoader = DataLoader(this)
+        when (fragmentTAG) {
+            Constants.DOCUMENTS -> {}
+            Constants.DOCUMENTS_LIST -> dataLoader.getDocuments(documentType.toString())
+            Constants.CATALOGS -> dataLoader.getAllowedCatalogsTypes()
         }
     }
 
-    @Override
-    public void onDataLoaderError(String error) {
-        if (fragment instanceof SelectDataTypeFragment){
-            SelectDataTypeFragment selectDataTypeFragment = (SelectDataTypeFragment) fragment;
-            selectDataTypeFragment.loadError(error);
+    override fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?) {
+        val items = dataItems ?: ArrayList()
+        if (items.isEmpty() && documentType != Constants.CACHED_DOCUMENTS) {
+            Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show()
         }
-        if (fragment instanceof DocumentsListFragment) {
-            DocumentsListFragment documentsListFragment = (DocumentsListFragment) fragment;
-            documentsListFragment.loadError(error);
-        }else{
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        if (fragment is DocumentsListFragment) {
+            val documentsListFragment = fragment as DocumentsListFragment
+            documentsListFragment.loadListData(items)
+            if (documentType == Constants.CACHED_DOCUMENTS) {
+                floatingActionButton!!.hide()
+            } else {
+                floatingActionButton!!.show()
+            }
         }
-    }
-
-    @Override
-    public void onListScrolled(int dy) {
-        if (dy > 0 && floatingActionButton.getVisibility() == View.VISIBLE) {
-            floatingActionButton.hide();
-        }else if (dy < 0 && floatingActionButton.getVisibility() != View.VISIBLE){
-            floatingActionButton.show();
+        if (fragment is SelectDataTypeFragment) {
+            val selectDataTypeFragment = fragment as SelectDataTypeFragment
+            selectDataTypeFragment.loadListData(items)
         }
     }
 
-    private void fabOnClickAction(){
-        Intent intent = new Intent(this, DocumentActivity.class);
-        DataBaseItem documentDataItem = new DataBaseItem();
-        documentDataItem.newDocumentDataItem(documentType);
-        intent.putExtra("cacheKey", cache.put(documentDataItem));
-        startActivity(intent);
+    override fun onDataLoaderError(error: String?) {
+        if (fragment is SelectDataTypeFragment) {
+            val selectDataTypeFragment = fragment as SelectDataTypeFragment
+            selectDataTypeFragment.loadError(error)
+        }
+        if (fragment is DocumentsListFragment) {
+            val documentsListFragment = fragment as DocumentsListFragment
+            documentsListFragment.loadError(error)
+        } else {
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onListScrolled(dy: Int) {
+        if (dy > 0 && floatingActionButton!!.visibility == View.VISIBLE) {
+            floatingActionButton!!.hide()
+        } else if (dy < 0 && floatingActionButton!!.visibility != View.VISIBLE) {
+            floatingActionButton!!.show()
+        }
+    }
+
+    private fun fabOnClickAction() {
+        val intent = Intent(this, DocumentActivity::class.java)
+        val documentDataItem = DataBaseItem()
+        documentDataItem.newDocumentDataItem(documentType)
+        intent.putExtra("cacheKey", cache.put(documentDataItem))
+        startActivity(intent)
     }
 }

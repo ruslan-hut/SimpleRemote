@@ -1,101 +1,99 @@
-package ua.com.programmer.simpleremote.specialItems;
+package ua.com.programmer.simpleremote.specialItems
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import ua.com.programmer.simpleremote.utility.Utils
+import java.util.Objects
 
-import java.util.Objects;
+class DocumentField {
+    private var meta: String? = null
+    var type: String? = null
+    var name: String? = null
+    var description: String? = null
+    var code: String? = null
+    var value: String? = null
 
-import ua.com.programmer.simpleremote.utility.Utils;
+    private val utils = Utils()
 
-public class DocumentField {
+    constructor(init: String) {
+        setDefaults()
 
-    private String meta;
-    public String type;
-    public String name;
-    public String description;
-    public String code;
-    public String value;
-
-    private final Utils utils = new Utils();
-
-    public DocumentField(String init){
-        setDefaults();
-
-        if (init.equals("")) return;
+        if (init == "") return
 
         try {
-            JSONObject jsonObject = new JSONObject(init);
-            initializeFromJSON(jsonObject);
-        }catch (JSONException ex){
-            utils.log("e", "DocumentField init from string: "+ex.toString());
+            val jsonObject = JSONObject(init)
+            initializeFromJSON(jsonObject)
+        } catch (ex: JSONException) {
+            utils.log("e", "DocumentField init from string: $ex")
         }
     }
 
-    public DocumentField(JSONObject jsonObject){
-        setDefaults();
-        initializeFromJSON(jsonObject);
+    constructor(jsonObject: JSONObject) {
+        setDefaults()
+        initializeFromJSON(jsonObject)
     }
 
-    private void setDefaults(){
-        meta = "unknown";
-        type = "";
-        name = "";
-        description = "";
-        code = "";
-        value = "";
+    private fun setDefaults() {
+        meta = "unknown"
+        type = ""
+        name = ""
+        description = ""
+        code = ""
+        value = ""
     }
 
-    private void initializeFromJSON(JSONObject jsonObject){
-        JSONArray columnNames = jsonObject.names();
-        for (int i = 0; i < Objects.requireNonNull(columnNames).length(); i++) {
+    private fun initializeFromJSON(jsonObject: JSONObject) {
+        val columnNames = jsonObject.names()
+        for (i in 0 until Objects.requireNonNull<JSONArray?>(columnNames).length()) {
             try {
-                String columnName = columnNames.getString(i);
-                String elementValue = jsonObject.getString(columnName);
+                val columnName = columnNames!!.getString(i)
+                val elementValue = jsonObject.getString(columnName)
 
-                if (columnName.equals("meta")) meta = elementValue;
-                if (columnName.equals("name")) name = elementValue;
-                if (columnName.equals("type")) type = elementValue;
-                if (columnName.equals("description")) description = elementValue;
-                if (columnName.equals("code")) code = elementValue;
-                if (columnName.equals("value")) value = elementValue;
-
-            }catch (JSONException ex){
-                utils.log("e", "DocumentField init from JSON: "+ex.toString());
+                if (columnName == "meta") meta = elementValue
+                if (columnName == "name") name = elementValue
+                if (columnName == "type") type = elementValue
+                if (columnName == "description") description = elementValue
+                if (columnName == "code") code = elementValue
+                if (columnName == "value") value = elementValue
+            } catch (ex: JSONException) {
+                utils.log("e", "DocumentField init from JSON: $ex")
             }
         }
     }
 
-    public String getNamedValue(){
-        return description+": "+value;
+    fun getNamedValue(): String {
+        return "$description: $value"
     }
 
-    public boolean hasValue(){
-        return !value.equals("");
+    fun hasValue(): Boolean {
+        return value != ""
     }
 
-    public boolean isReal() { return !name.equals(""); }
+    fun isReal(): Boolean {
+        return name != ""
+    }
 
-    public String asString(){
-        JSONObject jsonObject = new JSONObject();
-        try{
-            jsonObject.put("meta",meta);
-            jsonObject.put("type",type);
-            jsonObject.put("name",name);
-            jsonObject.put("description",description);
-            jsonObject.put("code",code);
-            jsonObject.put("value",value);
-        }catch (JSONException ex){
-            utils.log("e","DocumentField:asString: "+ex.toString());
+    fun asString(): String {
+        val jsonObject = JSONObject()
+        try {
+            jsonObject.put("meta", meta)
+            jsonObject.put("type", type)
+            jsonObject.put("name", name)
+            jsonObject.put("description", description)
+            jsonObject.put("code", code)
+            jsonObject.put("value", value)
+        } catch (ex: JSONException) {
+            utils.log("e", "DocumentField:asString: $ex")
         }
-        return jsonObject.toString();
+        return jsonObject.toString()
     }
 
-    public boolean isCatalog(){
-        return meta.equals("reference");
+    fun isCatalog(): Boolean {
+        return meta == "reference"
     }
 
-    public boolean isDate(){
-        return meta.equals("date");
+    fun isDate(): Boolean {
+        return meta == "date"
     }
 }

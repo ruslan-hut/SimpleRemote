@@ -1,61 +1,60 @@
-package ua.com.programmer.simpleremote.specialItems;
+package ua.com.programmer.simpleremote.specialItems
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.HashMap
+import java.util.UUID
 
-public class Cache {
-
-    private static DataBaseItem itemHolder;
-    private static final HashMap<String, DataBaseItem> map = new HashMap<>();
-    private static String fragmentTAG;
-    private static Cache cache;
-
-    private Cache(){}
-
-    public static Cache getInstance(){
-        if (cache == null) cache = new Cache();
-        return cache;
+class Cache private constructor() {
+    fun setItemHolder(item: DataBaseItem?) {
+        itemHolder = item
     }
 
-    public void setItemHolder(DataBaseItem item){
-        itemHolder = item;
-    }
-
-    public DataBaseItem getItemHolder(){
-        if (itemHolder == null){
-            itemHolder = new DataBaseItem();
+    fun getItemHolder(): DataBaseItem {
+        if (itemHolder == null) {
+            itemHolder = DataBaseItem()
         }
-        return itemHolder;
+        return itemHolder!!
     }
 
-    public String put(DataBaseItem dataBaseItem){
-        String key = UUID.randomUUID().toString();
-        map.put(key, dataBaseItem);
-        return key;
+    fun put(dataBaseItem: DataBaseItem?): String {
+        val key = UUID.randomUUID().toString()
+        map.put(key, dataBaseItem)
+        return key
     }
 
-    public DataBaseItem get(String key){
-        if (key != null && map.containsKey(key)){
-            DataBaseItem item = map.get(key);
-            if (item != null){
-                return item;
+    fun get(key: String?): DataBaseItem {
+        if (key != null && map.containsKey(key)) {
+            val item: DataBaseItem? = map.get(key)
+            if (item != null) {
+                return item
             }
         }
-        return new DataBaseItem();
+        return DataBaseItem()
     }
 
-    public void clear(){
-        map.clear();
+    fun clear() {
+        map.clear()
     }
 
-    public String getFragmentTAG(){
-        if (fragmentTAG == null){
-            fragmentTAG = "";
+    fun getFragmentTAG(): String {
+        if (fragmentTAG == null) {
+            fragmentTAG = ""
         }
-        return fragmentTAG;
+        return fragmentTAG!!
     }
 
-    public void setFragmentTAG(String tag){
-        fragmentTAG = tag;
+    fun setFragmentTAG(tag: String?) {
+        fragmentTAG = tag
+    }
+
+    companion object {
+        private var itemHolder: DataBaseItem? = null
+        private val map = HashMap<String?, DataBaseItem?>()
+        private var fragmentTAG: String? = null
+        private var cache: Cache? = null
+
+        fun getInstance(): Cache {
+            if (cache == null) cache = Cache()
+            return cache!!
+        }
     }
 }

@@ -1,157 +1,147 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
+
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ua.com.programmer.simpleremote.settings.AppSettings
+import ua.com.programmer.simpleremote.settings.Constants
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import java.lang.RuntimeException
+import java.util.ArrayList
 
 
-import android.content.Context;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+class SelectDataTypeFragment : Fragment() {
+    private var listener: OnFragmentInteractionListener? = null
+    private var dataTypeClass: String? = null
+    private var context: Context? = null
+    private var adapter: Adapter? = null
 
-import java.util.ArrayList;
-
-import ua.com.programmer.simpleremote.settings.AppSettings;
-import ua.com.programmer.simpleremote.settings.Constants;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-
-public class SelectDataTypeFragment extends Fragment {
-
-    private static final String DATA_TYPE_CLASS = "data_type_class";
-
-    private OnFragmentInteractionListener listener;
-    private String dataTypeClass;
-    private Context context;
-    private Adapter adapter;
-
-    public SelectDataTypeFragment() {}
-
-    static SelectDataTypeFragment newInstance(String dataTypeClass) {
-        SelectDataTypeFragment fragment = new SelectDataTypeFragment();
-        Bundle args = new Bundle();
-        args.putString(DATA_TYPE_CLASS, dataTypeClass);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            dataTypeClass = getArguments().getString(DATA_TYPE_CLASS);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            dataTypeClass = requireArguments().getString(DATA_TYPE_CLASS)
         }
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val fragmentView = inflater.inflate(R.layout.fragment_select_data_type, container, false)
 
-        View fragmentView = inflater.inflate(R.layout.fragment_select_data_type, container, false);
-
-        RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler);
+        val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.recycler)
         //recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new SelectDataTypeFragment.Adapter();
-        recyclerView.setAdapter(adapter);
+        val linearLayoutManager = LinearLayoutManager(context)
+        recyclerView.setLayoutManager(linearLayoutManager)
+        adapter = Adapter()
+        recyclerView.setAdapter(adapter)
 
-        if (dataTypeClass.equals(Constants.CATALOGS)){
-            adapter.loadListItems(AppSettings.getAllowedCatalogs());
+        if (dataTypeClass == Constants.CATALOGS) {
+            adapter!!.loadListItems(AppSettings.getAllowedCatalogs())
         }
-        if (dataTypeClass.equals(Constants.DOCUMENTS)){
-            adapter.loadListItems(AppSettings.getAllowedDocuments());
+        if (dataTypeClass == Constants.DOCUMENTS) {
+            adapter!!.loadListItems(AppSettings.getAllowedDocuments())
         }
 
-        return fragmentView;
+        return fragmentView
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof DocumentsListFragment.OnFragmentInteractionListener) {
-            listener = (SelectDataTypeFragment.OnFragmentInteractionListener) context;
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is DocumentsListFragment.OnFragmentInteractionListener) {
+            listener = context as OnFragmentInteractionListener
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw RuntimeException(
+                context.toString()
+                        + " must implement OnFragmentInteractionListener"
+            )
         }
-        this.context = context;
+        this.context = context
     }
 
-    void loadListData(ArrayList<DataBaseItem> items){
-        adapter.loadListItems(items);
+    fun loadListData(items: ArrayList<DataBaseItem?>) {
+        adapter!!.loadListItems(items)
     }
 
-    void loadError(String error){
-        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+    fun loadError(error: String?) {
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
     }
 
-    private void onListItemClick(int position){
-        if (listener != null){
-            listener.onFragmentInteraction(adapter.getListItem(position));
-        }
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(DataBaseItem currentListItem);
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-
-        TextView tvDescription;
-
-        ViewHolder(View view){
-            super(view);
-            tvDescription = view.findViewById(R.id.item_description);
-        }
-
-        void setItemInfo(DataBaseItem dataBaseItem){
-            tvDescription.setText(dataBaseItem.getString("description"));
+    private fun onListItemClick(position: Int) {
+        if (listener != null) {
+            listener!!.onFragmentInteraction(adapter!!.getListItem(position))
         }
     }
 
-    class Adapter extends RecyclerView.Adapter<SelectDataTypeFragment.ViewHolder>{
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction(currentListItem: DataBaseItem?)
+    }
 
-        private final ArrayList<DataBaseItem> listItems = new ArrayList<>();
+    internal class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var tvDescription: TextView = view.findViewById<TextView>(R.id.item_description)
 
-        void loadListItems(ArrayList<DataBaseItem> values){
-            listItems.clear();
-            listItems.addAll(values);
-            notifyDataSetChanged();
+        fun setItemInfo(dataBaseItem: DataBaseItem) {
+            tvDescription.text = dataBaseItem.getString("description")
+        }
+    }
+
+    internal inner class Adapter : RecyclerView.Adapter<ViewHolder?>() {
+        private val listItems = ArrayList<DataBaseItem?>()
+
+        fun loadListItems(values: ArrayList<DataBaseItem?>) {
+            listItems.clear()
+            listItems.addAll(values)
+            notifyDataSetChanged()
         }
 
-        DataBaseItem getListItem(int position){
-            if (position < getItemCount()){
-                return listItems.get(position);
+        fun getListItem(position: Int): DataBaseItem? {
+            if (position < itemCount) {
+                return listItems[position]
             }
-            return new DataBaseItem();
+            return DataBaseItem()
         }
 
-        @NonNull
-        @Override
-        public SelectDataTypeFragment.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.select_list_item,parent,false);
-            return new ViewHolder(view);
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.select_list_item, parent, false)
+            return ViewHolder(view)
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull SelectDataTypeFragment.ViewHolder holder, int position) {
-            holder.setItemInfo(getListItem(position));
-            holder.itemView.setOnClickListener((View v) -> onListItemClick(position));
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.setItemInfo(getListItem(position)!!)
+            holder.itemView.setOnClickListener(View.OnClickListener { v: View? ->
+                onListItemClick(
+                    position
+                )
+            })
         }
 
-        @Override
-        public int getItemCount() {
-            return listItems.size();
+        override fun getItemCount(): Int {
+            return listItems.size
         }
     }
 
+    companion object {
+        private const val DATA_TYPE_CLASS = "data_type_class"
+
+        @JvmStatic
+        fun newInstance(dataTypeClass: String?): SelectDataTypeFragment {
+            val fragment = SelectDataTypeFragment()
+            val args = Bundle()
+            args.putString(DATA_TYPE_CLASS, dataTypeClass)
+            fragment.setArguments(args)
+            return fragment
+        }
+    }
 }

@@ -1,99 +1,104 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import ua.com.programmer.simpleremote.settings.AppSettings
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.utility.Utils
+import java.util.ArrayList
 
-import java.util.ArrayList;
+class SqliteDB private constructor() {
+    private val utils = Utils()
 
-import ua.com.programmer.simpleremote.settings.AppSettings;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.Utils;
-
-public class SqliteDB {
-
-    private static SQLiteDatabase database;
-
-    private static SqliteDB db;
-    private static int connectionID;
-
-    private final Utils utils = new Utils();
-
-    private SqliteDB(){}
-
-    public static SqliteDB getInstance(Context context){
-        if (db == null){
-            db = new SqliteDB();
-            connectionID = AppSettings.getInstance(context).getConnectionID();
-        }
-        if (database == null){
-            SqliteDatabaseHelper sqliteDatabaseHelper = new SqliteDatabaseHelper(context);
-            database = sqliteDatabaseHelper.getWritableDatabase();
-        }
-        return db;
-    }
-
-    ArrayList<DataBaseItem> getConnections(){
-        ArrayList<DataBaseItem> resultArray = new ArrayList<>();
-        Cursor cursor = database.query("connections",null,null,null,null,null,null);
-        if (cursor != null && cursor.moveToFirst()){
+    fun getConnections(): ArrayList<DataBaseItem?> {
+        val resultArray = ArrayList<DataBaseItem?>()
+        val cursor = database!!.query("connections", null, null, null, null, null, null)
+        if (cursor.moveToFirst()) {
             do {
-                resultArray.add(new DataBaseItem(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
+                resultArray.add(DataBaseItem(cursor))
+            } while (cursor.moveToNext())
+            cursor.close()
         }
-        return resultArray;
+        return resultArray
     }
 
-    public void updateSettings(DataBaseItem item){
-        String alias = item.getString("alias");
-        if (alias.equals("")){
-            return;
+    fun updateSettings(item: DataBaseItem) {
+        val alias = item.getString("alias")
+        if (alias == "") {
+            return
         }
-        Cursor cursor = database.query("connections", null, "alias=?",new String[]{alias}, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            database.update("connections", item.getValues(), "alias=?", new String[]{alias});
-            cursor.close();
-        }else {
-            database.insert("connections", null, item.getValues());
-        }
-    }
-
-    public void deleteSettings(String alias){
-        database.delete("connections","alias=?",new String[]{alias});
-    }
-
-    void cacheData(String guid,String data){
-        ContentValues cv = new ContentValues();
-        cv.put("guid",guid);
-        cv.put("data",data);
-        cv.put("time",utils.currentDate());
-        cv.put("connection_id",connectionID);
-        String[] whereArgs = new String[]{guid};
-        Cursor cursor = database.query("cache",null,"guid=?",whereArgs,null,null,null);
-        if (cursor != null && cursor.moveToFirst()) {
-            database.update("cache", cv, "guid=?", whereArgs);
-            cursor.close();
-        }else {
-            database.insert("cache", null,cv);
+        val cursor = database!!.query(
+            "connections",
+            null,
+            "alias=?",
+            arrayOf<String>(alias),
+            null,
+            null,
+            null
+        )
+        if (cursor.moveToFirst()) {
+            database!!.update("connections", item.getValues(), "alias=?", arrayOf<String>(alias))
+            cursor.close()
+        } else {
+            database!!.insert("connections", null, item.getValues())
         }
     }
 
-    void deleteCachedData(String guid){
-        database.delete("cache","guid=?",new String[]{guid});
+    fun deleteSettings(alias: String?) {
+        database!!.delete("connections", "alias=?", arrayOf<String?>(alias))
     }
 
-    ArrayList<DataBaseItem> getCachedDataList(){
-        ArrayList<DataBaseItem> resultArray = new ArrayList<>();
-        Cursor cursor = database.query("cache",null,"connection_id="+connectionID,null,null,null,null);
-        if (cursor != null && cursor.moveToFirst()){
+    fun cacheData(guid: String?, data: String?) {
+        val cv = ContentValues()
+        cv.put("guid", guid)
+        cv.put("data", data)
+        cv.put("time", utils.currentDate())
+        cv.put("connection_id", connectionID)
+        val whereArgs = arrayOf<String?>(guid)
+        val cursor = database!!.query("cache", null, "guid=?", whereArgs, null, null, null)
+        if (cursor.moveToFirst()) {
+            database!!.update("cache", cv, "guid=?", whereArgs)
+            cursor.close()
+        } else {
+            database!!.insert("cache", null, cv)
+        }
+    }
+
+    fun deleteCachedData(guid: String?) {
+        database!!.delete("cache", "guid=?", arrayOf<String?>(guid))
+    }
+
+    fun getCachedDataList(): ArrayList<DataBaseItem?> {
+        val resultArray = ArrayList<DataBaseItem?>()
+        val cursor =
+            database!!.query("cache", null, "connection_id=$connectionID", null, null, null, null)
+        if (cursor.moveToFirst()) {
             do {
-                resultArray.add(new DataBaseItem(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
+                resultArray.add(DataBaseItem(cursor))
+            } while (cursor.moveToNext())
+            cursor.close()
         }
-        return resultArray;
+        return resultArray
     }
 
+    companion object {
+        private var database: SQLiteDatabase? = null
+
+        private var db: SqliteDB? = null
+        private var connectionID = 0
+
+        @JvmStatic
+        fun getInstance(context: Context?): SqliteDB? {
+            if (db == null) {
+                db = SqliteDB()
+                connectionID = AppSettings.getInstance(context)?.getConnectionID() ?: 0
+            }
+            if (database == null) {
+                val sqliteDatabaseHelper = SqliteDatabaseHelper(context)
+                database = sqliteDatabaseHelper.writableDatabase
+            }
+            return db
+        }
+    }
 }

@@ -1,230 +1,209 @@
-package ua.com.programmer.simpleremote;
+package ua.com.programmer.simpleremote
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
+import android.Manifest
+import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import com.google.common.util.concurrent.ListenableFuture
+import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.specialItems.Cache
+import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.utility.BarcodeFoundListener
+import ua.com.programmer.simpleremote.utility.BarcodeImageAnalyzer
+import ua.com.programmer.simpleremote.utility.Utils
+import java.lang.Exception
+import java.util.ArrayList
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+class ScannerActivity : AppCompatActivity(), DataLoaderListener {
+    private var cameraView: PreviewView? = null
+    private var cameraProvider: ListenableFuture<ProcessCameraProvider>? = null
+    private var cameraExecutor: ExecutorService? = null
 
-import com.google.common.util.concurrent.ListenableFuture;
+    private var textValue: TextView? = null
+    private var textDescription: TextView? = null
+    private var progressBar: ProgressBar? = null
+    private var dataBaseItem: DataBaseItem? = null
+    private var documentGUID: String? = null
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+    private val utils = Utils()
 
-import ua.com.programmer.simpleremote.specialItems.Cache;
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
-import ua.com.programmer.simpleremote.utility.BarcodeFoundListener;
-import ua.com.programmer.simpleremote.utility.BarcodeImageAnalyzer;
-import ua.com.programmer.simpleremote.utility.Utils;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_scanner)
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.header_scanner)
 
-public class ScannerActivity extends AppCompatActivity implements DataLoader.DataLoaderListener{
+        val intent = getIntent()
+        documentGUID = intent.getStringExtra("document")
 
-    private PreviewView cameraView;
-    private ListenableFuture<ProcessCameraProvider> cameraProvider;
-    private ExecutorService cameraExecutor;
+        textValue = findViewById<TextView>(R.id.text_value)
+        textDescription = findViewById<TextView>(R.id.text_item_description)
+        textDescription!!.text = ""
+        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
 
-    private TextView textValue;
-    private TextView textDescription;
-    private ProgressBar progressBar;
-    private DataBaseItem dataBaseItem;
-    private String documentGUID;
-
-    private final Utils utils = new Utils();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        setTitle(R.string.header_scanner);
-
-        Intent intent = getIntent();
-        documentGUID = intent.getStringExtra("document");
-
-        textValue = findViewById(R.id.text_value);
-        textDescription = findViewById(R.id.text_item_description);
-        textDescription.setText("");
-        progressBar = findViewById(R.id.progress_bar);
-
-        cameraExecutor = Executors.newSingleThreadExecutor();
-        cameraView = findViewById(R.id.camera_view);
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        cameraView = findViewById<PreviewView>(R.id.camera_view)
         try {
-            cameraProvider = ProcessCameraProvider.getInstance(this);
-        }catch (Exception e){
-            utils.debug("ScannerActivity: create camera provider: "+e);
+            cameraProvider = ProcessCameraProvider.getInstance(this)
+        } catch (e: Exception) {
+            utils.debug("ScannerActivity: create camera provider: $e")
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-            }else {
-                setupCamera();
-            }
-        }else {
-            setupCamera();
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf<String>(Manifest.permission.CAMERA), 1)
+        } else {
+            setupCamera()
         }
 
-        TextView buttonRepeat = findViewById(R.id.button_repeat);
-        buttonRepeat.setOnClickListener((View v) -> startCamera());
+        val buttonRepeat = findViewById<TextView>(R.id.button_repeat)
+        buttonRepeat.setOnClickListener(View.OnClickListener { v: View? -> startCamera() })
 
-        TextView buttonConfirm = findViewById(R.id.button_confirm);
-        buttonConfirm.setOnClickListener((View v) -> confirmAddItem());
-
+        val buttonConfirm = findViewById<TextView>(R.id.button_confirm)
+        buttonConfirm.setOnClickListener(View.OnClickListener { v: View? -> confirmAddItem() })
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            finish();
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            finish()
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private void setupCamera(){
-
-        if (cameraProvider == null){
-            Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+    private fun setupCamera() {
+        if (cameraProvider == null) {
+            Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
-        BarcodeImageAnalyzer barcodeImageAnalyzer = new BarcodeImageAnalyzer(new BarcodeFoundListener() {
-            @Override
-            public void onBarcodeFound(String barCode, int format) {
-                onBarcodeReceived(barCode);
+        val barcodeImageAnalyzer = BarcodeImageAnalyzer(object : BarcodeFoundListener {
+            override fun onBarcodeFound(barCode: String?, format: Int) {
+                onBarcodeReceived(barCode)
             }
 
-            @Override
-            public void onCodeNotFound(String error) {
-                utils.debug("BarcodeImageAnalyzer onCodeNotFound; "+error);
+            override fun onCodeNotFound(error: String?) {
+                utils.debug("BarcodeImageAnalyzer onCodeNotFound; $error")
             }
-        });
+        })
 
-        cameraProvider.addListener(() -> {
+        cameraProvider!!.addListener(Runnable {
             try {
-                ProcessCameraProvider provider = cameraProvider.get();
-                Preview preview = new Preview.Builder()
-                        .build();
-                preview.setSurfaceProvider(cameraView.getSurfaceProvider());
+                val provider = cameraProvider!!.get()
+                val preview = Preview.Builder()
+                    .build()
+                preview.surfaceProvider = cameraView!!.getSurfaceProvider()
 
-                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                        .build();
-                imageAnalysis.setAnalyzer(cameraExecutor, barcodeImageAnalyzer);
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .build()
+                imageAnalysis.setAnalyzer(cameraExecutor!!, barcodeImageAnalyzer)
 
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                try{
-                    provider.unbindAll();
-                    provider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
-                }catch (Exception e){
-                    utils.error("provider.bindToLifecycle; "+e.getMessage());
+                try {
+                    provider.unbindAll()
+                    provider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview)
+                } catch (e: Exception) {
+                    utils.error("provider.bindToLifecycle; " + e.message)
                 }
-
-            } catch (Exception e) {
-                utils.error("cameraProvider.addListener; " + e.getMessage());
+            } catch (e: Exception) {
+                utils.error("cameraProvider.addListener; " + e.message)
             }
-        }, ContextCompat.getMainExecutor(this));
-
+        }, ContextCompat.getMainExecutor(this))
     }
 
-    private void startCamera(){
-        dataBaseItem = null;
-        textValue.setText("");
-        textDescription.setText("");
+    private fun startCamera() {
+        dataBaseItem = null
+        textValue!!.text = ""
+        textDescription!!.text = ""
         try {
-            textValue.setText(R.string.scanning);
-            setupCamera();
-        }catch (SecurityException se) {
-            textValue.setText(R.string.error_no_permission);
-        }catch (Exception e){
-            textValue.setText(e.toString());
+            textValue!!.setText(R.string.scanning)
+            setupCamera()
+        } catch (_: SecurityException) {
+            textValue!!.setText(R.string.error_no_permission)
+        } catch (e: Exception) {
+            textValue!!.text = e.toString()
         }
     }
 
-    private void stopCamera(){
+    private fun stopCamera() {
         try {
-            cameraProvider.get().unbindAll();
-        }catch (Exception e){
-            utils.debug("Unbind camera provider; "+e.getMessage());
+            cameraProvider!!.get().unbindAll()
+        } catch (e: Exception) {
+            utils.debug("Unbind camera provider; " + e.message)
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) onBackPressed();
-        return super.onOptionsItemSelected(item);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public void onDataLoaded(ArrayList<DataBaseItem> dataItems) {
-        progressBar.setVisibility(View.GONE);
-        if (dataItems.size() > 0) {
-            dataBaseItem = dataItems.get(0);
-            textDescription.setText(dataBaseItem.getString("description"));
-            textDescription.setTextColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
-            confirmAddItem();
-        }else {
-            dataBaseItem = null;
-            textDescription.setText(R.string.warn_no_barcode);
-            textDescription.setTextColor(ContextCompat.getColor(this,R.color.colorAccent));
+    override fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?) {
+        progressBar!!.visibility = View.GONE
+        val items = dataItems ?: ArrayList()
+        if (items.isNotEmpty()) {
+            dataBaseItem = items[0]
+            textDescription!!.text = dataBaseItem!!.getString("description")
+            textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            confirmAddItem()
+        } else {
+            dataBaseItem = null
+            textDescription!!.setText(R.string.warn_no_barcode)
+            textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
         }
-
     }
 
-    @Override
-    public void onDataLoaderError(String error) {
-        progressBar.setVisibility(View.GONE);
-        Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show();
+    override fun onDataLoaderError(error: String?) {
+        progressBar!!.visibility = View.GONE
+        Toast.makeText(this, R.string.toast_error, Toast.LENGTH_SHORT).show()
     }
 
-    private void onBarcodeReceived(String barcodeValue){
-        stopCamera();
+    private fun onBarcodeReceived(barcodeValue: String?) {
+        stopCamera()
 
-        ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
-        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP);
+        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
 
-        textValue.setText(barcodeValue);
-        progressBar.setVisibility(View.VISIBLE);
+        textValue!!.text = barcodeValue
+        progressBar!!.visibility = View.VISIBLE
 
-        DataBaseItem barcodeParameters = new DataBaseItem();
-        barcodeParameters.put("value",barcodeValue);
-        barcodeParameters.put("guid",documentGUID);
+        val barcodeParameters = DataBaseItem()
+        barcodeParameters.put("value", barcodeValue)
+        barcodeParameters.put("guid", documentGUID)
 
-        DataLoader dataLoader = new DataLoader(this);
-        dataLoader.getItemWithBarcode(barcodeParameters);
+        val dataLoader = DataLoader(this)
+        dataLoader.getItemWithBarcode(barcodeParameters)
     }
 
-    private void confirmAddItem(){
-        Intent intent = getIntent();
+    private fun confirmAddItem() {
+        val intent = getIntent()
         if (dataBaseItem != null) {
-            intent.putExtra("cacheKey", Cache.getInstance().put(dataBaseItem));
-        }else{
-            intent.putExtra("cacheKey", "");
+            intent.putExtra("cacheKey", Cache.getInstance().put(dataBaseItem))
+        } else {
+            intent.putExtra("cacheKey", "")
         }
-        setResult(RESULT_OK, intent);
-        finish();
+        setResult(RESULT_OK, intent)
+        finish()
     }
-
 }
