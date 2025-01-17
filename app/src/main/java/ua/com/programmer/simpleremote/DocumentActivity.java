@@ -722,6 +722,7 @@ public class DocumentActivity extends AppCompatActivity implements DataLoader.Da
 
     private void onBarcodeReceived() {
         if (!barcode.isEmpty()) {
+            //utils.debug("onBarcodeReceived: "+barcode);
             progressBar.setVisibility(View.VISIBLE);
 
             DataBaseItem barcodeParameters = new DataBaseItem();

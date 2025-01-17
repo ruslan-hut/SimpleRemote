@@ -69,25 +69,20 @@
                         android:text="@string/sample_text"/>
                 </LinearLayout>
 
-
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:id="@+id/item_company"
-                        android:textColor="@color/colorGrey"
-                        android:text="@string/sample_text"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/item_warehouse"
-                        android:textColor="@color/colorGrey"
-                        android:text="@string/sample_text"/>
-                </LinearLayout>
+                    android:id="@+id/item_company"
+                    android:maxLines="1"
+                    android:textColor="@color/colorGrey"
+                    android:text="@string/sample_text"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/item_warehouse"
+                    android:maxLines="1"
+                    android:textColor="@color/colorGrey"
+                    android:text="@string/sample_text"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -95,6 +90,7 @@
                     android:id="@+id/item_contractor"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold"
+                    android:maxLines="1"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -102,23 +98,27 @@
                     android:id="@+id/item_field1"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold"
+                    android:maxLines="1"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field2"
+                    android:maxLines="1"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field3"
+                    android:maxLines="1"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field4"
+                    android:maxLines="1"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/sample_text"/>
                 <LinearLayout

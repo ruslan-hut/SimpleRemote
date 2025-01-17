@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
     @Override
     public void onDataLoaded(ArrayList<DataBaseItem> dataItems) {
         progressBar.setVisibility(View.INVISIBLE);
-        if (dataItems.size() > 0) {
+        if (!dataItems.isEmpty()) {
             if (checkServerResponse(dataItems.get(0))) {
                 setResult(1);
                 finish();
@@ -165,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
     }
 
     private void connect(){
-        if (appSettings.getServerAddress().equals("")) {
+        if (appSettings.getServerAddress().isEmpty()) {
             Toast.makeText(this, R.string.error_no_address, Toast.LENGTH_SHORT).show();
         }else {
             progressBar.setVisibility(View.VISIBLE);
@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
             utils.error("checkServerResponse: "+e);
             utils.error("response: "+response.getAsJSON());
         }
-        if (documentsList.size() > 0){
+        if (!documentsList.isEmpty()){
             DataBaseItem cacheList = new DataBaseItem();
             cacheList.put("description",getResources().getString(R.string.cached_list));
             cacheList.put("code", Constants.CACHED_DOCUMENTS);
