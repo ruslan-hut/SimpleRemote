@@ -32,10 +32,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONArray
 import org.json.JSONObject
-import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
 import ua.com.programmer.simpleremote.DocumentActivity.ContentAdapter
 import ua.com.programmer.simpleremote.DocumentActivity.ContentViewHolder
 import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.repository.DataLoader
 import ua.com.programmer.simpleremote.settings.AppSettings
 import ua.com.programmer.simpleremote.settings.Constants
 import ua.com.programmer.simpleremote.specialItems.Cache

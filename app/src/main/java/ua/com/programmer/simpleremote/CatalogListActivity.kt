@@ -25,7 +25,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import ua.com.programmer.simpleremote.CatalogListActivity.CatalogListAdapter
 import ua.com.programmer.simpleremote.CatalogListActivity.CatalogViewHolder
-import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.repository.DataLoader
+import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
 import ua.com.programmer.simpleremote.settings.Constants
 import ua.com.programmer.simpleremote.specialItems.Cache
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem

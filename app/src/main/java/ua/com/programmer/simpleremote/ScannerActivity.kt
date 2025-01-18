@@ -18,7 +18,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
-import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.repository.DataLoader
+import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
 import ua.com.programmer.simpleremote.specialItems.Cache
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem
 import ua.com.programmer.simpleremote.utility.BarcodeFoundListener

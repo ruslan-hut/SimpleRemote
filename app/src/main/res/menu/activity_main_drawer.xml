@@ -7,7 +7,7 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/nav_documents"
+                    android:id="@+id/selectDataTypeFragment"
                     android:icon="@drawable/baseline_list_24"
                     android:title="@string/header_documents" />
                 <item

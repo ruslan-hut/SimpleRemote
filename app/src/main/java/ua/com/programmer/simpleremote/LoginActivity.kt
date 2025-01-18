@@ -16,9 +16,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import org.json.JSONArray
-import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
+import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
 import ua.com.programmer.simpleremote.LoginActivity.ConnectionsSpinnerAdapter
 import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.repository.DataLoader
 import ua.com.programmer.simpleremote.settings.AppSettings
 import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity
 import ua.com.programmer.simpleremote.settings.Constants

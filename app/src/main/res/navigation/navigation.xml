@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    app:startDestination="@id/selectDataTypeFragment">
+
+    <fragment
+        android:id="@+id/selectDataTypeFragment"
+        android:name="ua.com.programmer.simpleremote.ui.selector.SelectDataTypeFragment"
+        android:label="@string/header_documents" />
+</navigation>

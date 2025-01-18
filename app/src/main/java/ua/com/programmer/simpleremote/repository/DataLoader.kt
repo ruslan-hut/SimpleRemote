@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.repository
 
 import android.content.Context
 import android.util.Base64
@@ -12,19 +12,17 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import ua.com.programmer.simpleremote.DataLoader.DataLoaderListener
-import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.SqliteDB
 import ua.com.programmer.simpleremote.settings.AppSettings
 import ua.com.programmer.simpleremote.settings.Constants
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem
 import ua.com.programmer.simpleremote.specialItems.DocumentField
 import ua.com.programmer.simpleremote.utility.Utils
 import java.lang.Exception
-import java.util.ArrayList
-import java.util.HashMap
 import java.util.UUID
 
-internal class DataLoader(context: Context) {
+class DataLoader(context: Context) {
     private var USER_PASSWORD: String? = null
     private var SERVER_URL: String? = null
     private val USER_ID: String?
@@ -38,7 +36,7 @@ internal class DataLoader(context: Context) {
     private val textConnectionError: String
 
     interface DataLoaderListener {
-        fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?)
+        fun onDataLoaded(dataItems: java.util.ArrayList<DataBaseItem?>?)
         fun onDataLoaderError(error: String?)
     }
 
@@ -49,9 +47,9 @@ internal class DataLoader(context: Context) {
             currentRequestTAG = UUID.randomUUID().toString()
         }
 
-        database = getInstance(context)
+        database = SqliteDB.Companion.getInstance(context)
 
-        appSettings = AppSettings.getInstance(context)!!
+        appSettings = AppSettings.Companion.getInstance(context)!!
         if (appSettings.demoMode()) {
             USER_PASSWORD = "Помощник:12qwaszx"
             SERVER_URL = "http://hoot.com.ua/simple/hs/rc"
@@ -66,7 +64,7 @@ internal class DataLoader(context: Context) {
         textConnectionError = context.getString(R.string.error_unknown)
     }
 
-    private fun authHeaders(): HashMap<String?, String?> {
+    private fun authHeaders(): java.util.HashMap<String?, String?> {
         val headers = HashMap<String?, String?>()
         val auth = "Basic " + Base64.encodeToString(USER_PASSWORD!!.toByteArray(), Base64.NO_WRAP)
         headers.put("Authorization", auth)
@@ -81,7 +79,7 @@ internal class DataLoader(context: Context) {
 
         val responseString = response.toString()
         if (responseString.length < 500) {
-            utils.debug("<<< " + responseString)
+            utils.debug("<<< $responseString")
         } else {
             utils.debug("<<< " + responseString.substring(0, 500) + "...")
         }
@@ -194,7 +192,7 @@ internal class DataLoader(context: Context) {
     fun getDocuments(documentType: String) {
         items.clear()
         if (documentType == Constants.CACHED_DOCUMENTS) {
-            val cachedItems: ArrayList<DataBaseItem?> = database!!.getCachedDataList()
+            val cachedItems: java.util.ArrayList<DataBaseItem?> = database!!.getCachedDataList()
             for (cacheItem in cachedItems) {
                 try {
                     cacheItem?.let {
