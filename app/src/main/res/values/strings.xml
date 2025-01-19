@@ -91,4 +91,8 @@
     <string name="take_photo">Take a photo</string>
     <string name="save_photo_and_exit">Save photo and exit</string>
     <string name="multiply_sign">X</string>
+    <string name="pref_user_id">User ID</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="text_erase_data">Data will be deleted permanently, continue?</string>
+    <string name="connections_list">Connections</string>
 </resources>

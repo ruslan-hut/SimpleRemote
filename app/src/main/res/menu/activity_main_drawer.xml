@@ -23,7 +23,7 @@
         <menu>
             <group android:checkableBehavior="none">
                 <item
-                    android:id="@+id/nav_settings_connection"
+                    android:id="@+id/connectionsListFragment"
                     android:icon="@drawable/ic_phonelink_setup_black_24dp"
                     android:title="@string/action_connection_settings" />
                 <item

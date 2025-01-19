@@ -8,4 +8,21 @@
         android:id="@+id/selectDataTypeFragment"
         android:name="ua.com.programmer.simpleremote.ui.selector.SelectDataTypeFragment"
         android:label="@string/header_documents" />
+    <fragment
+        android:id="@+id/connectionsListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.connection.ConnectionsListFragment"
+        android:label="@string/connections_list" >
+        <action
+            android:id="@+id/action_connectionsListFragment_to_connectionFragment"
+            app:destination="@id/connectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/connectionFragment"
+        android:name="ua.com.programmer.simpleremote.ui.connection.ConnectionFragment"
+        android:label="@string/action_connection_settings" >
+        <argument
+            android:name="guid"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

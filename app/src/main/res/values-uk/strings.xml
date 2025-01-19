@@ -91,4 +91,8 @@
     <string name="take_photo">Зробити фото</string>
     <string name="save_photo_and_exit">Зберегти фотографію і вийти?</string>
     <string name="multiply_sign">X</string>
+    <string name="pref_user_id">ID пристрою</string>
+    <string name="copied_to_clipboard">Скопіювано до буферу</string>
+    <string name="text_erase_data">Дані будуть видалені без можливості відновлення. Продовжити?</string>
+    <string name="connections_list">Підключення</string>
 </resources>

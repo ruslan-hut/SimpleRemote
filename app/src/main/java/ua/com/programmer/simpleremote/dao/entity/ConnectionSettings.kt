@@ -34,3 +34,13 @@ data class ConnectionSettings(
 fun ConnectionSettings.getGuid(): String {
     return if (guid.length > 7) guid.subSequence(0,8).toString() else "<?>"
 }
+
+// Returns true if the connection settings are the same
+// WARN use only for UI purposes
+fun ConnectionSettings.isEquals(other: ConnectionSettings): Boolean {
+    return guid == other.guid
+            && description == other.description
+            && serverAddress == other.serverAddress
+            && user == other.user
+            && isCurrent == other.isCurrent
+}

@@ -45,11 +45,8 @@ private lateinit var drawerLayout: DrawerLayout
 class MainActivity : AppCompatActivity() {
 
     private val viewModel : MainViewModel by viewModels()
-
     private lateinit var binding : ActivityMainBinding
-
     private var backPressedTime: Long = 0
-    private var fragmentTAG: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,21 +98,21 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.action_filter) {
-            if (fragmentTAG == Constants.DOCUMENTS_LIST) {
-                val intent = Intent(this, DocumentsFilterActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.main, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        val id = item.itemId
+//        if (id == R.id.action_filter) {
+//            if (fragmentTAG == Constants.DOCUMENTS_LIST) {
+//                val intent = Intent(this, DocumentsFilterActivity::class.java)
+//                startActivity(intent)
+//                return true
+//            }
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
 }
