@@ -1,11 +1,11 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.util.ArrayList
 
 class SqliteDB private constructor() {

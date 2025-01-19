@@ -1,7 +1,6 @@
 package ua.com.programmer.simpleremote.ui.connection
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,7 +49,6 @@ class ConnectionsListFragment: Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.connections.observe(viewLifecycleOwner) {
-            Log.d("RC_ConnectionsListFragment", "connections: ${it.count()}")
             adapter.submitList(it)
         }
 

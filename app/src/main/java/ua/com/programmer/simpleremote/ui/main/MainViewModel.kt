@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.ui.main
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor(
         Log.d("RC_MainViewModel", "init")
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
-                _connection.value = it ?: ConnectionSettings.buildDemo()
+                _connection.value = it ?: ConnectionSettings.Builder.buildDemo()
             }
         }
     }

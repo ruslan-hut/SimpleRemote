@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.content.Context
 import android.os.Bundle
@@ -10,12 +10,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import java.lang.RuntimeException
-import java.util.ArrayList
-
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
 
 class SelectDataTypeFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -44,10 +42,10 @@ class SelectDataTypeFragment : Fragment() {
         recyclerView.setAdapter(adapter)
 
         if (dataTypeClass == Constants.CATALOGS) {
-            adapter!!.loadListItems(AppSettings.getAllowedCatalogs())
+            adapter!!.loadListItems(AppSettings.Companion.getAllowedCatalogs())
         }
         if (dataTypeClass == Constants.DOCUMENTS) {
-            adapter!!.loadListItems(AppSettings.getAllowedDocuments())
+            adapter!!.loadListItems(AppSettings.Companion.getAllowedDocuments())
         }
 
         return fragmentView
@@ -70,7 +68,7 @@ class SelectDataTypeFragment : Fragment() {
         this.context = context
     }
 
-    fun loadListData(items: ArrayList<DataBaseItem?>) {
+    fun loadListData(items: java.util.ArrayList<DataBaseItem?>) {
         adapter!!.loadListItems(items)
     }
 
@@ -99,7 +97,7 @@ class SelectDataTypeFragment : Fragment() {
     internal inner class Adapter : RecyclerView.Adapter<ViewHolder?>() {
         private val listItems = ArrayList<DataBaseItem?>()
 
-        fun loadListItems(values: ArrayList<DataBaseItem?>) {
+        fun loadListItems(values: java.util.ArrayList<DataBaseItem?>) {
             listItems.clear()
             listItems.addAll(values)
             notifyDataSetChanged()

@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.settings
+package ua.com.programmer.simpleremote.deprecated.settings
 
 object Constants {
     const val DOCUMENTS: String = "documents"

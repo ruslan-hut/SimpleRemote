@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.utility;
+package ua.com.programmer.simpleremote.deprecated.utility;
 
 public interface BarcodeFoundListener {
     void onBarcodeFound(String barCode, int format);

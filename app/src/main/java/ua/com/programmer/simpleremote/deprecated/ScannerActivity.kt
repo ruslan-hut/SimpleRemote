@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -18,19 +18,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
+import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.repository.DataLoader
-import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.utility.BarcodeFoundListener
-import ua.com.programmer.simpleremote.utility.BarcodeImageAnalyzer
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.utility.BarcodeFoundListener
+import ua.com.programmer.simpleremote.deprecated.utility.BarcodeImageAnalyzer
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
-import java.util.ArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class ScannerActivity : AppCompatActivity(), DataLoaderListener {
+class ScannerActivity : AppCompatActivity(), DataLoader.DataLoaderListener {
     private var cameraView: PreviewView? = null
     private var cameraProvider: ListenableFuture<ProcessCameraProvider>? = null
     private var cameraExecutor: ExecutorService? = null
@@ -61,7 +60,7 @@ class ScannerActivity : AppCompatActivity(), DataLoaderListener {
         cameraExecutor = Executors.newSingleThreadExecutor()
         cameraView = findViewById<PreviewView>(R.id.camera_view)
         try {
-            cameraProvider = ProcessCameraProvider.getInstance(this)
+            cameraProvider = ProcessCameraProvider.Companion.getInstance(this)
         } catch (e: Exception) {
             utils.debug("ScannerActivity: create camera provider: $e")
         }
@@ -160,7 +159,7 @@ class ScannerActivity : AppCompatActivity(), DataLoaderListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?) {
+    override fun onDataLoaded(dataItems: java.util.ArrayList<DataBaseItem?>?) {
         progressBar!!.visibility = View.GONE
         val items = dataItems ?: ArrayList()
         if (items.isNotEmpty()) {
@@ -200,7 +199,7 @@ class ScannerActivity : AppCompatActivity(), DataLoaderListener {
     private fun confirmAddItem() {
         val intent = getIntent()
         if (dataBaseItem != null) {
-            intent.putExtra("cacheKey", Cache.getInstance().put(dataBaseItem))
+            intent.putExtra("cacheKey", Cache.Companion.getInstance().put(dataBaseItem))
         } else {
             intent.putExtra("cacheKey", "")
         }

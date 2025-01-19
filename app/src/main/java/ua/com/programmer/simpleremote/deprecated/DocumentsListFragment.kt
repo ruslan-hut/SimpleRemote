@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,14 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import ua.com.programmer.simpleremote.DocumentsListFragment.DocumentViewHolder
-import ua.com.programmer.simpleremote.DocumentsListFragment.DocumentsAdapter
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.specialItems.DocumentField
-import java.lang.RuntimeException
-import java.util.ArrayList
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
 
 class DocumentsListFragment : Fragment() {
     private var mContext: Context? = null
@@ -39,7 +35,7 @@ class DocumentsListFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_documents_list, container, false)
 
         swipeRefreshLayout = fragmentView.findViewById<SwipeRefreshLayout>(R.id.documents_swipe)
-        swipeRefreshLayout!!.setOnRefreshListener(OnRefreshListener { this.updateList() })
+        swipeRefreshLayout!!.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener { this.updateList() })
 
         val recyclerView = fragmentView.findViewById<RecyclerView>(R.id.documents_recycler)
         //recyclerView.setHasFixedSize(true);
@@ -93,7 +89,7 @@ class DocumentsListFragment : Fragment() {
         mContext = context
     }
 
-    fun loadListData(items: ArrayList<DataBaseItem?>) {
+    fun loadListData(items: java.util.ArrayList<DataBaseItem?>) {
         documentsAdapter!!.loadListItems(items)
         swipeRefreshLayout!!.isRefreshing = false
     }
@@ -214,7 +210,7 @@ class DocumentsListFragment : Fragment() {
         private val listItems = ArrayList<DataBaseItem?>()
 
         @SuppressLint("NotifyDataSetChanged")
-        fun loadListItems(values: ArrayList<DataBaseItem?>) {
+        fun loadListItems(values: java.util.ArrayList<DataBaseItem?>) {
             listItems.clear()
             listItems.addAll(values)
             notifyDataSetChanged()

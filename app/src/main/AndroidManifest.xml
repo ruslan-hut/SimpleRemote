@@ -29,14 +29,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".CameraActivity"
+            android:name=".deprecated.CameraActivity"
             android:screenOrientation="locked"
             android:exported="false" />
         <activity
-            android:name=".ItemEditScreen"
+            android:name=".deprecated.ItemEditScreen"
             android:exported="false"
             android:screenOrientation="locked" />
-        <activity android:name=".serviceUtils.DocumentsFilterActivity" />
+        <activity android:name="ua.com.programmer.simpleremote.deprecated.serviceUtils.DocumentsFilterActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -49,19 +49,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CatalogListActivity"
+            android:name=".deprecated.CatalogListActivity"
             android:screenOrientation="locked"
             android:exported="false" />
         <activity
-            android:name=".DocumentActivity"
+            android:name=".deprecated.DocumentActivity"
             android:screenOrientation="locked"
             android:exported="false" />
         <activity
-            android:name=".ScannerActivity"
+            android:name=".deprecated.ScannerActivity"
             android:screenOrientation="locked"
             android:exported="false" />
-        <activity android:name=".settings.ConnectionSettingsActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name="ua.com.programmer.simpleremote.deprecated.settings.ConnectionSettingsActivity" />
+        <activity android:name=".deprecated.LoginActivity" />
 
     </application>
 

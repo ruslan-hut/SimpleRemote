@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.utility;
+package ua.com.programmer.simpleremote.deprecated.utility;
 
 import android.annotation.SuppressLint;
 import android.media.Image;

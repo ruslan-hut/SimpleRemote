@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.content.Context
 import android.content.Intent
@@ -16,21 +16,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import org.json.JSONArray
-import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
-import ua.com.programmer.simpleremote.LoginActivity.ConnectionsSpinnerAdapter
-import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.BuildConfig
+import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.repository.DataLoader
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.specialItems.DocumentField
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.settings.ConnectionSettingsActivity
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
-import java.util.ArrayList
 
-class LoginActivity : AppCompatActivity(), DataLoaderListener, AdapterView.OnItemSelectedListener {
+class LoginActivity : AppCompatActivity(), DataLoader.DataLoaderListener, AdapterView.OnItemSelectedListener {
     private var appSettings: AppSettings? = null
     private var connectionsSpinner: Spinner? = null
     private var adapter: ConnectionsSpinnerAdapter? = null
@@ -43,10 +41,10 @@ class LoginActivity : AppCompatActivity(), DataLoaderListener, AdapterView.OnIte
         setContentView(R.layout.activity_login)
 
         setResult(0)
-        Cache.getInstance().clear()
+        Cache.Companion.getInstance().clear()
         imageCacheCleaner()
 
-        appSettings = AppSettings.getInstance(this)
+        appSettings = AppSettings.Companion.getInstance(this)
 
         val autoConnect = findViewById<CheckBox>(R.id.autoconnect)
         autoConnect.isChecked = appSettings!!.autoConnect()
@@ -95,7 +93,7 @@ class LoginActivity : AppCompatActivity(), DataLoaderListener, AdapterView.OnIte
         super.onResume()
     }
 
-    override fun onDataLoaded(dataItems: ArrayList<DataBaseItem?>?) {
+    override fun onDataLoaded(dataItems: java.util.ArrayList<DataBaseItem?>?) {
         progressBar!!.visibility = View.INVISIBLE
         if (dataItems == null) {
             Toast.makeText(this, R.string.error_no_data, Toast.LENGTH_SHORT).show()
@@ -149,7 +147,7 @@ class LoginActivity : AppCompatActivity(), DataLoaderListener, AdapterView.OnIte
         val currentAlias = appSettings!!.getCurrentConnectionAlias()
         adapter!!.clear()
 
-        adapter!!.addAll(getInstance(this)!!.getConnections())
+        adapter!!.addAll(SqliteDB.Companion.getInstance(this)!!.getConnections())
 
         val specialItem = DataBaseItem()
         specialItem.put("alias", getResources().getString(R.string.alias_add_new))

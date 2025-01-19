@@ -13,12 +13,12 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.SqliteDB
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.specialItems.DocumentField
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.SqliteDB
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
 import java.util.UUID
 

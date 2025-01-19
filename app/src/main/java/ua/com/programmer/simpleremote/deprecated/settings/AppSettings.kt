@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.settings
+package ua.com.programmer.simpleremote.deprecated.settings
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,9 +8,9 @@ import com.bumptech.glide.load.model.LazyHeaders
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.specialItems.DocumentField
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.util.ArrayList
 import java.util.UUID
 

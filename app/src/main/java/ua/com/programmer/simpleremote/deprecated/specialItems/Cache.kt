@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.specialItems
+package ua.com.programmer.simpleremote.deprecated.specialItems
 
 import java.util.HashMap
 import java.util.UUID

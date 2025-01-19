@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -33,17 +33,18 @@ import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONArray
 import org.json.JSONObject
 import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
-import ua.com.programmer.simpleremote.DocumentActivity.ContentAdapter
-import ua.com.programmer.simpleremote.DocumentActivity.ContentViewHolder
-import ua.com.programmer.simpleremote.SqliteDB.Companion.getInstance
+import ua.com.programmer.simpleremote.deprecated.DocumentActivity.ContentAdapter
+import ua.com.programmer.simpleremote.deprecated.DocumentActivity.ContentViewHolder
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.deprecated.SqliteDB.Companion.getInstance
 import ua.com.programmer.simpleremote.repository.DataLoader
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.specialItems.DocumentField
-import ua.com.programmer.simpleremote.utility.ImageLoader
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
+import ua.com.programmer.simpleremote.deprecated.utility.ImageLoader
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
 import java.util.ArrayList
 import java.util.Objects

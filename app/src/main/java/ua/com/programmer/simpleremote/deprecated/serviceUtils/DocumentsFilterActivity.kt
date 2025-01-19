@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.serviceUtils
+package ua.com.programmer.simpleremote.deprecated.serviceUtils
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -15,13 +15,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ua.com.programmer.simpleremote.CatalogListActivity
+import ua.com.programmer.simpleremote.deprecated.CatalogListActivity
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.serviceUtils.DocumentsFilterActivity.FilterListAdapter
-import ua.com.programmer.simpleremote.serviceUtils.DocumentsFilterActivity.FilterViewHolder
-import ua.com.programmer.simpleremote.settings.AppSettings
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DocumentField
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
 import java.util.ArrayList
 import java.util.Calendar
 import java.util.GregorianCalendar

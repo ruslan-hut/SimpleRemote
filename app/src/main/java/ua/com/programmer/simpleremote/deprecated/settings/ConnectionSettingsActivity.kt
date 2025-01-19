@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.settings
+package ua.com.programmer.simpleremote.deprecated.settings
 
 import android.os.Bundle
 import android.view.Menu
@@ -8,8 +8,8 @@ import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.SqliteDB
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.SqliteDB
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
 
 class ConnectionSettingsActivity : AppCompatActivity() {
     private var appSettings: AppSettings? = null

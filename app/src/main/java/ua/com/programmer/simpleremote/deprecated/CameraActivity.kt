@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.Manifest
 import android.app.AlertDialog
@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,19 +17,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCapture.OnImageSavedCallback
-import androidx.camera.core.ImageCapture.OutputFileOptions
-import androidx.camera.core.ImageCapture.OutputFileResults
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.io.File
 import java.lang.Exception
 import java.util.UUID
@@ -57,7 +54,7 @@ class CameraActivity : AppCompatActivity() {
         setTitle(R.string.header_camera)
 
         val intent = getIntent()
-        item = Cache.getInstance().get(intent.getStringExtra("cacheKey"))
+        item = Cache.Companion.getInstance().get(intent.getStringExtra("cacheKey"))
         item!!.put("type", Constants.DOCUMENT_LINE)
 
         outputDirectory = this.getApplicationContext().getFilesDir()
@@ -65,7 +62,7 @@ class CameraActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         cameraView = findViewById<PreviewView>(R.id.camera_view)
-        cameraProvider = ProcessCameraProvider.getInstance(this)
+        cameraProvider = ProcessCameraProvider.Companion.getInstance(this)
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf<String>(Manifest.permission.CAMERA), 1)
@@ -148,7 +145,7 @@ class CameraActivity : AppCompatActivity() {
                 DialogInterface.OnClickListener { dialogInterface: DialogInterface?, i: Int ->
                     item!!.put("image", imageFileName)
                     val intent = getIntent()
-                    intent.putExtra("cacheKey", Cache.getInstance().put(item))
+                    intent.putExtra("cacheKey", Cache.Companion.getInstance().put(item))
                     setResult(RESULT_OK, intent)
                     finish()
                 })
@@ -171,15 +168,16 @@ class CameraActivity : AppCompatActivity() {
     private fun takePhoto() {
         imageFileName = UUID.randomUUID().toString() + ".jpg"
 
-        val fileOptions = OutputFileOptions.Builder(
+        val fileOptions = ImageCapture.OutputFileOptions.Builder(
             File(outputDirectory, imageFileName ?: "image.jpg")
         ).build()
 
         val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
         toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
 
-        imageCapture!!.takePicture(fileOptions, cameraExecutor!!, object : OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: OutputFileResults) {
+        imageCapture!!.takePicture(fileOptions, cameraExecutor!!, object :
+            ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 utils.debug("Camera: image saved: $imageFileName")
                 stopCamera()
             }

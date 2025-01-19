@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.utility;
+package ua.com.programmer.simpleremote.deprecated.utility;
 
 import android.content.Context;
 import android.view.View;
@@ -11,7 +11,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 
 import ua.com.programmer.simpleremote.R;
-import ua.com.programmer.simpleremote.settings.AppSettings;
+import ua.com.programmer.simpleremote.deprecated.settings.AppSettings;
 
 public class ImageLoader {
 

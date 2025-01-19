@@ -1,9 +1,9 @@
-package ua.com.programmer.simpleremote.specialItems
+package ua.com.programmer.simpleremote.deprecated.specialItems
 
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.util.Objects
 
 class DocumentField {

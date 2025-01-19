@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -16,24 +16,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import ua.com.programmer.simpleremote.CatalogListActivity.CatalogListAdapter
-import ua.com.programmer.simpleremote.CatalogListActivity.CatalogViewHolder
+import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.repository.DataLoader
-import ua.com.programmer.simpleremote.repository.DataLoader.DataLoaderListener
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.utility.Utils
-import java.util.ArrayList
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 
-class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
+class CatalogListActivity : AppCompatActivity(), DataLoader.DataLoaderListener {
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var catalogListAdapter: CatalogListAdapter? = null
     private val utils = Utils()
@@ -46,7 +42,7 @@ class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
     private var documentGUID: String? = null
 
     private val openNextScreen =
-        registerForActivityResult<Intent?, ActivityResult?>(StartActivityForResult(),
+        registerForActivityResult<Intent?, ActivityResult?>(ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result: ActivityResult? -> })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +84,7 @@ class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
         documentGUID = intent.getStringExtra("documentGUID")
 
         swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.catalog_swipe)
-        swipeRefreshLayout!!.setOnRefreshListener(OnRefreshListener { this.updateList() })
+        swipeRefreshLayout!!.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener { this.updateList() })
 
         val recyclerView = findViewById<RecyclerView>(R.id.catalog_recycler)
         recyclerView.setHasFixedSize(true)
@@ -117,14 +113,14 @@ class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
         dataLoader.getCatalogData(catalogType, currentGroup, searchFilter, documentGUID)
     }
 
-    override fun onDataLoaded(dataBaseItems: ArrayList<DataBaseItem?>?) {
+    override fun onDataLoaded(dataBaseItems: java.util.ArrayList<DataBaseItem?>?) {
         noDataText!!.visibility = View.VISIBLE
         swipeRefreshLayout!!.isRefreshing = false
         dataBaseItems?.let {
             if (it.isNotEmpty()) {
                 noDataText!!.visibility = View.GONE
             }
-            val items : ArrayList<DataBaseItem> = ArrayList()
+            val items : java.util.ArrayList<DataBaseItem> = ArrayList()
             for (item in it) {
                 if (item != null) {
                     items.add(item)
@@ -182,7 +178,7 @@ class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
                 startActivity(intent)
             }
         } else if (itemSelectionMode == true) {
-            val cache = Cache.getInstance()
+            val cache = Cache.Companion.getInstance()
             val intent = getIntent()
             intent.putExtra("cacheKey", cache.put(dataBaseItem))
             setResult(RESULT_OK, intent)
@@ -259,7 +255,7 @@ class CatalogListActivity : AppCompatActivity(), DataLoaderListener {
         private val listItems = ArrayList<DataBaseItem>()
 
         @SuppressLint("NotifyDataSetChanged")
-        fun loadListItems(values: ArrayList<DataBaseItem>) {
+        fun loadListItems(values: java.util.ArrayList<DataBaseItem>) {
             listItems.clear()
             listItems.addAll(values)
             notifyDataSetChanged()

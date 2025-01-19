@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote
+package ua.com.programmer.simpleremote.deprecated
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,16 +11,16 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.TextView.OnEditorActionListener
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import ua.com.programmer.simpleremote.settings.Constants
-import ua.com.programmer.simpleremote.specialItems.Cache
-import ua.com.programmer.simpleremote.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.utility.Utils
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.deprecated.settings.Constants
+import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
+import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
+import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -37,11 +37,12 @@ class ItemEditScreen : AppCompatActivity() {
     private val utils = Utils()
 
     private val openCameraScreen =
-        registerForActivityResult<Intent?, ActivityResult?>(StartActivityForResult(),
+        registerForActivityResult<Intent?, ActivityResult?>(ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result: ActivityResult? ->
                 val data = result!!.data
                 if (data == null) return@ActivityResultCallback
-                val dataBaseItem = Cache.getInstance().get(data.getStringExtra("cacheKey"))
+                val dataBaseItem =
+                    Cache.Companion.getInstance().get(data.getStringExtra("cacheKey"))
                 val newImage = dataBaseItem.getString("image")
                 if (!newImage.isEmpty()) {
                     if (!attachImage!!.isEmpty()) {
@@ -68,12 +69,12 @@ class ItemEditScreen : AppCompatActivity() {
         outputDirectory = this.applicationContext.filesDir
 
         val intent = getIntent()
-        item = Cache.getInstance().get(intent.getStringExtra("cacheKey"))
+        item = Cache.Companion.getInstance().get(intent.getStringExtra("cacheKey"))
         item!!.put("type", Constants.DOCUMENT_LINE)
         workingMode = item!!.getString("workingMode")
 
         editQuantity = findViewById<EditText>(R.id.edit_quantity)
-        editQuantity!!.setOnEditorActionListener(OnEditorActionListener { v: TextView?, actionId: Int, event: KeyEvent? ->
+        editQuantity!!.setOnEditorActionListener(TextView.OnEditorActionListener { v: TextView?, actionId: Int, event: KeyEvent? ->
             onEditTextAction(
                 actionId
             )
@@ -135,14 +136,14 @@ class ItemEditScreen : AppCompatActivity() {
         item!!.put("notes", enteredNotes)
 
         val intent = getIntent()
-        intent.putExtra("cacheKey", Cache.getInstance().put(item))
+        intent.putExtra("cacheKey", Cache.Companion.getInstance().put(item))
         setResult(RESULT_OK, intent)
         finish()
     }
 
     private fun openCamera() {
         val intent = Intent(this, CameraActivity::class.java)
-        intent.putExtra("cacheKey", Cache.getInstance().put(item))
+        intent.putExtra("cacheKey", Cache.Companion.getInstance().put(item))
         openCameraScreen.launch(intent)
     }
 

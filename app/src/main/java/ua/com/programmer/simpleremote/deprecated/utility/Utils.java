@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.utility;
+package ua.com.programmer.simpleremote.deprecated.utility;
 
 import android.util.Log;
 
@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import ua.com.programmer.simpleremote.BuildConfig;
 import ua.com.programmer.simpleremote.R;
-import ua.com.programmer.simpleremote.settings.Constants;
+import ua.com.programmer.simpleremote.deprecated.settings.Constants;
 
 public class Utils {
 
