@@ -44,3 +44,28 @@ fun ConnectionSettings.isEquals(other: ConnectionSettings): Boolean {
             && user == other.user
             && isCurrent == other.isCurrent
 }
+
+fun ConnectionSettings.getBaseUrl(): String {
+    var url = ""
+    if (serverAddress.isNotBlank()) {
+        url = if (serverAddress.contains("http://") || serverAddress.contains("https://")) {
+            serverAddress
+        }else{
+            "http://$serverAddress"
+        }
+        if (!url.endsWith("/")) url = "$url/"
+        if (databaseName.isNotBlank()) {
+            url = "$url$databaseName/hs/rc/"
+        }
+    }
+    return url
+}
+
+// check settings for changes to perform reconnection
+fun ConnectionSettings.isDifferent(other: ConnectionSettings): Boolean {
+    return this.guid != other.guid ||
+            this.serverAddress != other.serverAddress ||
+            this.databaseName != other.databaseName ||
+            this.user != other.user ||
+            this.password != other.password
+}

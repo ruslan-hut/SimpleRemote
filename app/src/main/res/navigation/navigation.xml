@@ -2,11 +2,11 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/navigation"
-    app:startDestination="@id/selectDataTypeFragment">
+    app:startDestination="@id/selectDocumentTypeFragment">
 
     <fragment
-        android:id="@+id/selectDataTypeFragment"
-        android:name="ua.com.programmer.simpleremote.ui.selector.SelectDataTypeFragment"
+        android:id="@+id/selectDocumentTypeFragment"
+        android:name="ua.com.programmer.simpleremote.ui.selector.SelectDocumentTypeFragment"
         android:label="@string/header_documents" />
     <fragment
         android:id="@+id/connectionsListFragment"

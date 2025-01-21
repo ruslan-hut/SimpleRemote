@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.selectDataTypeFragment), drawerLayout
+            setOf(R.id.selectDocumentTypeFragment), drawerLayout
         )
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_container) as NavHostFragment
