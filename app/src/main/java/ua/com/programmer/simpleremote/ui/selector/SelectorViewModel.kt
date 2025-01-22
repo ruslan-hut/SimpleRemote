@@ -22,6 +22,9 @@ class SelectorViewModel @Inject constructor(
     private val _documents = MutableLiveData<List<DataType>>()
     val documents: LiveData<List<DataType>> get() = _documents
 
+    private val _catalogs = MutableLiveData<List<DataType>>()
+    val catalogs: LiveData<List<DataType>> get() = _catalogs
+
     private val _connection = MutableLiveData<ConnectionSettings>()
     val connection get() = _connection
 
@@ -33,8 +36,8 @@ class SelectorViewModel @Inject constructor(
         }
         viewModelScope.launch {
             networkRepo.userOptions.collect {
-                Log.d("RC_SelectorViewModel", "checkConnection: $it")
                 _documents.value = it.document
+                _catalogs.value = it.catalog
             }
         }
     }

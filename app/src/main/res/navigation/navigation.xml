@@ -25,4 +25,8 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/selectCatalogTypeFragment"
+        android:name="ua.com.programmer.simpleremote.ui.selector.SelectCatalogTypeFragment"
+        android:label="@string/header_catalogs" />
 </navigation>

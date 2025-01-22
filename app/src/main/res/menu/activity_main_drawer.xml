@@ -11,7 +11,7 @@
                     android:icon="@drawable/baseline_list_24"
                     android:title="@string/header_documents" />
                 <item
-                    android:id="@+id/nav_catalogs"
+                    android:id="@+id/selectCatalogTypeFragment"
                     android:icon="@drawable/baseline_list_24"
                     android:title="@string/header_catalogs" />
             </group>
