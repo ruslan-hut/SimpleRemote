@@ -6,7 +6,9 @@ import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ConnectionSettingsImpl @Inject constructor(
    private val connectionSettingsDao: ConnectionSettingsDao
 ) : ConnectionSettingsRepository {

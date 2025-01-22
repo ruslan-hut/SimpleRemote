@@ -10,9 +10,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
+import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
 import ua.com.programmer.simpleremote.http.HttpAuthInterceptor
 import ua.com.programmer.simpleremote.http.HttpClientApi
 import ua.com.programmer.simpleremote.http.TokenRefresh
+import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.DataLoader
 import javax.inject.Singleton
 
@@ -24,6 +27,12 @@ class Repository {
     @Singleton
     fun provideDataLoader(@ApplicationContext context: Context): DataLoader {
         return DataLoader(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectionRepository(dao: ConnectionSettingsDao): ConnectionSettingsRepository {
+        return ConnectionSettingsImpl(dao)
     }
 
 }

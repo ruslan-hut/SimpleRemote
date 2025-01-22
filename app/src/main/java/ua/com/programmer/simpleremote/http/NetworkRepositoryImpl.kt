@@ -20,7 +20,9 @@ import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class NetworkRepositoryImpl @Inject constructor(
     private val connectionRepo: ConnectionSettingsRepository,
     private val retrofitBuilder: Retrofit.Builder,
