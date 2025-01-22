@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.main
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ class MainViewModel @Inject constructor(
     val connection get() = _connection
 
     init {
-        Log.d("RC_MainViewModel", "init")
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
                 _connection.value = it ?: ConnectionSettings.Builder.buildDemo()

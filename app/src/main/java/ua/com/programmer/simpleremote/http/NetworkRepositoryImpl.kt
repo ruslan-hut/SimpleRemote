@@ -31,7 +31,7 @@ class NetworkRepositoryImpl @Inject constructor(
     private val _activeConnection = connectionRepo.currentConnection.stateIn(
         CoroutineScope(Dispatchers.IO),
         SharingStarted.Eagerly,
-        null // Начальное значение
+        null // initial value
     )
     private val _activeOptions = MutableStateFlow(UserOptions(isEmpty = true))
 
@@ -53,17 +53,16 @@ class NetworkRepositoryImpl @Inject constructor(
     private suspend fun handleConnectionChange(settings: ConnectionSettings) {
         val baseUrl = settings.getBaseUrl()
         if (baseUrl.isBlank()) return
-        Log.d("RC_NetworkRepository", "connection changed; base url: $baseUrl")
 
         httpAuthInterceptor.setCredentials(settings.user, settings.password)
 
+        Log.d("RC_NetworkRepository", "init connection; base url: $baseUrl")
         try {
             val retrofit = retrofitBuilder.baseUrl(baseUrl).build()
             apiService = retrofit.create(HttpClientApi::class.java)
 
             val updatedOptions = fetchUserOptions(settings)
             updatedOptions?.let { _activeOptions.value = it }
-
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Failed to update connection: ${e.message}")
             apiService = null
