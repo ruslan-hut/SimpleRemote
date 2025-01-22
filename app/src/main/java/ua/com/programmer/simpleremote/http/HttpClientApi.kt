@@ -8,10 +8,10 @@ import retrofit2.http.Path
 
 interface HttpClientApi {
 
-    @GET("check/{id}")
-    suspend fun check(@Path("id") userId: String): CheckResponse
+    @POST("pst/{id}")
+    suspend fun check(@Path("id") userId: String, @Body data: CheckRequest): CheckResponse
 
     @POST("pst/{token}")
-    suspend fun post(@Path("token") token: String, @Body data: JsonObject): Map<String,Any>
+    suspend fun post(@Path("token") token: String, @Body data: JsonObject): CheckResponse
 
 }
