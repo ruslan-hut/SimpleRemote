@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -36,7 +37,7 @@ class SelectDocumentTypeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                //viewModel.setCurrentConnection(item.guid)
+                openDocumentList(item.code)
             },
         )
         val recycler = binding.recycler
@@ -46,6 +47,11 @@ class SelectDocumentTypeFragment: Fragment() {
         viewModel.documents.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
+    }
+
+    private fun openDocumentList(type: String) {
+        val action = SelectDocumentTypeFragmentDirections.actionSelectDocumentTypeFragmentToDocumentListFragment(type)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {

@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/selectDocumentTypeFragment"
         android:name="ua.com.programmer.simpleremote.ui.selector.SelectDocumentTypeFragment"
-        android:label="@string/header_documents" />
+        android:label="@string/header_documents" >
+        <action
+            android:id="@+id/action_selectDocumentTypeFragment_to_documentListFragment"
+            app:destination="@id/documentListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/connectionsListFragment"
         android:name="ua.com.programmer.simpleremote.ui.connection.ConnectionsListFragment"
@@ -29,4 +33,13 @@
         android:id="@+id/selectCatalogTypeFragment"
         android:name="ua.com.programmer.simpleremote.ui.selector.SelectCatalogTypeFragment"
         android:label="@string/header_catalogs" />
+    <fragment
+        android:id="@+id/documentListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.DocumentListFragment"
+        android:label="@string/header_documents" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

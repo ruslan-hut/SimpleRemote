@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -15,12 +17,16 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
+import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.UserOptions
 import ua.com.programmer.simpleremote.http.entity.CheckRequest
 import ua.com.programmer.simpleremote.http.entity.CheckResponse
 import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
 import ua.com.programmer.simpleremote.http.client.HttpClientApi
 import ua.com.programmer.simpleremote.http.client.TokenRefresh
+import ua.com.programmer.simpleremote.http.entity.DataType
+import ua.com.programmer.simpleremote.http.entity.ListRequest
+import ua.com.programmer.simpleremote.http.entity.isSuccessful
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
@@ -32,7 +38,7 @@ class NetworkRepositoryImpl @Inject constructor(
     private val connectionRepo: ConnectionSettingsRepository,
     private val retrofitBuilder: Retrofit.Builder,
     private val httpAuthInterceptor: HttpAuthInterceptor,
-    tokenRefresh: TokenRefresh
+    tokenRefresh: TokenRefresh,
 ) : NetworkRepository {
 
     private val _activeConnection = connectionRepo.currentConnection.stateIn(
@@ -56,6 +62,35 @@ class NetworkRepositoryImpl @Inject constructor(
     }
 
     override val userOptions: Flow<UserOptions> = _activeOptions
+
+    override fun documents(type: String): Flow<List<Document>> = flow {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            emit(emptyList<Document>())
+            return@flow
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "documents",
+            data = gson.toJson(DataType(type = type)).toString()
+        )
+
+        try {
+            val response = apiService?.getDocuments(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val documents = response.data.filterNotNull()
+                Log.d("RC_NetworkRepository", "documents list received: ${documents.size}")
+                emit(documents)
+            } else {
+                Log.e("RC_NetworkRepository", "Failed to fetch documents: ${response?.message}")
+                emit(emptyList<Document>())
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
+            emit(emptyList<Document>())
+        }
+    }.flowOn(Dispatchers.IO)
 
     private suspend fun handleConnectionChange(settings: ConnectionSettings) {
         val baseUrl = settings.getBaseUrl()
@@ -81,11 +116,12 @@ class NetworkRepositoryImpl @Inject constructor(
         val response = executeCheck(settings) ?: return null
         return if (response.data.isNotEmpty()) {
             val userOptions = response.data[0]
-            userOptions?.let {
-                _activeOptions.value = it
-                connectionRepo.save(settings.copy(userOptions = gson.toJson(it)))
-            }
-            userOptions
+            val options = userOptions?.copy(
+                isEmpty = false,
+                userId = settings.guid,
+                token = response.token,
+            )
+            options
         } else {
             null
         }
@@ -98,6 +134,9 @@ class NetworkRepositoryImpl @Inject constructor(
         val connection = _activeConnection.value ?: throw Exception("No active connection settings")
         val response = executeCheck(connection) ?: throw Exception("$tag: Response is null")
         Log.d("RC_NetworkRepository", "new token: ${response.token}")
+        _activeOptions.apply {
+            value = value.copy(isEmpty = false, userId = connection.guid, token = response.token)
+        }
         return response.token
     }
 

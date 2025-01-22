@@ -10,6 +10,7 @@ data class UserOptions(
     val mode: String = "",
     val loadImages: Boolean = false,
     val user: String = "",
+    val token: String = "",
     val catalog: List<DataType> = listOf(),
     val document: List<DataType> = listOf()
 )
