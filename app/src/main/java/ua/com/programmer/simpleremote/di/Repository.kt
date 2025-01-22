@@ -12,9 +12,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
-import ua.com.programmer.simpleremote.http.HttpAuthInterceptor
-import ua.com.programmer.simpleremote.http.HttpClientApi
-import ua.com.programmer.simpleremote.http.TokenRefresh
+import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
+import ua.com.programmer.simpleremote.http.client.HttpClientApi
+import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.DataLoader
 import javax.inject.Singleton

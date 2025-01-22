@@ -1,10 +1,11 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.client
 
 import com.google.gson.JsonObject
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import ua.com.programmer.simpleremote.http.entity.CheckRequest
+import ua.com.programmer.simpleremote.http.entity.CheckResponse
 
 interface HttpClientApi {
 

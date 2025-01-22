@@ -1,9 +1,10 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.client
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import javax.inject.Inject
 
 class HttpClient @Inject constructor(authenticator: TokenRefresh, authInterceptor: Interceptor) {

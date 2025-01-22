@@ -1,8 +1,8 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.client
 
+import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.Response
-import kotlin.text.isNotBlank
 
 class HttpAuthInterceptor: Interceptor {
 
@@ -10,7 +10,7 @@ class HttpAuthInterceptor: Interceptor {
 
     fun setCredentials(user: String, pass: String) {
         credentials = if (user.isNotBlank()) {
-            okhttp3.Credentials.basic(user, pass, Charsets.UTF_8)
+            Credentials.basic(user, pass, Charsets.UTF_8)
         } else{
             ""
         }

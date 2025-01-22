@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.components.ViewModelComponent
-import ua.com.programmer.simpleremote.http.NetworkRepositoryImpl
+import ua.com.programmer.simpleremote.http.impl.NetworkRepositoryImpl
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 
 @Module

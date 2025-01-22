@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.entity
 
 data class RequestBody(
     val userID: String = "",

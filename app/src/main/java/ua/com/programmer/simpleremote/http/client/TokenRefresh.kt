@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.client
 
 import android.util.Log
 import okhttp3.Authenticator
@@ -6,7 +6,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 import javax.inject.Inject
-import kotlin.text.isBlank
 
 class TokenRefresh @Inject constructor(): Authenticator {
 

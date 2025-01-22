@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.impl
 
 import android.util.Log
 import com.google.gson.Gson
@@ -16,6 +16,11 @@ import retrofit2.Retrofit
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
 import ua.com.programmer.simpleremote.entity.UserOptions
+import ua.com.programmer.simpleremote.http.entity.CheckRequest
+import ua.com.programmer.simpleremote.http.entity.CheckResponse
+import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
+import ua.com.programmer.simpleremote.http.client.HttpClientApi
+import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
@@ -32,7 +37,7 @@ class NetworkRepositoryImpl @Inject constructor(
 
     private val _activeConnection = connectionRepo.currentConnection.stateIn(
         CoroutineScope(Dispatchers.IO),
-        SharingStarted.Eagerly,
+        SharingStarted.Companion.Eagerly,
         null // initial value
     )
     private val _activeOptions = MutableStateFlow(UserOptions(isEmpty = true))

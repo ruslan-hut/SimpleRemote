@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.http
+package ua.com.programmer.simpleremote.http.entity
 
 import ua.com.programmer.simpleremote.entity.UserOptions
 
