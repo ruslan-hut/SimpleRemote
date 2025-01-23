@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,6 +38,7 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun setDocumentId(id: String) {
+        if (_content.value?.isNotEmpty() == true) return
         this.guid = id
         viewModelScope.launch {
             _isLoading.value = true
