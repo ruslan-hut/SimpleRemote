@@ -24,8 +24,8 @@ class ItemEditFragment: Fragment() {
     private val binding get() = _binding!!
     private val navigationArgs: ItemEditFragmentArgs by navArgs()
 
+    var product: Product? = null
     var productCode = ""
-    var productBarcode = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,16 +47,32 @@ class ItemEditFragment: Fragment() {
             findNavController().popBackStack()
         }
 
+        sharedViewModel.content.observe(viewLifecycleOwner) {
+            viewModel.loadContent(it)
+        }
         sharedViewModel.product.observe(viewLifecycleOwner) {
-            productBarcode = it.barcode
+            product = it
             bind(it)
         }
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty() && it == productBarcode) {
+            if (it.isNotEmpty() && it == product?.barcode) {
                 sharedViewModel.clearBarcode()
+                sharedViewModel.setDocumentContent(
+                    viewModel.confirmQuantity(product, binding.collectEdit.text.toString())
+                )
                 findNavController().popBackStack()
             }
         }
+        binding.buttonCancel.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.buttonYes.setOnClickListener {
+            sharedViewModel.setDocumentContent(
+                viewModel.confirmQuantity(product, binding.editQuantity.text.toString())
+            )
+            findNavController().popBackStack()
+        }
+
     }
 
     private fun bind(product: Product) {
@@ -69,6 +85,7 @@ class ItemEditFragment: Fragment() {
             product.contentItem?.let {
                 collectEdit.text = it.quantity
                 restEdit.text = it.rest
+                editQuantity.setText(it.collect)
             }
         }
     }

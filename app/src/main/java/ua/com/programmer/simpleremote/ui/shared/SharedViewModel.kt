@@ -1,11 +1,14 @@
 package ua.com.programmer.simpleremote.ui.shared
 
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
+import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
@@ -21,6 +24,9 @@ class SharedViewModel @Inject constructor(
 
     private val _document = MutableLiveData<Document>()
     val document get() = _document
+
+    private val _content = MutableLiveData<List<Content>>(emptyList())
+    val content: LiveData<List<Content>> get() = _content
 
     private val _product = MutableLiveData<Product>()
     val product get() = _product
@@ -41,6 +47,11 @@ class SharedViewModel @Inject constructor(
 
     fun setProduct(prod: Product) {
         _product.value = prod
+    }
+
+    fun setDocumentContent(content: List<Content>) {
+        Log.d("RC_SharedViewModel", "setDocumentContent: $content")
+        _content.value = content
     }
 
     fun onBarcodeRead(value: String) {

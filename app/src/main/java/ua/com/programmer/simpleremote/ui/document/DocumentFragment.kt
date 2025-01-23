@@ -72,6 +72,12 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
         }
 
+        viewModel.content.observe(viewLifecycleOwner) {
+            sharedViewModel.setDocumentContent(it)
+        }
+        viewModel.isEditable.observe(viewLifecycleOwner) {
+            binding.bottomBar.visibility = if (it) View.VISIBLE else View.GONE
+        }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.progressBar.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
@@ -91,12 +97,10 @@ class DocumentFragment: Fragment(), MenuProvider {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.content.observe(viewLifecycleOwner) {
+        sharedViewModel.content.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-        viewModel.isEditable.observe(viewLifecycleOwner) {
-            binding.bottomBar.visibility = if (it) View.VISIBLE else View.GONE
-        }
+
     }
 
     private fun bind(item: Document) {
@@ -219,12 +223,16 @@ class DocumentFragment: Fragment(), MenuProvider {
                     itemQuantity.text = item.quantity
                     itemUnit.text = item.unit
                     itemSum.text = item.sum
+                    itemCollect.text = item.collect
 
                     itemNotes.text = item.notes
                     //itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
                     itemImage.visibility = if (item.image.isEmpty()) View.GONE else View.VISIBLE
                     //itemImage.setImageURI(item.image.toUri())
+
+                    iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
+                    isChecked.isChecked = item.checked
 
                 }
             }
