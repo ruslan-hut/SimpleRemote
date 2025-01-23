@@ -11,8 +11,8 @@ data class UserOptions(
     val loadImages: Boolean = false,
     val user: String = "",
     val token: String = "",
-    val catalog: List<DataType> = listOf(),
-    val document: List<DataType> = listOf()
+    val catalog: List<ListType> = listOf(),
+    val document: List<ListType> = listOf()
 )
 
 class UserOptionsBuilder {

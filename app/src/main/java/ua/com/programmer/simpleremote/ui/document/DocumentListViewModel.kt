@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,10 +18,17 @@ class DocumentListViewModel @Inject constructor(
     private val _documents = MutableLiveData<List<Document>>()
     val documents: LiveData<List<Document>> get() = _documents
 
-    fun setDocumentType(type: String) {
-        viewModelScope.launch {
-            networkRepository.documents(type).collect {
-                _documents.value = it
+    var title: String = ""
+    var type: String = ""
+
+    fun setDocumentType(type: String?, title: String?) {
+        this.title = title ?: ""
+        type?.let {
+            this.type = it
+            viewModelScope.launch {
+                networkRepository.documents(it).collect {
+                    _documents.value = it
+                }
             }
         }
     }

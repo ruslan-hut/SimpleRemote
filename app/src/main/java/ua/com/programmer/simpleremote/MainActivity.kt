@@ -14,14 +14,14 @@ import androidx.navigation.ui.NavigationUI
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
-import ua.com.programmer.simpleremote.ui.main.MainViewModel
+import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 private lateinit var drawerLayout: DrawerLayout
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel : MainViewModel by viewModels()
+    private val viewModel : SharedViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
     private var backPressedTime: Long = 0
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.connection.observe(this, {
+        viewModel.connection.observe(this) {
             it?.let {
                 val textUserID = "${BuildConfig.VERSION_NAME} (${it.getGuid()})"
                 val header = binding.navView.getHeaderView(0)
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 val textAccount = header.findViewById<TextView>(R.id.nav_header_text2)
                 textAccount.text = it.description
             }
-        })
+        }
 
     }
 

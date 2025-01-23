@@ -1,6 +1,6 @@
 package ua.com.programmer.simpleremote.entity
 
-data class DataType(
+data class ListType(
     val code: String = "",
     val description: String = "",
 )

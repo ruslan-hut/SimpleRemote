@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -14,12 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
-import ua.com.programmer.simpleremote.entity.DataType
+import ua.com.programmer.simpleremote.entity.ListType
+import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
 class SelectDocumentTypeFragment: Fragment() {
 
     private val viewModel: SelectorViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentSelectDataTypeBinding? = null
     private val binding get() = _binding!!
 
@@ -29,7 +32,6 @@ class SelectDocumentTypeFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSelectDataTypeBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -37,7 +39,8 @@ class SelectDocumentTypeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                openDocumentList(item.code)
+                sharedViewModel.setListType(item)
+                openDocumentList(item.code, item.description)
             },
         )
         val recycler = binding.recycler
@@ -49,8 +52,8 @@ class SelectDocumentTypeFragment: Fragment() {
         }
     }
 
-    private fun openDocumentList(type: String) {
-        val action = SelectDocumentTypeFragmentDirections.actionSelectDocumentTypeFragmentToDocumentListFragment(type)
+    private fun openDocumentList(type: String, title: String) {
+        val action = SelectDocumentTypeFragmentDirections.actionSelectDocumentTypeFragmentToDocumentListFragment(type, title)
         findNavController().navigate(action)
     }
 
@@ -60,11 +63,11 @@ class SelectDocumentTypeFragment: Fragment() {
     }
 
     private class ItemsListAdapter(
-        private val onItemClicked: (DataType) -> Unit
-    ): ListAdapter<DataType, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
+        private val onItemClicked: (ListType) -> Unit
+    ): ListAdapter<ListType, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
         class ItemViewHolder(private var binding: SelectListItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: DataType) {
+            fun bind(item: ListType) {
                 binding.apply {
                     itemDescription.text = item.description
                 }
@@ -72,13 +75,13 @@ class SelectDocumentTypeFragment: Fragment() {
         }
 
         companion object {
-            private val DiffCallback = object : DiffUtil.ItemCallback<DataType>() {
+            private val DiffCallback = object : DiffUtil.ItemCallback<ListType>() {
 
-                override fun areItemsTheSame(oldItem: DataType, newItem: DataType): Boolean {
+                override fun areItemsTheSame(oldItem: ListType, newItem: ListType): Boolean {
                     return oldItem.code == newItem.code
                 }
 
-                override fun areContentsTheSame(oldItem: DataType, newItem: DataType): Boolean {
+                override fun areContentsTheSame(oldItem: ListType, newItem: ListType): Boolean {
                     return oldItem == newItem
                 }
 

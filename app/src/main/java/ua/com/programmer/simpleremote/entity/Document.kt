@@ -4,6 +4,7 @@ data class Document(
     val guid: String = "",
     val isProcessed: Int = 0,
     val isDeleted: Int = 0,
+    val title: String = "",
     val number: String = "",
     val date: String = "",
     val company: String = "",

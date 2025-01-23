@@ -7,28 +7,25 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
-import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
-import ua.com.programmer.simpleremote.entity.Document
-import kotlin.getValue
 import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
+import ua.com.programmer.simpleremote.databinding.FragmentDocumentBinding
+import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
-class DocumentListFragment: Fragment() {
+class DocumentFragment: Fragment() {
 
-    private val viewModel: DocumentListViewModel by viewModels()
+    private val viewModel: DocumentViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    private var _binding : FragmentDocumentsListBinding? = null
+    private var _binding : FragmentDocumentBinding? = null
     private val binding get() = _binding!!
-    private val navigationArgs: DocumentListFragmentArgs by navArgs()
+    private val navigationArgs: DocumentFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,33 +37,80 @@ class DocumentListFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentDocumentsListBinding.inflate(inflater, container, false)
+        _binding = FragmentDocumentBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        sharedViewModel.document.observe(viewLifecycleOwner) {
+            it?.let {
+                bind(it)
+                viewModel.setDocumentId(it.guid)
+            }
+        }
+
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                sharedViewModel.setDocument(item)
-                openDocument(viewModel.type, viewModel.title)
+                //sharedViewModel.setDocument(item)
             },
         )
-        val recycler = binding.documentsRecycler
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-
-        viewModel.documents.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
-        binding.documentsSwipe.setOnRefreshListener {
-            binding.documentsSwipe.isRefreshing = false
-        }
     }
 
-    private fun openDocument(type: String, title: String) {
-        val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type)
-        this.findNavController().navigate(action)
+    private fun bind(item: Document) {
+        binding.apply {
+            documentTitle.text = viewModel.title
+            documentNumber.text = item.number
+            documentDate.text = item.date
+            documentHeaderNotes.text = item.notes
+
+            documentContractor.text = item.contractor
+            documentHeaderContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
+
+            if (item.cacheGUID.isNotEmpty()) {
+                documentIcon.setImageResource(R.drawable.sharp_help_outline_24)
+            }else if (item.isDeleted == 1) {
+                documentIcon.setImageResource(R.drawable.twotone_close_24)
+            }else if (item.isProcessed == 1) {
+                documentIcon.setImageResource(R.drawable.twotone_check_box_24)
+            }else{
+                documentIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
+            }
+
+            if (item.contractor.isNotEmpty()) {
+                documentContractor.text = item.contractor
+                documentContractor.visibility = View.VISIBLE
+            } else {
+                documentContractor.visibility = View.GONE
+            }
+
+            if (item.field1.isEmpty()) {
+                documentHeaderField1.visibility = View.GONE
+            } else {
+                documentField1Name.text = item.field1
+                documentHeaderField1.visibility = View.VISIBLE
+            }
+            if (item.field2.isEmpty()) {
+                documentHeaderField2.visibility = View.GONE
+            } else {
+                documentField2Name.text = item.field2
+                documentHeaderField2.visibility = View.VISIBLE
+            }
+            if (item.field3.isEmpty()) {
+                documentHeaderField3.visibility = View.GONE
+            } else {
+                documentField3Name.text = item.field3
+                documentHeaderField3.visibility = View.VISIBLE
+            }
+            if (item.field4.isEmpty()) {
+                documentHeaderField4.visibility = View.GONE
+            } else {
+                documentField4Name.text = item.field4
+                documentHeaderField4.visibility = View.VISIBLE
+            }
+
+        }
     }
 
     override fun onDestroyView() {

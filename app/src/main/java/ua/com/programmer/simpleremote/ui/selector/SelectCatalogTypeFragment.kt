@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
-import ua.com.programmer.simpleremote.entity.DataType
+import ua.com.programmer.simpleremote.entity.ListType
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -55,11 +55,11 @@ class SelectCatalogTypeFragment: Fragment() {
     }
 
     private class ItemsListAdapter(
-        private val onItemClicked: (DataType) -> Unit
-    ): ListAdapter<DataType, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
+        private val onItemClicked: (ListType) -> Unit
+    ): ListAdapter<ListType, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
         class ItemViewHolder(private var binding: SelectListItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: DataType) {
+            fun bind(item: ListType) {
                 binding.apply {
                     itemDescription.text = item.description
                 }
@@ -67,13 +67,13 @@ class SelectCatalogTypeFragment: Fragment() {
         }
 
         companion object {
-            private val DiffCallback = object : DiffUtil.ItemCallback<DataType>() {
+            private val DiffCallback = object : DiffUtil.ItemCallback<ListType>() {
 
-                override fun areItemsTheSame(oldItem: DataType, newItem: DataType): Boolean {
+                override fun areItemsTheSame(oldItem: ListType, newItem: ListType): Boolean {
                     return oldItem.code == newItem.code
                 }
 
-                override fun areContentsTheSame(oldItem: DataType, newItem: DataType): Boolean {
+                override fun areContentsTheSame(oldItem: ListType, newItem: ListType): Boolean {
                     return oldItem == newItem
                 }
 

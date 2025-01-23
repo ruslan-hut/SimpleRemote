@@ -118,7 +118,7 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_document_coordinator)
+        setContentView(R.layout.fragment_document)
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.document)

@@ -41,5 +41,25 @@
             android:name="type"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_documentListFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/documentFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.DocumentFragment"
+        android:label="@string/document" >
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>
