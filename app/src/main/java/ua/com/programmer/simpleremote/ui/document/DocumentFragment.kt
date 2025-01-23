@@ -2,24 +2,34 @@ package ua.com.programmer.simpleremote.ui.document
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
+import ua.com.programmer.simpleremote.databinding.DocumentContentItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentBinding
+import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
-class DocumentFragment: Fragment() {
+class DocumentFragment: Fragment(), MenuProvider {
 
     private val viewModel: DocumentViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
@@ -38,6 +48,10 @@ class DocumentFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentDocumentBinding.inflate(inflater)
+
+        val menuHost : MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         return binding.root
     }
 
@@ -50,12 +64,35 @@ class DocumentFragment: Fragment() {
                 viewModel.setDocumentId(it.guid)
             }
         }
+        sharedViewModel.barcode.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                viewModel.onBarcodeRead(it)
+                sharedViewModel.clearBarcode()
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.progressBar.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        }
+        viewModel.product.observe(viewLifecycleOwner) {
+            onProductReceived(it)
+        }
 
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
                 //sharedViewModel.setDocument(item)
             },
         )
+        val recycler = binding.documentContent
+        recycler.adapter = adapter
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.content.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
+        }
+        viewModel.isEditable.observe(viewLifecycleOwner) {
+            binding.bottomBar.visibility = if (it) View.VISIBLE else View.GONE
+        }
     }
 
     private fun bind(item: Document) {
@@ -113,78 +150,86 @@ class DocumentFragment: Fragment() {
         }
     }
 
+    private fun onProductReceived(product: Product) {
+        if (product.id.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.warn_no_barcode, Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(requireContext(), product.description, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.document_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.edit_document -> {
+                viewModel.enableEdit()
+            }
+            R.id.delete_document -> {
+                //
+            }
+            R.id.save_document -> {
+                viewModel.saveDocument()
+            }
+            R.id.refresh -> {
+                //
+            }
+            else -> return false
+        }
+        return true
+    }
+
     private class ItemsListAdapter(
-        private val onItemClicked: (Document) -> Unit
-    ): ListAdapter<Document, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
+        private val onItemClicked: (Content) -> Unit
+    ): ListAdapter<Content, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
-        class ItemViewHolder(private var binding: DocumentsListItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: Document) {
+        class ItemViewHolder(private var binding: DocumentContentItemBinding): RecyclerView.ViewHolder(binding.root) {
+            fun bind(item: Content) {
                 binding.apply {
-                    itemNumber.text = item.number
-                    itemDate.text = item.date
-                    itemCompany.text = item.company
-                    itemWarehouse.text = item.warehouse
+                    itemLineNumber.text = "${item.line}"
+                    itemDescription.text = item.description
+                    itemCode.text = item.code
 
-                    itemContractor.text = item.contractor
-                    itemContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
+                    itemCode2.text = item.code2
+                    itemCode2.visibility = if (item.code2.isEmpty()) View.GONE else View.VISIBLE
 
-                    itemField1.text = item.field1
-                    itemField1.visibility = if (item.field1.isEmpty()) View.GONE else View.VISIBLE
-                    itemField2.text = item.field2
-                    itemField2.visibility = if (item.field2.isEmpty()) View.GONE else View.VISIBLE
-                    itemField3.text = item.field3
-                    itemField3.visibility = if (item.field3.isEmpty()) View.GONE else View.VISIBLE
-                    itemField4.text = item.field4
-                    itemField4.visibility = if (item.field4.isEmpty()) View.GONE else View.VISIBLE
+                    itemCode3.text = item.code3
+                    itemCode3.visibility = if (item.code3.isEmpty()) View.GONE else View.VISIBLE
 
-                    val sumText = if (item.currency.isEmpty()) item.sum else "${item.sum} ${item.currency}"
-                    itemSum.text = sumText
+                    itemRest.text = item.rest
+                    itemRest.visibility = if (item.rest.isEmpty()) View.GONE else View.VISIBLE
+                    itemRestTitle.visibility = if (item.rest.isEmpty()) View.GONE else View.VISIBLE
 
-                    if (item.notes.isNotEmpty()) {
-                        itemNotes.text = item.notes
-                        itemNotes.visibility = View.VISIBLE
-                    } else {
-                        itemNotes.visibility = View.GONE
-                    }
+                    itemPrice.text = item.price
+                    itemQuantity.text = item.quantity
+                    itemUnit.text = item.unit
+                    itemSum.text = item.sum
 
-                    if (item.checked) {
-                        itemTextChecked.visibility = View.VISIBLE
-                    } else {
-                        itemTextChecked.visibility = View.INVISIBLE
-                    }
+                    itemNotes.text = item.notes
+                    //itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
-                    if (item.repeated == "1") {
-                        iconRepeat.visibility = View.VISIBLE
-                    } else {
-                        iconRepeat.visibility = View.GONE
-                    }
+                    itemImage.visibility = if (item.image.isEmpty()) View.GONE else View.VISIBLE
+                    //itemImage.setImageURI(item.image.toUri())
 
-                    if (item.cacheGUID.isNotEmpty()) {
-                        itemIcon.setImageResource(R.drawable.sharp_help_outline_24)
-                    }else if (item.isDeleted == 1) {
-                        itemIcon.setImageResource(R.drawable.twotone_close_24)
-                    }else if (item.isProcessed == 1) {
-                        itemIcon.setImageResource(R.drawable.twotone_check_box_24)
-                    }else{
-                        itemIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
-                    }
                 }
             }
         }
 
         companion object {
-            private val DiffCallback = object : DiffUtil.ItemCallback<Document>() {
+            private val DiffCallback = object : DiffUtil.ItemCallback<Content>() {
 
-                override fun areItemsTheSame(oldItem: Document, newItem: Document): Boolean {
-                    return oldItem.guid == newItem.guid
+                override fun areItemsTheSame(oldItem: Content, newItem: Content): Boolean {
+                    return oldItem.line == newItem.line
                 }
 
-                override fun areContentsTheSame(oldItem: Document, newItem: Document): Boolean {
+                override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {
                     return oldItem == newItem
                 }
 
@@ -193,7 +238,7 @@ class DocumentFragment: Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val viewHolder = ItemViewHolder(
-                DocumentsListItemBinding.inflate(
+                DocumentContentItemBinding.inflate(
                     LayoutInflater.from(parent.context), parent, false
                 )
             )

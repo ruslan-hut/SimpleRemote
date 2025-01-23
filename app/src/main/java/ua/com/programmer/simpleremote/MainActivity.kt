@@ -1,6 +1,8 @@
 package ua.com.programmer.simpleremote
 
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -23,7 +25,10 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel : SharedViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
+
     private var backPressedTime: Long = 0
+    private var barcode = StringBuilder()
+    private var lastKeystrokeTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,5 +78,34 @@ class MainActivity : AppCompatActivity() {
         val navController = this.findNavController(R.id.nav_host_container)
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        event.let {
+            if (it.action == KeyEvent.ACTION_DOWN) {
+                val currentTime = System.currentTimeMillis()
+
+                if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > 60) {
+                    barcode.clear()
+                }
+                when (it.keyCode) {
+                    KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_TAB -> {
+                        viewModel.onBarcodeRead(barcode.toString())
+                        barcode.clear()
+                        return true
+                    }
+                    else -> {
+                        val char = it.unicodeChar.toChar()
+                        if (Character.isDigit(char) || Character.isLetter(char)) {
+                            barcode.append(char)
+                        }
+                    }
+                }
+
+                lastKeystrokeTime = currentTime
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
 
 }

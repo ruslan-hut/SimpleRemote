@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -16,13 +15,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
 import ua.com.programmer.simpleremote.entity.ListType
-import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
 class SelectDocumentTypeFragment: Fragment() {
 
     private val viewModel: SelectorViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentSelectDataTypeBinding? = null
     private val binding get() = _binding!!
 
@@ -39,7 +36,6 @@ class SelectDocumentTypeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                sharedViewModel.setListType(item)
                 openDocumentList(item.code, item.description)
             },
         )

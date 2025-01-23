@@ -21,6 +21,8 @@ class SharedViewModel @Inject constructor(
     private val _document = MutableLiveData<Document>()
     val document get() = _document
 
+    val barcode = MutableLiveData<String>()
+
     init {
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
@@ -31,5 +33,14 @@ class SharedViewModel @Inject constructor(
 
     fun setDocument(doc: Document) {
         _document.value = doc
+    }
+
+    fun onBarcodeRead(value: String) {
+        if (value.isBlank() || value.length < 10) return
+        barcode.value = value
+    }
+
+    fun clearBarcode() {
+        barcode.value = ""
     }
 }

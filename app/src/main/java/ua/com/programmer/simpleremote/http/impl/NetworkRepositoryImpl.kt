@@ -17,7 +17,9 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
+import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.UserOptions
 import ua.com.programmer.simpleremote.http.entity.CheckRequest
 import ua.com.programmer.simpleremote.http.entity.CheckResponse
@@ -35,10 +37,10 @@ import javax.inject.Singleton
 
 @Singleton
 class NetworkRepositoryImpl @Inject constructor(
-    private val connectionRepo: ConnectionSettingsRepository,
+    connectionRepo: ConnectionSettingsRepository,
+    tokenRefresh: TokenRefresh,
     private val retrofitBuilder: Retrofit.Builder,
     private val httpAuthInterceptor: HttpAuthInterceptor,
-    tokenRefresh: TokenRefresh,
 ) : NetworkRepository {
 
     private val _activeConnection = connectionRepo.currentConnection.stateIn(
@@ -89,6 +91,63 @@ class NetworkRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
             emit(emptyList<Document>())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun documentContent(type: String, guid: String): Flow<List<Content>> = flow {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            emit(emptyList<Content>())
+            return@flow
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "documentContent",
+            data = gson.toJson(DataType(type = type, guid = guid)).toString()
+        )
+
+        try {
+            val response = apiService?.getDocumentContent(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val content = response.data.filterNotNull()
+                Log.d("RC_NetworkRepository", "document content received: ${content.size}")
+                emit(content)
+            } else {
+                Log.e("RC_NetworkRepository", "Failed to fetch content: ${response?.message}")
+                emit(emptyList<Content>())
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while fetching content: ${e.message}")
+            emit(emptyList<Content>())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun barcode(type: String, guid: String, value: String): Flow<Product> = flow {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            emit(Product())
+            return@flow
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "barcode",
+            data = gson.toJson(DataType(type = type, guid = guid, value = value)).toString()
+        )
+
+        try {
+            val response = apiService?.getBarcode(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val products = response.data.filterNotNull()
+                emit(products.firstOrNull() ?: Product())
+            } else {
+                Log.e("RC_NetworkRepository", "Failed to receive barcode: ${response?.message}")
+                emit(Product())
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while receiving barcode: ${e.message}")
+            emit(Product())
         }
     }.flowOn(Dispatchers.IO)
 
