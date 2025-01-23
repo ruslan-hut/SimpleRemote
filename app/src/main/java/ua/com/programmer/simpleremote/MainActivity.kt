@@ -1,7 +1,6 @@
 package ua.com.programmer.simpleremote
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.widget.TextView
 import android.widget.Toast
