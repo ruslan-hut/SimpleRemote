@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import javax.inject.Inject
 
@@ -21,6 +22,9 @@ class SharedViewModel @Inject constructor(
     private val _document = MutableLiveData<Document>()
     val document get() = _document
 
+    private val _product = MutableLiveData<Product>()
+    val product get() = _product
+
     val barcode = MutableLiveData<String>()
 
     init {
@@ -33,6 +37,10 @@ class SharedViewModel @Inject constructor(
 
     fun setDocument(doc: Document) {
         _document.value = doc
+    }
+
+    fun setProduct(prod: Product) {
+        _product.value = prod
     }
 
     fun onBarcodeRead(value: String) {

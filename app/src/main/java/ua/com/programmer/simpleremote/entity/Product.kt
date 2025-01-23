@@ -12,5 +12,6 @@ data class Product(
     val groupCode: String = "",
     val rest: Int = 0,
     val price: Int = 0,
-    val barcode: String = ""
+    val barcode: String = "",
+    val contentItem: Content? = null
 )

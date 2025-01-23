@@ -26,8 +26,8 @@ class DocumentViewModel @Inject constructor(
     private val _isEditable = MutableLiveData<Boolean>(false)
     val isEditable: LiveData<Boolean> get() = _isEditable
 
-    private val _product = MutableLiveData<Product>()
-    val product: LiveData<Product> get() = _product
+    private val _product = MutableLiveData<Product?>()
+    val product: LiveData<Product?> get() = _product
 
     var title = ""
     var type = ""
@@ -47,6 +47,22 @@ class DocumentViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun onItemClicked(item: Content) {
+        if (_isEditable.value == false) return
+        val product = Product(
+            id = item.code,
+            code = item.code,
+            description = item.description,
+            unit = item.unit,
+            contentItem = item
+        )
+        _product.value = product
+    }
+
+    fun resetProduct() {
+        _product.value = null
     }
 
     fun enableEdit() {
@@ -69,8 +85,13 @@ class DocumentViewModel @Inject constructor(
         if (_isEditable.value == false) return
         viewModelScope.launch {
             _isLoading.value = true
-            networkRepository.barcode(type, guid, barcode).collect {
-                _product.value = it
+            networkRepository.barcode(type, guid, barcode).collect { found ->
+                // find product in content
+                val item = _content.value?.find { found.code == it.code }
+                val product = found.copy(
+                    contentItem = item
+                )
+                _product.value = product
                 _isLoading.value = false
             }
         }

@@ -61,5 +61,17 @@
             android:name="type"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_documentFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemEditFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.ItemEditFragment"
+        android:label="@string/item_edit" >
+        <argument
+            android:name="code"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>

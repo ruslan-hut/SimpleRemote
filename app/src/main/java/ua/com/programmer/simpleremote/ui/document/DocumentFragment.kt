@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -74,13 +75,16 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.progressBar.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
-        viewModel.product.observe(viewLifecycleOwner) {
-            onProductReceived(it)
+        viewModel.product.observe(viewLifecycleOwner) { product ->
+            product?.let {
+                onProductReceived(it)
+                viewModel.resetProduct()
+            }
         }
 
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                //sharedViewModel.setDocument(item)
+                viewModel.onItemClicked(item)
             },
         )
         val recycler = binding.documentContent
@@ -151,11 +155,15 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private fun onProductReceived(product: Product) {
+        sharedViewModel.setProduct(product)
+
         if (product.id.isEmpty()) {
             Toast.makeText(requireContext(), R.string.warn_no_barcode, Toast.LENGTH_SHORT).show()
-        }else{
-            Toast.makeText(requireContext(), product.description, Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
