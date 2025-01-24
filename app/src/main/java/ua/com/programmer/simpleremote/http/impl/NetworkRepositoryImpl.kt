@@ -151,6 +151,23 @@ class NetworkRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun reconnect() {
+        _activeOptions.value = UserOptions(isEmpty = false)
+        val settings = _activeConnection.value
+        if (settings == null) {
+            _activeOptions.value = UserOptions(isEmpty = true)
+            return
+        }
+        if (apiService == null) {
+            handleConnectionChange(settings)
+            return
+        }
+        apiService?.let {
+            val updatedOptions = fetchUserOptions(settings)
+            _activeOptions.value = updatedOptions ?: UserOptions(isEmpty = true)
+        }
+    }
+
     private suspend fun handleConnectionChange(settings: ConnectionSettings) {
         val baseUrl = settings.getBaseUrl()
         if (baseUrl.isBlank()) return
@@ -163,7 +180,7 @@ class NetworkRepositoryImpl @Inject constructor(
             apiService = retrofit.create(HttpClientApi::class.java)
 
             val updatedOptions = fetchUserOptions(settings)
-            updatedOptions?.let { _activeOptions.value = it }
+            _activeOptions.value = updatedOptions ?: UserOptions(isEmpty = true)
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Failed to update connection: ${e.message}")
             apiService = null

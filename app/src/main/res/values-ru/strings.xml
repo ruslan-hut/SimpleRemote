@@ -95,4 +95,6 @@
     <string name="copied_to_clipboard">Скопировано в буфер</string>
     <string name="text_erase_data">Данные будут удалены без возможности восстановления. Продолжить?</string>
     <string name="connections_list">Подключения</string>
+    <string name="check_connection">Проверьте настройки подключения</string>
+    <string name="click_to_retry">Нажмите здесь чтобы попробовать снова</string>
 </resources>

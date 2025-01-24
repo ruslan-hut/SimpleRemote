@@ -95,4 +95,6 @@
     <string name="copied_to_clipboard">Скопіювано до буферу</string>
     <string name="text_erase_data">Дані будуть видалені без можливості відновлення. Продовжити?</string>
     <string name="connections_list">Підключення</string>
+    <string name="check_connection">Перевірте налаштування підключення</string>
+    <string name="click_to_retry">Нажміть тут щоб спробувати знову</string>
 </resources>

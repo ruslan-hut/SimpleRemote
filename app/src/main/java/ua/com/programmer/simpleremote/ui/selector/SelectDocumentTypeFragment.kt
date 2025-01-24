@@ -44,7 +44,22 @@ class SelectDocumentTypeFragment: Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.documents.observe(viewLifecycleOwner) {
+            if (it.isEmpty()) {
+                binding.cardNoData.visibility = View.VISIBLE
+                binding.recycler.visibility = View.GONE
+            } else {
+                binding.cardNoData.visibility = View.GONE
+                binding.recycler.visibility = View.VISIBLE
+            }
             adapter.submitList(it)
+        }
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.listSwipe.isRefreshing = it
+        }
+
+        binding.cardNoData.setOnClickListener {
+            binding.cardNoData.visibility = View.GONE
+            viewModel.tryReconnect()
         }
     }
 
