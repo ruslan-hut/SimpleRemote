@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
-            android:background="@color/colorWhite"
+            android:background="?attr/android:colorBackground"
             android:padding="4dp">
 
             <ImageView
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/document_title_receive"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <TextView
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/number_sign"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/holder_number"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -70,14 +70,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
-            android:background="@color/colorWhite"
+            android:background="?attr/android:colorBackground"
             android:padding="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/date"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <TextView
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/holder_number"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -99,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
-            android:background="@color/colorWhite"
+            android:background="?attr/android:colorBackground"
             android:paddingStart="4dp"
             android:paddingTop="8dp"
             android:paddingEnd="4dp"
@@ -109,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/store"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <TextView
@@ -123,7 +123,7 @@
                 android:layout_weight="1"
                 android:drawableEnd="@drawable/sharp_more_horiz_24"
                 android:text="@string/holder_number"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -132,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
-            android:background="@color/colorWhite"
+            android:background="?attr/android:colorBackground"
             android:paddingStart="4dp"
             android:paddingTop="8dp"
             android:paddingEnd="4dp"
@@ -142,7 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/contractor"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
             <TextView
@@ -156,7 +156,7 @@
                 android:layout_weight="1"
                 android:drawableEnd="@drawable/sharp_more_horiz_24"
                 android:text="@string/holder_number"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -195,7 +195,7 @@
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/darkPrimary"
+        android:background="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -214,12 +214,13 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/background_rounded_corner_accent"
-            android:drawableStart="@drawable/twotone_camera_24"
+            android:textColor="?attr/colorOnPrimaryContainer"
             android:padding="8dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="@string/header_scanner"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            app:drawableStartCompat="@drawable/twotone_camera_24"/>
 
         <TextView
             android:id="@+id/add_item_button"
@@ -230,12 +231,13 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/background_rounded_corner_accent"
-            android:drawableStart="@drawable/sharp_playlist_add_24"
+            android:textColor="?attr/colorOnPrimaryContainer"
             android:padding="8dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="@string/add_line"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            app:drawableStartCompat="@drawable/sharp_playlist_add_24" />
 
         <TextView
             android:layout_width="0dp"

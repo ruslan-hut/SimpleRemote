@@ -32,7 +32,8 @@
                     android:paddingTop="8dp"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
-                    android:src="@drawable/twotone_check_box_outline_blank_24"/>
+                    android:src="@drawable/twotone_check_box_outline_blank_24"
+                    app:tint="?attr/colorOnBackground" />
                 <ImageView
                     android:id="@+id/icon_repeat"
                     android:layout_width="wrap_content"
@@ -40,7 +41,8 @@
                     android:paddingTop="4dp"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
-                    android:src="@drawable/baseline_replay_black_24"/>
+                    android:src="@drawable/baseline_replay_black_24"
+                    app:tint="?attr/colorOnBackground" />
             </LinearLayout>
 
 
@@ -59,13 +61,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:id="@+id/item_number"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:text="@string/sample_text"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/item_date"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:text="@string/sample_text"/>
                 </LinearLayout>
 
@@ -88,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_contractor"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:textStyle="bold"
                     android:maxLines="1"
                     android:text="@string/sample_text"/>
@@ -96,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field1"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:textStyle="bold"
                     android:maxLines="1"
                     android:text="@string/sample_text"/>
@@ -105,21 +107,21 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field2"
                     android:maxLines="1"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field3"
                     android:maxLines="1"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_field4"
                     android:maxLines="1"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_text"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -130,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/checked"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="?attr/colorPrimaryContainer"
                         android:textStyle="bold"/>
                     <TextView
                         android:layout_weight="1"
@@ -140,7 +142,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/item_sum"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:text="@string/sample_number"/>
                 </LinearLayout>
                 <TextView

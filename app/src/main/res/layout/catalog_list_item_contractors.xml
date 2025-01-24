@@ -43,7 +43,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:text="@string/sample_text"
-                    android:textColor="@color/colorPrimaryDark"/>
+                    android:textColor="?attr/colorOnBackground"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"

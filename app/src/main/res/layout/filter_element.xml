@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="?attr/colorOnBackground"
             android:text="@string/sample_text"/>
         <TextView
             android:layout_width="8sp"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:drawableEnd="@drawable/sharp_more_horiz_24"
             android:textSize="16sp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="?attr/colorOnBackground"
             android:text="@string/sample_text"
             android:textStyle="bold"/>
     </LinearLayout>

@@ -8,7 +8,7 @@
     android:paddingTop="1dp"
     android:paddingBottom="1dp"
     android:layout_margin="1dp"
-    android:background="@color/colorWhite">
+    android:background="?attr/android:colorBackground">
 
     <ImageView
         android:id="@+id/item_image"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_text"/>
                 <ImageView
                     android:id="@+id/icon_star"
@@ -75,7 +75,7 @@
                 android:layout_gravity="center"
                 android:padding="4dp"
                 android:background="@color/colorLight"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:text="@string/sample_number"/>
 
@@ -83,7 +83,7 @@
                 android:id="@+id/item_code3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp"
                 android:text="@string/sample_number"/>
 

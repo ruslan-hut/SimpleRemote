@@ -37,8 +37,8 @@
         android:layout_marginTop="20dp"
         android:padding="8dp"
         android:textSize="16sp"
-        android:background="@color/darkAccent"
-        android:textColor="@color/colorWhite"
+        android:background="?attr/colorPrimaryContainer"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:text="@string/no_data"/>
 
 

@@ -38,7 +38,7 @@
             android:id="@+id/text_lines"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
+            android:background="?attr/android:colorBackground"
             android:paddingRight="8dp"
             android:paddingLeft="8dp"
             android:orientation="vertical">

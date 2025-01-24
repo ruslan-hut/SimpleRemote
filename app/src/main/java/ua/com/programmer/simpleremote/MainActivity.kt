@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
@@ -38,12 +39,16 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.selectDocumentTypeFragment), drawerLayout
+            setOf(
+                R.id.selectDocumentTypeFragment,
+                R.id.selectCatalogTypeFragment
+                ), drawerLayout
         )
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_container) as NavHostFragment
         val navController = navHostFragment.navController
 
+        setupActionBarWithNavController(navController, appBarConfiguration)
         NavigationUI.setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(binding.navView, navController)
 

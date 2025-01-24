@@ -18,8 +18,9 @@
             android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/darkPrimary"
-            android:elevation="4dp" />
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="?attr/colorOnPrimary"
+            android:elevation="4dp"/>
 
         <androidx.fragment.app.FragmentContainerView
             android:name="androidx.navigation.fragment.NavHostFragment"

@@ -10,7 +10,8 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
@@ -31,13 +32,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:padding="4dp">
 
                     <ImageView
                         android:id="@+id/document_icon"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        app:tint="?attr/colorOnPrimaryContainer" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -48,7 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/document_title_receive"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -59,7 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/number_sign"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -68,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/holder_number"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -78,14 +80,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:padding="4dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/date"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -97,7 +99,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/holder_number"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -107,7 +109,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -117,7 +119,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contractor"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -130,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -140,7 +142,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -151,7 +153,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -165,7 +167,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -175,7 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -186,7 +188,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -200,7 +202,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -210,7 +212,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -221,7 +223,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -235,7 +237,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -245,7 +247,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -256,7 +258,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <TextView
@@ -270,7 +272,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/holder_text"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -280,7 +282,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
@@ -291,7 +293,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/checked"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorOnBackground"
                         android:textSize="16sp" />
 
                     <CheckBox
@@ -305,7 +307,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/colorWhite"
+                    android:background="?attr/android:colorBackground"
                     android:hint="@string/notes"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
@@ -344,7 +346,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/darkPrimary">
+        android:background="?attr/colorPrimary">
 
         <TextView
             android:layout_width="0dp"
@@ -365,7 +367,8 @@
             android:paddingEnd="32dp"
             android:text="@string/header_scanner"
             android:textAlignment="center"
-            app:drawableStartCompat="@drawable/twotone_camera_24" />
+            app:drawableStartCompat="@drawable/twotone_camera_24"
+            app:tint="?attr/colorOnPrimaryContainer" />
 
         <TextView
             android:id="@+id/add_item_button"
@@ -381,7 +384,8 @@
             android:paddingEnd="32dp"
             android:text="@string/add_line"
             android:textAlignment="center"
-            app:drawableStartCompat="@drawable/sharp_playlist_add_24" />
+            app:drawableStartCompat="@drawable/sharp_playlist_add_24"
+            app:tint="?attr/colorOnPrimaryContainer" />
 
         <TextView
             android:layout_width="0dp"
