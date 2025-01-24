@@ -62,6 +62,9 @@ class DocumentListFragment: Fragment() {
         binding.documentsSwipe.setOnRefreshListener {
             binding.documentsSwipe.isRefreshing = false
         }
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.documentsSwipe.isRefreshing = it
+        }
     }
 
     private fun openDocument(type: String, title: String) {

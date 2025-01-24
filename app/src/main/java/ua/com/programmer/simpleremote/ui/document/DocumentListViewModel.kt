@@ -18,6 +18,9 @@ class DocumentListViewModel @Inject constructor(
     private val _documents = MutableLiveData<List<Document>>()
     val documents: LiveData<List<Document>> get() = _documents
 
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     var title: String = ""
     var type: String = ""
 
@@ -25,11 +28,14 @@ class DocumentListViewModel @Inject constructor(
         this.title = title ?: ""
         type?.let {
             this.type = it
+            _isLoading.value = true
             viewModelScope.launch {
                 networkRepository.documents(it).collect {
                     _documents.value = it
+                    _isLoading.value = false
                 }
             }
         }
     }
+
 }
