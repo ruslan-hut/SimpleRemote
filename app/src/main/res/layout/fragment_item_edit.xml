@@ -232,6 +232,7 @@
             android:paddingTop="8dp"
             android:paddingRight="16dp"
             android:paddingBottom="8dp"
+            android:textColor="?attr/colorOnTertiary"
             android:text="@string/action_save"
             android:textAllCaps="true" />
     </LinearLayout>

@@ -7,7 +7,7 @@
     android:paddingRight="2dp"
     android:paddingTop="1dp"
     android:paddingBottom="1dp"
-    android:layout_margin="1dp"
+    android:layout_margin="2dp"
     android:background="?attr/android:colorBackground">
 
     <ImageView

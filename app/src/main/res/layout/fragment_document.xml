@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".deprecated.DocumentActivity">
+    android:background="?attr/colorSurfaceVariant"
+    tools:context=".ui.document.DocumentFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -367,8 +368,8 @@
             android:paddingEnd="32dp"
             android:text="@string/header_scanner"
             android:textAlignment="center"
-            app:drawableStartCompat="@drawable/twotone_camera_24"
-            app:tint="?attr/colorOnPrimaryContainer" />
+            android:textColor="?attr/colorOnTertiary"
+            app:drawableStartCompat="@drawable/twotone_camera_24" />
 
         <TextView
             android:id="@+id/add_item_button"
@@ -384,8 +385,8 @@
             android:paddingEnd="32dp"
             android:text="@string/add_line"
             android:textAlignment="center"
-            app:drawableStartCompat="@drawable/sharp_playlist_add_24"
-            app:tint="?attr/colorOnPrimaryContainer" />
+            android:textColor="?attr/colorOnTertiary"
+            app:drawableStartCompat="@drawable/sharp_playlist_add_24" />
 
         <TextView
             android:layout_width="0dp"
