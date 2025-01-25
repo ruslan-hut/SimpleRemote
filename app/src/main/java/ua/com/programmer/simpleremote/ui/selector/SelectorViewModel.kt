@@ -26,20 +26,27 @@ class SelectorViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private val _isError = MutableLiveData<Boolean>()
+    val isError: LiveData<Boolean> get() = _isError
+
     init {
         viewModelScope.launch {
             _isLoading.value = true
             networkRepo.userOptions.collect {
                 _documents.value = it.document
                 _catalogs.value = it.catalog
+
                 _isLoading.value = false
+                _isError.value = it.isEmpty
             }
         }
     }
 
     fun tryReconnect() {
+        _isError.value = false
+        _isLoading.value = true
+
         viewModelScope.launch {
-            _isLoading.value = true
             delay(3000)
             networkRepo.reconnect()
             _isLoading.value = false
