@@ -26,7 +26,12 @@ class ConnectionSettingsImpl @Inject constructor(
     }
 
     override suspend fun save(connection: ConnectionSettings): Long {
-        return connectionSettingsDao.insert(connection)
+        val id = connectionSettingsDao.insert(connection)
+        val current = connectionSettingsDao.checkCurrent()
+        if (current == null) {
+            connectionSettingsDao.setIsCurrent(connection.guid)
+        }
+        return id
     }
 
     override suspend fun delete(guid: String): Int {
@@ -37,6 +42,20 @@ class ConnectionSettingsImpl @Inject constructor(
         if (guid.isEmpty()) return
         connectionSettingsDao.resetIsCurrent()
         connectionSettingsDao.setIsCurrent(guid)
+    }
+
+    override suspend fun checkAvailableConnection() {
+        val current = connectionSettingsDao.checkCurrent()
+        if (current == null) {
+            val first = connectionSettingsDao.getFirst()
+            if (first != null) {
+                connectionSettingsDao.setIsCurrent(first.guid)
+                return
+            }
+            val demo = ConnectionSettings.Builder.buildDemo()
+            connectionSettingsDao.insert(demo)
+            connectionSettingsDao.setIsCurrent(demo.guid)
+        }
     }
 
 }

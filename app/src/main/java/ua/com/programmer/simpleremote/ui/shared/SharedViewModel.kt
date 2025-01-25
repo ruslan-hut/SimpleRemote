@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.entity.Content
@@ -34,6 +35,9 @@ class SharedViewModel @Inject constructor(
     val barcode = MutableLiveData<String>()
 
     init {
+        viewModelScope.launch(Dispatchers.IO) {
+            connectionRepo.checkAvailableConnection()
+        }
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
                 _connection.value = it ?: ConnectionSettings.Builder.buildDemo()

@@ -14,6 +14,12 @@ interface ConnectionSettingsDao {
     @Query("SELECT * FROM connection_settings WHERE is_current=1 LIMIT 1")
     fun getCurrent(): Flow<ConnectionSettings?>
 
+    @Query("SELECT * FROM connection_settings WHERE is_current=1 LIMIT 1")
+    fun checkCurrent(): ConnectionSettings?
+
+    @Query("SELECT * FROM connection_settings LIMIT 1")
+    fun getFirst(): ConnectionSettings?
+
     @Query("SELECT * FROM connection_settings ORDER BY description")
     fun getAll(): Flow<List<ConnectionSettings>>
 

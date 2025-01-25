@@ -10,5 +10,5 @@ interface ConnectionSettingsRepository {
     suspend fun save(connection: ConnectionSettings): Long
     suspend fun delete(guid: String): Int
     suspend fun setCurrent(guid: String)
-
+    suspend fun checkAvailableConnection()
 }
