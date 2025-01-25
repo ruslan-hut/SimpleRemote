@@ -32,6 +32,18 @@ abstract class AppDatabase: RoomDatabase() {
                         "is_current INTEGER NOT NULL DEFAULT 0," +
                         "auto_connect INTEGER NOT NULL DEFAULT 0," +
                         "PRIMARY KEY(guid))")
+
+                // copy data from old connections table
+                db.execSQL("INSERT INTO connection_settings (" +
+                        "description, server_address, database_name, user, password, guid" +
+                        ") SELECT " +
+                        "alias, server_address, database_name, user_name, user_password, LOWER(HEX(RANDOMBLOB(16))" +
+                        ") FROM connections")
+
+                db.execSQL("DROP TABLE connections")
+
+                // set current connection
+                db.execSQL("UPDATE connection_settings SET is_current = 1 WHERE guid = (SELECT MIN(guid) FROM connection_settings)")
             }
         }
 

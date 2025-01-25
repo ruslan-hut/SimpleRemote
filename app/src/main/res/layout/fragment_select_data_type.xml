@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:cardBackgroundColor="?attr/colorError"
+        app:cardBackgroundColor="?attr/colorTertiaryContainer"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp">
 
@@ -23,13 +23,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textColor="?attr/colorOnTertiaryContainer"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:text="@string/save_error_warn"/>
+                android:text="@string/error_no_data"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="?attr/colorOnError"
+                android:textColor="?attr/colorOnTertiaryContainer"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:text="@string/click_to_retry"/>
         </LinearLayout>
