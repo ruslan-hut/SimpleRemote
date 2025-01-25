@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.selector
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

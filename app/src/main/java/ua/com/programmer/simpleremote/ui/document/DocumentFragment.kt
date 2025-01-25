@@ -226,7 +226,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                     itemCollect.text = item.collect
 
                     itemNotes.text = item.notes
-                    //itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
+                    itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
                     itemImage.visibility = if (item.image.isEmpty()) View.GONE else View.VISIBLE
                     //itemImage.setImageURI(item.image.toUri())

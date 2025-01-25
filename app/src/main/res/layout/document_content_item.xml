@@ -40,8 +40,8 @@
                     android:id="@+id/item_description"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_height="match_parent"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_text"/>
@@ -65,7 +65,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textColor="@color/colorSecondaryText"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="?attr/colorTertiary"
                 android:text="@string/sample_number"/>
 
             <TextView
@@ -74,9 +75,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="4dp"
-                android:background="@color/colorLight"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp"
+                android:background="?attr/colorPrimaryContainer"
+                android:textColor="?attr/colorOnPrimaryContainer"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="@string/sample_number"/>
 
             <TextView
@@ -84,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:text="@string/sample_number"/>
 
             <LinearLayout
@@ -94,7 +95,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:text="@string/title_rest"/>
                 <TextView
                     android:id="@+id/item_rest"
@@ -102,7 +103,8 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
-                    android:textSize="16sp"
+                    android:textColor="?attr/colorSecondary"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:text="@string/sample_number"/>
             </LinearLayout>
 
@@ -116,14 +118,16 @@
                     android:id="@+id/item_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorDarkGrey"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_number"/>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
+                    android:gravity="center_vertical"
                     android:text="@string/multiply_sign"/>
                 <TextView
                     android:layout_width="8dp"
@@ -134,16 +138,17 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
-                    android:textSize="18sp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textStyle="bold"
-                    android:textColor="@color/colorDarkGrey"
+                    android:textColor="?attr/colorOnBackground"
                     android:text="@string/sample_number"/>
 
                 <TextView
                     android:id="@+id/item_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorDarkGrey"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_text"/>
 
             </LinearLayout>
@@ -155,6 +160,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="@string/title_sum"/>
                 <TextView
                     android:id="@+id/item_sum"
@@ -162,8 +168,8 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorDarkGrey"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_number"/>
                 <TextView
                     android:id="@+id/item_collect"
@@ -173,8 +179,9 @@
                     android:gravity="end"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
-                    android:textSize="16sp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/colorSecondaryText"
+                    android:textStyle="bold"
                     android:text="@string/sample_number"/>
             </LinearLayout>
 
@@ -183,7 +190,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="@color/colorSecondaryText"
+                android:textColor="?attr/colorTertiary"
                 android:text="@string/sample_text"/>
 
         </LinearLayout>

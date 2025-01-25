@@ -67,7 +67,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/item_date"
-                        android:textColor="?attr/colorOnBackground"
+                        android:textColor="?attr/colorSecondary"
                         android:text="@string/sample_text"/>
                 </LinearLayout>
 
@@ -76,14 +76,14 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/item_company"
                     android:maxLines="1"
-                    android:textColor="@color/colorGrey"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_warehouse"
                     android:maxLines="1"
-                    android:textColor="@color/colorGrey"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_text"/>
 
                 <TextView
@@ -92,7 +92,6 @@
                     android:id="@+id/item_contractor"
                     android:textColor="?attr/colorOnBackground"
                     android:textStyle="bold"
-                    android:maxLines="1"
                     android:text="@string/sample_text"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -132,7 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/checked"
-                        android:textColor="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorTertiary"
                         android:textStyle="bold"/>
                     <TextView
                         android:layout_weight="1"
@@ -142,6 +141,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/item_sum"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="?attr/colorOnBackground"
                         android:text="@string/sample_number"/>
                 </LinearLayout>
@@ -149,6 +149,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/item_notes"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="?attr/colorSecondary"
                     android:text="@string/sample_text"/>
 
             </LinearLayout>
