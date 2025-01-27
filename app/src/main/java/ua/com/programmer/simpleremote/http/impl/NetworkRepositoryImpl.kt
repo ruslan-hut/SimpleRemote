@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
+import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
@@ -68,7 +69,7 @@ class NetworkRepositoryImpl @Inject constructor(
     override fun documents(type: String): Flow<List<Document>> = flow {
         val options = _activeOptions.value
         if (options.isEmpty) {
-            emit(emptyList<Document>())
+            emit(emptyList())
             return@flow
         }
 
@@ -82,22 +83,21 @@ class NetworkRepositoryImpl @Inject constructor(
             val response = apiService?.getDocuments(options.token, body)
             if (response != null && response.isSuccessful()) {
                 val documents = response.data.filterNotNull()
-                Log.d("RC_NetworkRepository", "documents list received: ${documents.size}")
                 emit(documents)
             } else {
                 Log.e("RC_NetworkRepository", "Failed to fetch documents: ${response?.message}")
-                emit(emptyList<Document>())
+                emit(emptyList())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
-            emit(emptyList<Document>())
+            emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
 
     override fun documentContent(type: String, guid: String): Flow<List<Content>> = flow {
         val options = _activeOptions.value
         if (options.isEmpty) {
-            emit(emptyList<Content>())
+            emit(emptyList())
             return@flow
         }
 
@@ -111,15 +111,48 @@ class NetworkRepositoryImpl @Inject constructor(
             val response = apiService?.getDocumentContent(options.token, body)
             if (response != null && response.isSuccessful()) {
                 val content = response.data.filterNotNull()
-                Log.d("RC_NetworkRepository", "document content received: ${content.size}")
                 emit(content)
             } else {
                 Log.e("RC_NetworkRepository", "Failed to fetch content: ${response?.message}")
-                emit(emptyList<Content>())
+                emit(emptyList())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching content: ${e.message}")
-            emit(emptyList<Content>())
+            emit(emptyList())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>> = flow {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            emit(emptyList())
+            return@flow
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "catalog",
+            data = gson.toJson(
+                DataType(
+                    type = type,
+                    group = group,
+                    documentGUID = docGuid
+                )
+            ).toString()
+        )
+
+        try {
+            val response = apiService?.getCatalog(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val documents = response.data.filterNotNull()
+                emit(documents)
+            } else {
+                Log.e("RC_NetworkRepository", "Failed to fetch catalog: ${response?.message}")
+                emit(emptyList())
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while fetching catalog: ${e.message}")
+            emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
 

@@ -27,7 +27,7 @@ class SelectDocumentTypeFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSelectDataTypeBinding.inflate(inflater, container, false)
         return binding.root
     }

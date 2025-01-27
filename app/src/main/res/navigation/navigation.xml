@@ -32,7 +32,11 @@
     <fragment
         android:id="@+id/selectCatalogTypeFragment"
         android:name="ua.com.programmer.simpleremote.ui.selector.SelectCatalogTypeFragment"
-        android:label="@string/header_catalogs" />
+        android:label="@string/header_catalogs" >
+        <action
+            android:id="@+id/action_selectCatalogTypeFragment_to_catalogListFragment"
+            app:destination="@id/catalogListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/documentListFragment"
         android:name="ua.com.programmer.simpleremote.ui.document.DocumentListFragment"
@@ -73,5 +77,29 @@
             android:name="code"
             app:argType="string"
             app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/catalogListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.catalog.CatalogListFragment"
+        android:label="@string/header_catalogs" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="group"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="docGuid"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_catalogListFragment_self"
+            app:destination="@id/catalogListFragment" />
     </fragment>
 </navigation>

@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sample_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textStyle="bold" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sample_text"
-                android:textColor="@color/colorDarkGrey" />
+                android:textColor="?attr/colorSecondary" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_code"
-                    android:textColor="@color/colorDarkGrey" />
+                    android:textColor="?attr/colorSecondary" />
 
                 <TextView
                     android:id="@+id/item_code"
@@ -63,7 +63,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
                     android:text="@string/sample_number"
-                    android:textColor="@color/colorDarkGrey" />
+                    android:textColor="?attr/colorSecondary" />
             </LinearLayout>
 
             <LinearLayout
@@ -72,18 +72,19 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/rest_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="2dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
-                    android:background="@color/colorLight">
+                    android:background="?attr/colorTertiaryContainer">
                     <TextView
                         android:id="@+id/rest_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_rest"
-                        android:textColor="@color/colorDarkGrey" />
+                        android:textColor="?attr/colorOnTertiaryContainer" />
 
                     <TextView
                         android:id="@+id/rest_value"
@@ -92,7 +93,8 @@
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
                         android:text="@string/sample_number"
-                        android:textColor="@color/colorDarkGrey"
+                        android:textColor="?attr/colorOnTertiaryContainer"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -101,24 +103,24 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/colorDarkGrey" />
+                    android:textColor="?attr/colorSecondary" />
 
                 <TextView
+                    android:id="@+id/price_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"
                     android:text="@string/title_price"
-                    android:textColor="@color/colorDarkGrey" />
+                    android:textColor="?attr/colorSecondary" />
 
                 <TextView
                     android:id="@+id/item_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sample_number"
-                    android:textColor="@color/colorDarkGrey"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textColor="?attr/colorSecondary"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
             </LinearLayout>
 
         </LinearLayout>

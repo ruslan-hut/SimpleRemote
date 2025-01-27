@@ -3,6 +3,7 @@ package ua.com.programmer.simpleremote.http.client
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
+import ua.com.programmer.simpleremote.http.entity.CatalogListResponse
 import ua.com.programmer.simpleremote.http.entity.CheckRequest
 import ua.com.programmer.simpleremote.http.entity.CheckResponse
 import ua.com.programmer.simpleremote.http.entity.DocumentContentResponse
@@ -23,5 +24,8 @@ interface HttpClientApi {
 
     @POST("pst/{token}")
     suspend fun getBarcode(@Path("token") token: String, @Body data: ListRequest): ProductResponse
+
+    @POST("pst/{token}")
+    suspend fun getCatalog(@Path("token") token: String, @Body data: ListRequest): CatalogListResponse
 
 }

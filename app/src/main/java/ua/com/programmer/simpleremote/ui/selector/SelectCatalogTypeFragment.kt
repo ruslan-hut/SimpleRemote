@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -27,7 +29,7 @@ class SelectCatalogTypeFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSelectDataTypeBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -37,7 +39,7 @@ class SelectCatalogTypeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
-                //viewModel.setCurrentConnection(item.guid)
+                openCatalog(item.code, item.description)
             },
         )
         val recycler = binding.recycler
@@ -58,6 +60,11 @@ class SelectCatalogTypeFragment: Fragment() {
             binding.cardNoData.visibility = View.GONE
             viewModel.tryReconnect()
         }
+    }
+
+    private fun openCatalog(type: String, title: String) {
+        val action = SelectCatalogTypeFragmentDirections.actionSelectCatalogTypeFragmentToCatalogListFragment(type, title, "", "")
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
