@@ -19,6 +19,7 @@ import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
 import ua.com.programmer.simpleremote.entity.Document
 import kotlin.getValue
 import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.entity.isEmpty
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
@@ -92,13 +93,13 @@ class DocumentListFragment: Fragment() {
                     itemContractor.text = item.contractor
                     itemContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
 
-                    itemField1.text = item.field1
+                    itemField1.text = item.field1.value
                     itemField1.visibility = if (item.field1.isEmpty()) View.GONE else View.VISIBLE
-                    itemField2.text = item.field2
+                    itemField2.text = item.field2.value
                     itemField2.visibility = if (item.field2.isEmpty()) View.GONE else View.VISIBLE
-                    itemField3.text = item.field3
+                    itemField3.text = item.field3.value
                     itemField3.visibility = if (item.field3.isEmpty()) View.GONE else View.VISIBLE
-                    itemField4.text = item.field4
+                    itemField4.text = item.field4.value
                     itemField4.visibility = if (item.field4.isEmpty()) View.GONE else View.VISIBLE
 
                     val sumText = if (item.currency.isEmpty()) item.sum else "${item.sum} ${item.currency}"

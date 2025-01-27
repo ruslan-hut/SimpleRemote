@@ -27,6 +27,7 @@ import ua.com.programmer.simpleremote.databinding.FragmentDocumentBinding
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
+import ua.com.programmer.simpleremote.entity.isEmpty
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
@@ -47,7 +48,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentDocumentBinding.inflate(inflater)
 
         val menuHost : MenuHost = requireActivity()
@@ -133,25 +134,25 @@ class DocumentFragment: Fragment(), MenuProvider {
             if (item.field1.isEmpty()) {
                 documentHeaderField1.visibility = View.GONE
             } else {
-                documentField1Name.text = item.field1
+                documentField1Name.text = item.field1.value
                 documentHeaderField1.visibility = View.VISIBLE
             }
             if (item.field2.isEmpty()) {
                 documentHeaderField2.visibility = View.GONE
             } else {
-                documentField2Name.text = item.field2
+                documentField2Name.text = item.field2.value
                 documentHeaderField2.visibility = View.VISIBLE
             }
             if (item.field3.isEmpty()) {
                 documentHeaderField3.visibility = View.GONE
             } else {
-                documentField3Name.text = item.field3
+                documentField3Name.text = item.field3.value
                 documentHeaderField3.visibility = View.VISIBLE
             }
             if (item.field4.isEmpty()) {
                 documentHeaderField4.visibility = View.GONE
             } else {
-                documentField4Name.text = item.field4
+                documentField4Name.text = item.field4.value
                 documentHeaderField4.visibility = View.VISIBLE
             }
 
