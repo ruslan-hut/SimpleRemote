@@ -35,7 +35,9 @@ class ConnectionViewModel @Inject constructor(
 
     fun saveConnection(connection: ConnectionSettings, afterSave: () -> Unit) {
         viewModelScope.launch {
-            connectionRepo.save(connection)
+            withContext(Dispatchers.IO) {
+                connectionRepo.save(connection)
+            }
             withContext(Dispatchers.Main) {
                 afterSave()
             }
@@ -44,7 +46,9 @@ class ConnectionViewModel @Inject constructor(
 
     fun deleteConnection(guid: String, afterDelete: () -> Unit) {
         viewModelScope.launch {
-            connectionRepo.delete(guid)
+            withContext(Dispatchers.IO) {
+                connectionRepo.delete(guid)
+            }
             withContext(Dispatchers.Main) {
                 afterDelete()
             }
