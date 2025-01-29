@@ -89,6 +89,9 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 
+    // Play service
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+
     // Lifecycle libraries
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.7"

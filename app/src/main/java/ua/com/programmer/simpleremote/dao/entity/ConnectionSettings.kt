@@ -30,6 +30,10 @@ data class ConnectionSettings(
     }
 }
 
+fun ConnectionSettings.isDemo(): Boolean {
+    return serverAddress == "hoot.com.ua" && databaseName == "simple"
+}
+
 // Returns truncated guid for log or UI
 fun ConnectionSettings.getGuid(): String {
     return if (guid.length > 7) guid.subSequence(0,8).toString() else "<?>"
