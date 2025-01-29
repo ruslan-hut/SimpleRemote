@@ -1,6 +1,7 @@
 package ua.com.programmer.simpleremote.http.impl
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +56,7 @@ class NetworkRepositoryImpl @Inject constructor(
     private val tokenCounter = AtomicInteger(0)
     private val maxTokenRefresh = 3
     private val gson = Gson()
+    private val logger = FirebaseCrashlytics.getInstance()
 
     init {
         tokenRefresh.setRefreshToken { runBlocking { refreshToken() } }
@@ -78,6 +80,7 @@ class NetworkRepositoryImpl @Inject constructor(
             type = "documents",
             data = gson.toJson(DataType(type = type)).toString()
         )
+        logger.log("request body: $body")
 
         try {
             val response = apiService?.getDocuments(options.token, body)
@@ -90,6 +93,7 @@ class NetworkRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
+            logger.recordException(e)
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -106,6 +110,7 @@ class NetworkRepositoryImpl @Inject constructor(
             type = "documentContent",
             data = gson.toJson(DataType(type = type, guid = guid)).toString()
         )
+        logger.log("request body: $body")
 
         try {
             val response = apiService?.getDocumentContent(options.token, body)
@@ -118,6 +123,7 @@ class NetworkRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching content: ${e.message}")
+            logger.recordException(e)
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -140,6 +146,7 @@ class NetworkRepositoryImpl @Inject constructor(
                 )
             ).toString()
         )
+        logger.log("request body: $body")
 
         try {
             val response = apiService?.getCatalog(options.token, body)
@@ -152,6 +159,7 @@ class NetworkRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching catalog: ${e.message}")
+            logger.recordException(e)
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -168,6 +176,7 @@ class NetworkRepositoryImpl @Inject constructor(
             type = "barcode",
             data = gson.toJson(DataType(type = type, guid = guid, value = value)).toString()
         )
+        logger.log("request body: $body")
 
         try {
             val response = apiService?.getBarcode(options.token, body)
@@ -180,6 +189,7 @@ class NetworkRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while receiving barcode: ${e.message}")
+            logger.recordException(e)
             emit(Product())
         }
     }.flowOn(Dispatchers.IO)
@@ -218,6 +228,7 @@ class NetworkRepositoryImpl @Inject constructor(
             Log.e("RC_NetworkRepository", "Failed to update connection: ${e.message}")
             apiService = null
             _activeOptions.value = UserOptions(isEmpty = true)
+            logger.recordException(e)
         }
     }
 
@@ -251,10 +262,12 @@ class NetworkRepositoryImpl @Inject constructor(
 
     private suspend fun executeCheck(settings: ConnectionSettings): CheckResponse? {
         val body = CheckRequest(userID = settings.guid, type = "check")
+        logger.log("request body: $body")
         return try {
             apiService?.check(settings.guid, body)
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "check call failed: ${e.message}")
+            logger.recordException(e)
             null
         }
     }
