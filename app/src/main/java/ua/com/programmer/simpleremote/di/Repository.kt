@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
 import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
@@ -57,7 +58,11 @@ class NetworkModule {
     @Singleton
     fun provideOkHttpClient(authInterceptor: HttpAuthInterceptor, authenticator: TokenRefresh): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
