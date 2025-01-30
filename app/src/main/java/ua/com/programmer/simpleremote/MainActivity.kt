@@ -13,10 +13,17 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
+import ua.com.programmer.simpleremote.firebase.DeleteOldUsersWorker
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
+import java.util.concurrent.TimeUnit
 
 private lateinit var drawerLayout: DrawerLayout
 
@@ -76,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        scheduleUserCleanupWorker()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -111,5 +119,20 @@ class MainActivity : AppCompatActivity() {
         return super.dispatchKeyEvent(event)
     }
 
+    private fun scheduleUserCleanupWorker() {
+        val workRequest = PeriodicWorkRequestBuilder<DeleteOldUsersWorker>(1, TimeUnit.DAYS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED) // only run when the device is connected to the internet
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DeleteOldUsersWorker",
+            ExistingPeriodicWorkPolicy.KEEP, // don't replace any existing work with the same name
+            workRequest
+        )
+    }
 
 }
