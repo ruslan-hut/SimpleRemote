@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Content
+import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import javax.inject.Inject
@@ -27,6 +28,8 @@ class DocumentViewModel @Inject constructor(
 
     private val _product = MutableLiveData<Product?>()
     val product: LiveData<Product?> get() = _product
+
+    val message = MutableLiveData<String>()
 
     var title = ""
     var type = ""
@@ -69,8 +72,16 @@ class DocumentViewModel @Inject constructor(
         _isEditable.value = true
     }
 
-    fun saveDocument() {
+    fun saveDocument(document: Document) {
         _isEditable.value = false
+        viewModelScope.launch {
+            _isLoading.value = true
+            val msg = networkRepository.saveDocument(document.copy(
+                type = type,
+            ))
+            if (msg.isNotBlank()) message.value = msg
+            _isLoading.value = false
+        }
     }
 
     fun refresh() {
@@ -95,6 +106,10 @@ class DocumentViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun clearMessage() {
+        message.value = ""
     }
 
 }

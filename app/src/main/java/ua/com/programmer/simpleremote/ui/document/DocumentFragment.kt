@@ -88,6 +88,11 @@ class DocumentFragment: Fragment(), MenuProvider {
                 viewModel.resetProduct()
             }
         }
+        viewModel.message.observe(viewLifecycleOwner) {
+            if (it.isEmpty()) return@observe
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            viewModel.clearMessage()
+        }
 
         val adapter = ItemsListAdapter(
             onItemClicked = { item ->
@@ -189,7 +194,9 @@ class DocumentFragment: Fragment(), MenuProvider {
                 //
             }
             R.id.save_document -> {
-                viewModel.saveDocument()
+                viewModel.saveDocument(
+                    sharedViewModel.getDocument()
+                )
             }
             R.id.refresh -> {
                 //

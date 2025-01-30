@@ -64,6 +64,12 @@ class SharedViewModel @Inject constructor(
         _content.value = content
     }
 
+    fun getDocument(): Document {
+        return _document.value?.copy(
+            lines = _content.value ?: emptyList()
+        ) ?: Document()
+    }
+
     fun onBarcodeRead(value: String) {
         if (value.isBlank() || value.length < 10) return
         barcode.value = value

@@ -2,6 +2,7 @@ package ua.com.programmer.simpleremote.entity
 
 data class Document(
     val guid: String = "",
+    val type: String = "",
     val isProcessed: Int = 0,
     val isDeleted: Int = 0,
     val title: String = "",
@@ -19,5 +20,6 @@ data class Document(
     val field4: DocumentField = DocumentField(),
     val repeated: String = "",
     val currency: String = "",
-    val cacheGUID: String = ""
+    val cacheGUID: String = "",
+    val lines: List<Content> = emptyList(),
 )

@@ -31,6 +31,7 @@ import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import ua.com.programmer.simpleremote.http.entity.DataType
 import ua.com.programmer.simpleremote.http.entity.ListRequest
 import ua.com.programmer.simpleremote.http.entity.isSuccessful
+import ua.com.programmer.simpleremote.http.entity.readError
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
@@ -127,6 +128,35 @@ class NetworkRepositoryImpl @Inject constructor(
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun saveDocument(document: Document): String {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            return "Connection error"
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "saveDocument",
+            data = gson.toJson(document).toString()
+        )
+        logger.log("request body: $body")
+
+        try {
+            val response = apiService?.saveDocument(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                return ""
+            } else {
+                val message = response?.readError() ?: ""
+                Log.e("RC_NetworkRepository", "Failed to save document: $message")
+                return message
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while saving document: ${e.message}")
+            logger.recordException(e)
+        }
+        return "Connection error"
+    }
 
     override fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>> = flow {
         val options = _activeOptions.value
