@@ -18,6 +18,7 @@ class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : Worker
     }
 
     private fun deleteOldUserRecords() {
+        Log.d("RC_DeleteOldUsersWorker", "Deleting old user records...")
         val firebase = FirebaseFirestore.getInstance()
         val usersCollection = firebase.collection("users")
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

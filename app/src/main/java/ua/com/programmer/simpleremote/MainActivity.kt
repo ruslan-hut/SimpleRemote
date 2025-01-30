@@ -83,7 +83,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        scheduleUserCleanupWorker()
+        if (BuildConfig.DEBUG) {
+            scheduleUserCleanupWorker()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
