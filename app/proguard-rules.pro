@@ -36,6 +36,7 @@
 # Keep dataclasses used for data access and api calls
  -keep class ua.com.programmer.simpleremote.dao.entity.** { *; }
  -keep class ua.com.programmer.simpleremote.http.entity.** { *; }
+ -keep class ua.com.programmer.simpleremote.entity.** { *; }
 
 ##---------------Begin: proguard configuration for Gson  ----------
  # Gson uses generic type information stored in a class file when working with fields. Proguard

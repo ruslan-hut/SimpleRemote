@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.shared
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -62,7 +61,6 @@ class SharedViewModel @Inject constructor(
     }
 
     fun setDocumentContent(content: List<Content>) {
-        Log.d("RC_SharedViewModel", "setDocumentContent: $content")
         _content.value = content
     }
 
