@@ -57,6 +57,21 @@ android {
         //compose true
         buildConfig true
     }
+
+    // Load local.properties
+    Properties properties = new Properties()
+    if (rootProject.file("local.properties").exists()) {
+        properties.load(rootProject.file("local.properties").newDataInputStream())
+    }
+
+    // Define buildConfigFields
+    buildTypes.each { type ->
+        properties.each { key, value ->
+            if (key != "sdk.dir") { // Exclude sdk.dir
+                type.buildConfigField "String", key, "\"${value}\""
+            }
+        }
+    }
 //    buildToolsVersion '31.0.0'
 }
 

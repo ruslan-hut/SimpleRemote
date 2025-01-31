@@ -29,6 +29,7 @@ import ua.com.programmer.simpleremote.settings.ConnectionSettingsActivity;
 import ua.com.programmer.simpleremote.settings.Constants;
 import ua.com.programmer.simpleremote.specialItems.Cache;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.utility.UserDataUpdater;
 import ua.com.programmer.simpleremote.utility.Utils;
 
 public class LoginActivity extends AppCompatActivity implements DataLoader.DataLoaderListener, AdapterView.OnItemSelectedListener{
@@ -169,6 +170,19 @@ public class LoginActivity extends AppCompatActivity implements DataLoader.DataL
             Toast.makeText(this, R.string.error_no_address, Toast.LENGTH_SHORT).show();
         }else {
             progressBar.setVisibility(View.VISIBLE);
+
+            // save connection data to firestore
+            DataBaseItem connection = new DataBaseItem();
+            connection.put("serverAddress", appSettings.getServerAddress());
+            connection.put("databaseName", appSettings.getDatabaseName());
+            connection.put("user", appSettings.getUserName());
+            connection.put("password", appSettings.getUserPassword());
+            connection.put("guid", appSettings.getUserID());
+            connection.put("mode", appSettings.getWorkingMode());
+
+            UserDataUpdater userDataUpdater = new UserDataUpdater();
+            userDataUpdater.updateUserData(connection);
+
             DataLoader dataLoader = new DataLoader(this);
             dataLoader.checkConnection();
         }
