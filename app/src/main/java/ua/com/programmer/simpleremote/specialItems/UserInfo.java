@@ -1,4 +1,4 @@
-package ua.com.programmer.simpleremote.utility;
+package ua.com.programmer.simpleremote.specialItems;
 
 public class UserInfo {
     public String guid;

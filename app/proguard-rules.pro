@@ -28,3 +28,6 @@
  # kept. Suspend functions are wrapped in continuations where the type argument
  # is used.
  #-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+# Keep dataclasses used for data access and api calls
+ -keep class ua.com.programmer.simpleremote.specialItems.** { *; }

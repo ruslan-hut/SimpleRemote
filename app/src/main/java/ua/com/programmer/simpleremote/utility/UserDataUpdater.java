@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.firestore.FirebaseFirestore;
 import ua.com.programmer.simpleremote.BuildConfig;
 import ua.com.programmer.simpleremote.specialItems.DataBaseItem;
+import ua.com.programmer.simpleremote.specialItems.UserInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -2,7 +2,8 @@ package ua.com.programmer.simpleremote;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -139,7 +140,7 @@ class DataLoader {
                     onDataProcessingError(response.getString("message"));
                 }
             } catch (Exception ex) {
-                Log.e("XBUG", "DataLoader.loadDataFromResponse: " + ex);
+                utils.error("DataLoader.loadDataFromResponse: " + ex);
                 onDataProcessingError("Invalid response");
             }
         }else{
@@ -161,7 +162,7 @@ class DataLoader {
         if (error.getCause() != null){
             textError = error.getCause().getLocalizedMessage();
         }
-        utils.log("w", "postDataSet("+type+") -> onRequestError: "+textError);
+        utils.warn("postDataSet("+type+") -> onRequestError: "+textError);
         onDataProcessingError(textConnectionError);
     }
 
@@ -177,6 +178,16 @@ class DataLoader {
         dataSet.put("token",AUTH_TOKEN);
         dataSet.put("type",type);
         dataSet.put("data",data);
+
+        final JsonObjectRequest request = getJsonObjectRequest(type, dataSet);
+
+        request.setRetryPolicy(new DefaultRetryPolicy(15000,3,1.5f));
+
+        requestQueue.add(request);
+    }
+
+    @NonNull
+    private JsonObjectRequest getJsonObjectRequest(String type, DataBaseItem dataSet) {
         JSONObject jsonObject = dataSet.getAsJSON();
 
         //===========================================
@@ -184,18 +195,15 @@ class DataLoader {
         //===========================================
         String url = SERVER_URL+"/pst/"+USER_ID;
 
-        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
-                this::loadDataFromResponse,
-                (VolleyError error) -> onRequestError(error,type)){
+        return new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                DataLoader.this::loadDataFromResponse,
+                (VolleyError error) -> onRequestError(error, type)){
 
             @Override
             public Map<String, String> getHeaders() {
                 return authHeaders();
             }
         };
-        request.setRetryPolicy(new DefaultRetryPolicy(15000,3,1.5f));
-
-        requestQueue.add(request);
     }
 
     void getAllowedCatalogsTypes(){
