@@ -32,7 +32,12 @@ class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : Worker
                 for (document in documents) {
                     val userInfo = document.toObject(UserInfo::class.java)
                     if (userInfo.loginDate.isEmpty()) continue
-                    val loginDate = dateFormat.parse(userInfo.loginDate)
+                    val loginDate = try {
+                        dateFormat.parse(userInfo.loginDate)
+                    } catch (e: Exception) {
+                        Log.e("RC_DeleteOldUsersWorker", "Error parsing date: ${userInfo.loginDate}; ${e.message}")
+                        null
+                    }
 
                     if (loginDate != null && loginDate.before(thresholdDate)) {
                         usersCollection.document(document.id).delete()
