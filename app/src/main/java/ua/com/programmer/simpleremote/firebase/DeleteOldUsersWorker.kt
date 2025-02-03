@@ -31,6 +31,7 @@ class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : Worker
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     val userInfo = document.toObject(UserInfo::class.java)
+                    if (userInfo.loginDate.isEmpty()) continue
                     val loginDate = dateFormat.parse(userInfo.loginDate)
 
                     if (loginDate != null && loginDate.before(thresholdDate)) {
