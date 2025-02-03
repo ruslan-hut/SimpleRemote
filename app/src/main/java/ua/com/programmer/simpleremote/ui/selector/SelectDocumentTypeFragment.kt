@@ -57,6 +57,9 @@ class SelectDocumentTypeFragment: Fragment() {
             binding.cardNoData.visibility = View.GONE
             viewModel.tryReconnect()
         }
+        binding.listSwipe.setOnRefreshListener {
+            viewModel.tryReconnect()
+        }
     }
 
     private fun openDocumentList(type: String, title: String) {

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -58,6 +57,9 @@ class SelectCatalogTypeFragment: Fragment() {
 
         binding.cardNoData.setOnClickListener {
             binding.cardNoData.visibility = View.GONE
+            viewModel.tryReconnect()
+        }
+        binding.listSwipe.setOnRefreshListener {
             viewModel.tryReconnect()
         }
     }
