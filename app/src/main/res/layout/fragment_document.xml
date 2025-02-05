@@ -285,7 +285,7 @@
                     android:id="@+id/document_header_checked"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
+                    android:background="?attr/colorSurfaceVariant"
                     android:paddingStart="4dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="4dp"
