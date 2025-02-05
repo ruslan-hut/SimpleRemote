@@ -68,6 +68,9 @@
         <action
             android:id="@+id/action_documentFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -102,4 +105,8 @@
             android:id="@+id/action_catalogListFragment_self"
             app:destination="@id/catalogListFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="ua.com.programmer.simpleremote.ui.camera.CameraFragment"
+        android:label="@string/header_camera" />
 </navigation>

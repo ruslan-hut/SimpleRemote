@@ -161,6 +161,9 @@ class DocumentFragment: Fragment(), MenuProvider {
                 documentHeaderField4.visibility = View.VISIBLE
             }
 
+            scannerButton.setOnClickListener {
+                openCamera()
+            }
         }
     }
 
@@ -173,6 +176,11 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+        findNavController().navigate(action)
+    }
+
+    private fun openCamera() {
+        val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment()
         findNavController().navigate(action)
     }
 
