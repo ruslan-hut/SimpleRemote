@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
@@ -72,15 +74,21 @@ class DocumentViewModel @Inject constructor(
         _isEditable.value = true
     }
 
-    fun saveDocument(document: Document) {
+    fun saveDocument(document: Document, onSuccess: () -> Unit = {}) {
         _isEditable.value = false
         viewModelScope.launch {
             _isLoading.value = true
             val msg = networkRepository.saveDocument(document.copy(
                 type = type,
             ))
-            if (msg.isNotBlank()) message.value = msg
             _isLoading.value = false
+            if (msg.isNotBlank()) {
+                message.value = msg
+            }else{
+                withContext(Dispatchers.Main) {
+                    onSuccess
+                }
+            }
         }
     }
 

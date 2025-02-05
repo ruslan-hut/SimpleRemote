@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -47,13 +48,15 @@ class NetworkRepositoryImpl @Inject constructor(
 ) : NetworkRepository {
 
     private val _activeConnection = connectionRepo.currentConnection.stateIn(
-        CoroutineScope(Dispatchers.IO),
-        SharingStarted.Companion.Eagerly,
+        CoroutineScope(Dispatchers.IO + SupervisorJob()),
+        SharingStarted.Eagerly,
         null // initial value
     )
+
     private val _activeOptions = MutableStateFlow(UserOptions(isEmpty = true))
 
     private var apiService: HttpClientApi? = null
+    private var baseUrl: String = ""
     private val tokenCounter = AtomicInteger(0)
     private val maxTokenRefresh = 3
     private val gson = Gson()
@@ -63,8 +66,9 @@ class NetworkRepositoryImpl @Inject constructor(
         tokenRefresh.setRefreshToken { runBlocking { refreshToken() } }
 
         _activeConnection.filterNotNull().onEach { settings ->
+            Log.w("RC_NetworkRepository", "connection changed: ${settings.description}")
             handleConnectionChange(settings)
-        }.launchIn(CoroutineScope(Dispatchers.IO))
+        }.launchIn(CoroutineScope(Dispatchers.IO + SupervisorJob()))
     }
 
     override val userOptions: Flow<UserOptions> = _activeOptions
@@ -245,10 +249,14 @@ class NetworkRepositoryImpl @Inject constructor(
         val baseUrl = settings.getBaseUrl()
         if (baseUrl.isBlank()) return
 
+        Log.d("RC_NetworkRepository", "init connection; set credentials: ${settings.user}")
         httpAuthInterceptor.setCredentials(settings.user, settings.password)
+
+        if (this.baseUrl == baseUrl) return
 
         Log.d("RC_NetworkRepository", "init connection; base url: $baseUrl")
         try {
+            this.baseUrl = baseUrl
             val retrofit = retrofitBuilder.baseUrl(baseUrl).build()
             apiService = retrofit.create(HttpClientApi::class.java)
 

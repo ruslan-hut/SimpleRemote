@@ -195,7 +195,8 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
             R.id.save_document -> {
                 viewModel.saveDocument(
-                    sharedViewModel.getDocument()
+                    document = sharedViewModel.getDocument(),
+                    onSuccess = ::onSuccess
                 )
             }
             R.id.refresh -> {
@@ -204,6 +205,10 @@ class DocumentFragment: Fragment(), MenuProvider {
             else -> return false
         }
         return true
+    }
+
+    private fun onSuccess() {
+        findNavController().popBackStack()
     }
 
     private class ItemsListAdapter(

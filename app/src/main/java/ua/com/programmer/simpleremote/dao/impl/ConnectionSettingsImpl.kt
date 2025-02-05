@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
+import ua.com.programmer.simpleremote.dao.entity.isDemo
 import ua.com.programmer.simpleremote.entity.UserInfo
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import java.text.SimpleDateFormat
@@ -85,6 +86,8 @@ class ConnectionSettingsImpl @Inject constructor(
     }
 
     override suspend fun updateUserData(connection: ConnectionSettings) {
+        if (connection.isDemo()) return
+
         val logger = FirebaseCrashlytics.getInstance()
         logger.setUserId(connection.guid)
         val auth = FirebaseAuth.getInstance()

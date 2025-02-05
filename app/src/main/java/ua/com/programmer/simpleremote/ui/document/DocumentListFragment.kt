@@ -61,7 +61,7 @@ class DocumentListFragment: Fragment() {
             adapter.submitList(it)
         }
         binding.documentsSwipe.setOnRefreshListener {
-            binding.documentsSwipe.isRefreshing = false
+            viewModel.loadDocuments()
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.documentsSwipe.isRefreshing = it
@@ -71,6 +71,11 @@ class DocumentListFragment: Fragment() {
     private fun openDocument(type: String, title: String) {
         val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type)
         this.findNavController().navigate(action)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadDocuments()
     }
 
     override fun onDestroyView() {

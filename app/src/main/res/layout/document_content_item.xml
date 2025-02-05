@@ -27,8 +27,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="4dp">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/description_line"

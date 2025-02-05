@@ -81,6 +81,7 @@ class ItemEditFragment: Fragment() {
             itemCode.text = product.code
             collectUnit.text = product.unit
             restUnit.text = product.unit
+            itemUnit.text = product.unit
 
             product.contentItem?.let {
                 collectEdit.text = it.quantity

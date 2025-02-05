@@ -31,7 +31,7 @@ data class ConnectionSettings(
 }
 
 fun ConnectionSettings.isDemo(): Boolean {
-    return serverAddress == "hoot.com.ua" && databaseName == "simple"
+    return serverAddress.contains("hoot.com.ua") && databaseName == "simple"
 }
 
 // Returns truncated guid for log or UI

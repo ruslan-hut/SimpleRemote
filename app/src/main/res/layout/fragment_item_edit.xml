@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:colorBackground"
+    android:background="?attr/colorSurfaceVariant"
     tools:context=".deprecated.ItemEditScreen">
 
     <TextView
@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorSecondaryContainer"
         android:text="@string/holder_text"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="18sp"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="bold"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
@@ -28,9 +28,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSecondaryContainer"
+        android:textColor="?attr/colorOnSecondaryContainer"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintTop_toBottomOf="@+id/item_description" />
 
     <LinearLayout
@@ -50,7 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="@string/have_to_collect"
-            android:textSize="16sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/collect_edit"
             android:gravity="center_vertical"
@@ -58,15 +60,16 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:text="@string/holder_number"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/collect_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textSize="18sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
     <LinearLayout
@@ -86,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="@string/title_rest"
-            android:textSize="16sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/rest_edit"
             android:gravity="center_vertical"
@@ -94,15 +98,16 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:text="@string/holder_number"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/rest_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textSize="18sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
     <LinearLayout
@@ -118,25 +123,30 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="2"
+            android:gravity="center_vertical"
             android:text="@string/title_quantity"
-            android:textSize="16sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <EditText
             android:id="@+id/edit_quantity"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
             android:inputType="numberDecimal"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:background="?attr/android:colorBackground"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         <TextView
             android:id="@+id/item_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textSize="16sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
     <LinearLayout
@@ -154,15 +164,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/notes"
-            android:textSize="16sp"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSecondaryContainer" />
         <EditText
             android:id="@+id/edit_notes"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="textAutoCorrect"
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"/>
 
     </LinearLayout>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -26,14 +27,19 @@ class DocumentListViewModel @Inject constructor(
 
     fun setDocumentType(type: String?, title: String?) {
         this.title = title ?: ""
-        type?.let {
-            this.type = it
-            _isLoading.value = true
-            viewModelScope.launch {
-                networkRepository.documents(it).collect {
-                    _documents.value = it
-                    _isLoading.value = false
-                }
+        this.type = type ?: ""
+    }
+
+    fun loadDocuments() {
+        _isLoading.value = true
+        if (type.isEmpty()) {
+            _isLoading.value = false
+            return
+        }
+        viewModelScope.launch {
+            networkRepository.documents(type).collect {
+                _documents.value = it
+                _isLoading.value = false
             }
         }
     }

@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
-import ua.com.programmer.simpleremote.dao.entity.isDemo
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
@@ -42,11 +41,11 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
                 val conn = it ?: ConnectionSettings.Builder.buildDemo()
-                _connection.value = conn
-                if (!conn.isDemo()) {
-                    withContext(Dispatchers.IO) {
-                        connectionRepo.updateUserData(conn)
-                    }
+                withContext(Dispatchers.Main) {
+                    _connection.value = conn
+                }
+                withContext(Dispatchers.IO) {
+                    connectionRepo.updateUserData(conn)
                 }
             }
         }
