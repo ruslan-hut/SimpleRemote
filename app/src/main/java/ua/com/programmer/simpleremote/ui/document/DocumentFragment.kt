@@ -191,7 +191,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 viewModel.enableEdit()
             }
             R.id.delete_document -> {
-                //
+                viewModel.deleteDocument()
             }
             R.id.save_document -> {
                 viewModel.saveDocument(
@@ -200,7 +200,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 )
             }
             R.id.refresh -> {
-                //
+                viewModel.refresh()
             }
             else -> return false
         }

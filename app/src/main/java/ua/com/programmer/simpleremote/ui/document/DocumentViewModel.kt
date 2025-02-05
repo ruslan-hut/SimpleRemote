@@ -45,9 +45,13 @@ class DocumentViewModel @Inject constructor(
     fun setDocumentId(id: String) {
         if (_content.value?.isNotEmpty() == true) return
         this.guid = id
+        loadDocumentContent()
+    }
+
+    private fun loadDocumentContent() {
         viewModelScope.launch {
             _isLoading.value = true
-            networkRepository.documentContent(type, id).collect {
+            networkRepository.documentContent(type, guid).collect {
                 _content.value = it
                 _isLoading.value = false
             }
@@ -93,7 +97,7 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun refresh() {
-        //
+        loadDocumentContent()
     }
 
     fun deleteDocument() {
