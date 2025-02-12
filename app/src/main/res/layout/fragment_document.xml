@@ -30,13 +30,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:padding="4dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <ImageView
                         android:id="@+id/document_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/document"
                         app:tint="?attr/colorOnPrimaryContainer" />
 
                     <TextView
@@ -49,7 +50,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/document_title_receive"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -60,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/number_sign"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:id="@+id/document_number"
@@ -69,7 +70,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_number"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -77,15 +78,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:padding="4dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/date"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -97,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/holder_number"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -105,18 +106,15 @@
                     android:id="@+id/document_header_contractor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contractor"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -129,7 +127,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -137,11 +135,8 @@
                     android:id="@+id/document_header_field1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:id="@+id/document_field1_name"
@@ -149,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -160,10 +155,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="end"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -171,11 +165,8 @@
                     android:id="@+id/document_header_field2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:id="@+id/document_field2_name"
@@ -183,7 +174,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -194,10 +185,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="end"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -205,11 +195,8 @@
                     android:id="@+id/document_header_field3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:id="@+id/document_field3_name"
@@ -217,7 +204,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -228,10 +215,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="end"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -239,11 +225,8 @@
                     android:id="@+id/document_header_field4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/android:colorBackground"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/android:colorBackground">
 
                     <TextView
                         android:id="@+id/document_field4_name"
@@ -251,7 +234,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:layout_width="4dp"
@@ -262,10 +245,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="end"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -273,23 +255,17 @@
                     android:id="@+id/document_header_notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="2dp"
                     android:background="?attr/android:colorBackground"
-                    android:hint="@string/notes"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:hint="@string/notes">
                 </TextView>
 
                 <LinearLayout
                     android:id="@+id/document_header_checked"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorSurfaceVariant"
-                    android:paddingStart="4dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="4dp"
-                    android:paddingBottom="8dp">
+                    android:padding="2dp"
+                    android:background="?attr/colorSurfaceVariant">
 
                     <TextView
                         android:layout_width="0dp"

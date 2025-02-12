@@ -12,3 +12,7 @@ data class DocumentField(
 fun DocumentField.isEmpty(): Boolean {
     return code.isEmpty() && value.isEmpty()
 }
+
+fun DocumentField.presentation(): String {
+    return "$description: $value"
+}
