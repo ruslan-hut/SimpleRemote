@@ -191,14 +191,15 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:background="@color/colorGrey" />
+            android:background="?attr/colorSurface"
+            android:contentDescription="@string/header_goods_list" />
 
         <ImageView
             android:id="@+id/camera_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
-            android:src="@drawable/baseline_add_a_photo_black_24"/>
+            android:src="@drawable/baseline_add_a_photo_24"/>
 
     </FrameLayout>
 
@@ -238,12 +239,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:background="@drawable/background_rounded_corner_accent"
+            android:background="@drawable/button_primary"
             android:paddingLeft="16dp"
             android:paddingTop="8dp"
             android:paddingRight="16dp"
             android:paddingBottom="8dp"
-            android:textColor="?attr/colorOnTertiary"
             android:text="@string/action_save"
             android:textAllCaps="true" />
     </LinearLayout>

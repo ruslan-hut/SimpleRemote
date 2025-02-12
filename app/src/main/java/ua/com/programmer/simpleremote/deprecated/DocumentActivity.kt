@@ -924,9 +924,9 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
 
     internal inner class ContentAdapter : RecyclerView.Adapter<ContentViewHolder?>() {
         private val listItems = ArrayList<DataBaseItem>()
-        private val colorRed = getResources().getColor(R.color.backgroundRed)
-        private val colorYellow = getResources().getColor(R.color.backgroundYellow)
-        private val colorWhite = getResources().getColor(R.color.colorWhite)
+//        private val colorRed = getResources().getColor(R.color.backgroundRed)
+//        private val colorYellow = getResources().getColor(R.color.backgroundYellow)
+//        private val colorWhite = getResources().getColor(R.color.colorWhite)
 
         @SuppressLint("NotifyDataSetChanged")
         fun loadListItems(values: ArrayList<DataBaseItem>) {
@@ -1041,21 +1041,21 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
 
             if (checkedFlagEnabled) {
                 val restValue = utils.round(rest, 3)
-                if (workingMode == Constants.MODE_COLLECT) {
-                    if (checked) {
-                        holder.descriptionLine.setBackgroundColor(colorWhite)
-                    } else {
-                        holder.descriptionLine.setBackgroundColor(colorYellow)
-                    }
-                } else {
-                    if (restValue > 0 && !checked) {
-                        holder.descriptionLine.setBackgroundColor(colorRed)
-                    } else if (restValue <= 0 && !checked) {
-                        holder.descriptionLine.setBackgroundColor(colorYellow)
-                    } else {
-                        holder.descriptionLine.setBackgroundColor(colorWhite)
-                    }
-                }
+//                if (workingMode == Constants.MODE_COLLECT) {
+//                    if (checked) {
+//                        holder.descriptionLine.setBackgroundColor(colorWhite)
+//                    } else {
+//                        holder.descriptionLine.setBackgroundColor(colorYellow)
+//                    }
+//                } else {
+//                    if (restValue > 0 && !checked) {
+//                        holder.descriptionLine.setBackgroundColor(colorRed)
+//                    } else if (restValue <= 0 && !checked) {
+//                        holder.descriptionLine.setBackgroundColor(colorYellow)
+//                    } else {
+//                        holder.descriptionLine.setBackgroundColor(colorWhite)
+//                    }
+//                }
             }
         }
 

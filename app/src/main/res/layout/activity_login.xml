@@ -66,7 +66,7 @@
             <TextView
                 android:id="@+id/login_button"
                 android:drawableStart="@drawable/baseline_settings_remote_black_24"
-                android:background="@drawable/background_rounded_corner_accent"
+                android:background="@drawable/button_primary"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

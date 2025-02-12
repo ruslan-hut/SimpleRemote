@@ -44,21 +44,20 @@ class CameraFragment: Fragment() {
     private val binding get() = _binding!!
 
     private var cameraView: PreviewView? = null
-    private var cameraProvider: ListenableFuture<ProcessCameraProvider>? = null
-    private var cameraExecutor: ExecutorService? = null
     private var imageCapture: ImageCapture? = null
 
     private var outputDirectory: File? = null
     private var imageFileName: String? = null
 
+    private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
+        ProcessCameraProvider.getInstance(requireContext())
+    }
+    private val cameraExecutor: ExecutorService by lazy {
+        Executors.newSingleThreadExecutor()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Check camera permission
-        if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            setupCamera()
-        } else {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), 1)
-        }
     }
 
     override fun onCreateView(
@@ -72,8 +71,14 @@ class CameraFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Check camera permission
+        if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            setupCamera()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), 1)
+        }
+
         outputDirectory = requireContext().filesDir
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
         binding.buttonRepeat.setOnClickListener {
             startCamera()
@@ -85,9 +90,8 @@ class CameraFragment: Fragment() {
 
     private fun setupCamera() {
         cameraView = binding.cameraView
-        cameraProvider = ProcessCameraProvider.getInstance(requireContext())
-        cameraProvider?.addListener(Runnable {
-            val cameraProvider = cameraProvider?.get()
+        cameraProvider.addListener(Runnable {
+            val cameraProvider = cameraProvider.get()
             val preview = Preview.Builder().build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             preview.surfaceProvider = cameraView?.surfaceProvider
@@ -112,7 +116,7 @@ class CameraFragment: Fragment() {
         val handler = Handler(Looper.getMainLooper())
         handler.post(Runnable {
             try {
-                cameraProvider!!.get().unbindAll()
+                cameraProvider.get().unbindAll()
 //                if (!imageFileName!!.isEmpty()) {
 //                    saveAndExit()
 //                }

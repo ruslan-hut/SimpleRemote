@@ -9,8 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
         app:cardElevation="2dp"
-        app:cardCornerRadius="4dp"
-        app:cardBackgroundColor="?attr/android:colorBackground">
+        app:cardCornerRadius="4dp">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -83,8 +82,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:padding="4dp"
-                    android:background="?attr/colorPrimaryContainer"
-                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:background="?attr/colorSecondaryContainer"
+                    android:textColor="?attr/colorOnSecondaryContainer"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:text="@string/sample_number"/>
 
@@ -92,7 +91,6 @@
                     android:id="@+id/item_code3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnBackground"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:text="@string/sample_number"/>
 
@@ -111,7 +109,6 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
-                        android:textColor="?attr/colorSecondary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:text="@string/sample_number"/>
                 </LinearLayout>
@@ -178,7 +175,6 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="?attr/colorSecondary"
                         android:text="@string/sample_number"/>
                     <TextView
                         android:id="@+id/item_collect"
@@ -189,7 +185,7 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        android:textColor="@color/colorSecondaryText"
+                        android:textColor="?attr/colorError"
                         android:textStyle="bold"
                         android:text="@string/sample_number"/>
                     <TextView
@@ -197,7 +193,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="?attr/colorSecondary"
+                        android:textColor="?attr/colorError"
                         android:text="@string/sample_text"/>
                 </LinearLayout>
 

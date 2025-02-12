@@ -51,16 +51,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/title_code"
-                        android:textColor="@color/colorDarkGrey"/>
+                        android:text="@string/title_code" />
                     <TextView
                         android:id="@+id/item_code"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
-                        android:text="@string/sample_number"
-                        android:textColor="@color/colorDarkGrey"/>
+                        android:text="@string/sample_number" />
                 </LinearLayout>
 
             </LinearLayout>

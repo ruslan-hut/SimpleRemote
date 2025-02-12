@@ -157,8 +157,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -187,8 +186,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -217,8 +215,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -247,8 +244,7 @@
                         android:layout_weight="1"
                         android:text="@string/holder_text"
                         android:textColor="?attr/colorOnBackground"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
 
                 <TextView
@@ -329,13 +325,12 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:background="@drawable/background_rounded_corner_accent"
+            android:background="@drawable/button_primary"
             android:padding="8dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="@string/header_scanner"
             android:textAlignment="center"
-            android:textColor="?attr/colorOnTertiary"
             app:drawableStartCompat="@drawable/twotone_camera_24" />
 
         <TextView
@@ -346,13 +341,12 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:background="@drawable/background_rounded_corner_accent"
+            android:background="@drawable/button_primary"
             android:padding="8dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="@string/add_line"
             android:textAlignment="center"
-            android:textColor="?attr/colorOnTertiary"
             app:drawableStartCompat="@drawable/sharp_playlist_add_24" />
 
         <TextView

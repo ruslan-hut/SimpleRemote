@@ -165,12 +165,12 @@ class ScannerActivity : AppCompatActivity(), DataLoader.DataLoaderListener {
         if (items.isNotEmpty()) {
             dataBaseItem = items[0]
             textDescription!!.text = dataBaseItem!!.getString("description")
-            textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            //textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             confirmAddItem()
         } else {
             dataBaseItem = null
             textDescription!!.setText(R.string.warn_no_barcode)
-            textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+            //textDescription!!.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
         }
     }
 

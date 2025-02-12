@@ -245,11 +245,15 @@ class DocumentFragment: Fragment(), MenuProvider {
                     itemRestTitle.visibility = if (item.rest.isEmpty()) View.GONE else View.VISIBLE
 
                     itemPrice.text = item.price
+                    itemSum.text = item.sum
+
                     itemQuantity.text = item.quantity
                     itemUnit.text = item.unit
-                    itemSum.text = item.sum
+
+
                     itemCollect.text = item.collect
                     itemUnitCollect.text = item.unit
+                    itemUnitCollect.visibility = if (item.collect.isEmpty()) View.GONE else View.VISIBLE
 
                     itemNotes.text = item.notes
                     itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE

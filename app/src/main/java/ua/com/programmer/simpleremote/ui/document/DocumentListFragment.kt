@@ -93,8 +93,12 @@ class DocumentListFragment: Fragment() {
                 binding.apply {
                     itemNumber.text = item.number
                     itemDate.text = item.date
+
                     itemCompany.text = item.company
+                    itemCompany.visibility = if (item.company.isEmpty()) View.GONE else View.VISIBLE
+
                     itemWarehouse.text = item.warehouse
+                    itemWarehouse.visibility = if (item.warehouse.isEmpty()) View.GONE else View.VISIBLE
 
                     itemContractor.text = item.contractor
                     itemContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
