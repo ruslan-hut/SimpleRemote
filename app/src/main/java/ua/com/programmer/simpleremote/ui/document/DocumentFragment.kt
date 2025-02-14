@@ -184,7 +184,7 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private fun openCamera() {
-        val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment()
+        val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment(mode = "barcode")
         findNavController().navigate(action)
     }
 

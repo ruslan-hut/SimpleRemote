@@ -80,6 +80,9 @@
             android:name="code"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_itemEditFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
     <fragment
         android:id="@+id/catalogListFragment"
@@ -108,5 +111,10 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="ua.com.programmer.simpleremote.ui.camera.CameraFragment"
-        android:label="@string/header_camera" />
+        android:label="@string/header_camera" >
+        <argument
+            android:name="mode"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

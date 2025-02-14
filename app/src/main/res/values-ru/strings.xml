@@ -13,7 +13,7 @@
     <string name="action_shipping">Расходные накладные</string>
     <string name="hello_blank_fragment">Хеллоу</string>
     <string name="error_unknown">Что-то пошло не так</string>
-    <string name="sample_text">Информация загружается</string>
+    <string name="sample_text">...</string>
     <string name="sample_number">0.00</string>
     <string name="error_no_data">Нет данных от сервера</string>
     <string name="header_goods_list">Товары</string>

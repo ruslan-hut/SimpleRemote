@@ -12,7 +12,7 @@
     <string name="action_shipping">Shipping</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_unknown">Unknown error</string>
-    <string name="sample_text">Sample text</string>
+    <string name="sample_text">...</string>
     <string name="sample_number">0.00</string>
     <string name="error_no_data">Server returns no data</string>
     <string name="header_goods_list">Goods list</string>

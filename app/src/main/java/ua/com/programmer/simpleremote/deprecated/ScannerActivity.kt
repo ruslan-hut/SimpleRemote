@@ -22,8 +22,8 @@ import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.repository.DataLoader
 import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
 import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
-import ua.com.programmer.simpleremote.deprecated.utility.BarcodeFoundListener
-import ua.com.programmer.simpleremote.deprecated.utility.BarcodeImageAnalyzer
+import ua.com.programmer.simpleremote.ui.camera.BarcodeFoundListener
+import ua.com.programmer.simpleremote.ui.camera.BarcodeImageAnalyzer
 import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
 import java.util.concurrent.ExecutorService

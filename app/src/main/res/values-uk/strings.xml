@@ -13,7 +13,7 @@
     <string name="action_shipping">Видаткові накладні</string>
     <string name="hello_blank_fragment">Привіт</string>
     <string name="error_unknown">Якась халепа</string>
-    <string name="sample_text">Інформація завантажується</string>
+    <string name="sample_text">...</string>
     <string name="sample_number">0.00</string>
     <string name="error_no_data">Від сервера не отримано данних</string>
     <string name="header_goods_list">Товари</string>

@@ -13,6 +13,6 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:text="@string/sample_text"
-        android:background="@drawable/background_rounded_corner_white"/>
+        android:background="@drawable/button_surface"/>
 
 </LinearLayout>

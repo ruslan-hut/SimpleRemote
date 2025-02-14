@@ -72,6 +72,11 @@ class ItemEditFragment: Fragment() {
             )
             findNavController().popBackStack()
         }
+        binding.itemImage.setOnClickListener {
+            findNavController().navigate(
+                ItemEditFragmentDirections.actionItemEditFragmentToCameraFragment(mode = "photo")
+            )
+        }
 
     }
 

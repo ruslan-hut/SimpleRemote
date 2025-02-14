@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
@@ -23,6 +24,8 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
@@ -33,6 +36,7 @@ import java.lang.Exception
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.annotation.Nonnull
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -40,6 +44,7 @@ class CameraFragment: Fragment() {
 
     private val viewModel: CameraViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val navigationArgs: CameraFragmentArgs by navArgs()
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
@@ -58,6 +63,9 @@ class CameraFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.setMode(navigationArgs.mode)
+        viewModel.setPermissionGranted(checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+        viewModel.setDocument(sharedViewModel.getDocument())
     }
 
     override fun onCreateView(
@@ -71,59 +79,127 @@ class CameraFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Check camera permission
-        if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            setupCamera()
-        } else {
+        if (!viewModel.permissionGranted) {
             requestPermissions(arrayOf(Manifest.permission.CAMERA), 1)
         }
 
         outputDirectory = requireContext().filesDir
 
         binding.buttonRepeat.setOnClickListener {
-            startCamera()
+            resetCamera()
         }
         binding.buttonConfirm.setOnClickListener {
             takePhoto()
         }
-    }
-
-    private fun setupCamera() {
-        cameraView = binding.cameraView
-        cameraProvider.addListener(Runnable {
-            val cameraProvider = cameraProvider.get()
-            val preview = Preview.Builder().build()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            preview.surfaceProvider = cameraView?.surfaceProvider
-            imageCapture = ImageCapture.Builder().build()
-            cameraProvider?.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
-    private fun startCamera() {
-        try {
-            setupCamera()
-        } catch (se: SecurityException) {
-            Log.e("RC_CameraFragment", "SecurityException: ${se.message}")
-            Toast.makeText(requireContext(), R.string.error_no_permission, Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Log.e("RC_CameraFragment", "Exception: ${e.message}")
-            Toast.makeText(requireContext(), R.string.toast_error, Toast.LENGTH_SHORT).show()
+        viewModel.scanMode.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.textLines.visibility = View.GONE
+                binding.buttonConfirm.visibility = View.GONE
+                binding.delimiter.visibility = View.GONE
+            } else {
+                binding.textLines.visibility = View.GONE
+            }
+            setupCamera(it)
+        }
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.progressBar.visibility = View.GONE
+            }
         }
     }
 
-    private fun stopCamera() {
+    private fun setupCamera(scanMode: Boolean) {
+        if (!viewModel.permissionGranted) {
+            return
+        }
+        Log.d("RC_CameraFragment", "setupCamera: scan=$scanMode")
+        cameraView = binding.cameraView
+        cameraProvider.addListener(Runnable {
+            val preview = Preview.Builder().build()
+            preview.surfaceProvider = cameraView?.surfaceProvider
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            val cameraProvider = cameraProvider.get()
+            cameraProvider.unbindAll()
+
+            if (scanMode) {
+                val imageAnalysis = ImageAnalysis.Builder().build()
+                imageAnalysis.setAnalyzer(
+                    cameraExecutor,
+                    BarcodeImageAnalyzer(object : BarcodeFoundListener {
+                        override fun onBarcodeFound(barCode: String?, format: Int) {
+                            val code = barCode ?: ""
+                            makeBeep()
+                            if (code.isNotEmpty()) {
+                                sharedViewModel.onBarcodeRead(barCode ?: "")
+                                findNavController().popBackStack()
+                            }
+                        }
+
+                        override fun onCodeNotFound(error: String?) {
+                            Log.d("RC_CameraFragment", "onCodeNotFound: $error")
+                        }
+                    })
+                )
+                try {
+                    cameraProvider.bindToLifecycle(
+                        viewLifecycleOwner,
+                        cameraSelector,
+                        imageAnalysis,
+                        preview
+                    )
+                } catch (e: kotlin.Exception) {
+                    Log.e("RC_CameraFragment", "image analysis: bind provider error: ${e.message}")
+                }
+            }else{
+                imageCapture = ImageCapture.Builder().build()
+                try {
+                    cameraProvider.bindToLifecycle(
+                        viewLifecycleOwner,
+                        cameraSelector,
+                        preview,
+                        imageCapture
+                    )
+                } catch (e: kotlin.Exception) {
+                    Log.e("RC_CameraFragment", "image capture: bind provider error: ${e.message}")
+                }
+            }
+
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    private fun resetCamera() {
+        stopCamera {
+            try {
+                setupCamera(viewModel.scanMode.value == true)
+            } catch (se: SecurityException) {
+                Log.e("RC_CameraFragment", "SecurityException: ${se.message}")
+                Toast.makeText(requireContext(), R.string.error_no_permission, Toast.LENGTH_SHORT)
+                    .show()
+            } catch (e: Exception) {
+                Log.e("RC_CameraFragment", "Exception: ${e.message}")
+                Toast.makeText(requireContext(), R.string.toast_error, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun stopCamera(onStop: () -> Unit) {
         val handler = Handler(Looper.getMainLooper())
         handler.post(Runnable {
             try {
                 cameraProvider.get().unbindAll()
-//                if (!imageFileName!!.isEmpty()) {
-//                    saveAndExit()
-//                }
+                onStop()
             } catch (e: Exception) {
                 Log.e("RC_CameraFragment", "stopCamera: $e")
             }
         })
+    }
+
+    private fun makeBeep() {
+        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
     }
 
     private fun takePhoto() {
@@ -133,14 +209,16 @@ class CameraFragment: Fragment() {
             File(outputDirectory, imageFileName ?: "image.jpg")
         ).build()
 
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
+        makeBeep()
 
-        imageCapture!!.takePicture(fileOptions, cameraExecutor!!, object :
+        imageCapture!!.takePicture(fileOptions, cameraExecutor, object :
             ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 Log.d("RC_CameraFragment", "Image saved: ${outputFileResults.savedUri}")
-                stopCamera()
+                stopCamera {
+                    //sharedViewModel.onImageCaptured(imageFileName ?: "")
+                    findNavController().popBackStack()
+                }
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -148,6 +226,23 @@ class CameraFragment: Fragment() {
                 Log.e("RC_CameraFragment", "Image capture failed: ${exception.message}")
             }
         })
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        @Nonnull permissions: Array<String>,
+        @Nonnull grantResults: IntArray
+    ) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            viewModel.setPermissionGranted(true)
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 
