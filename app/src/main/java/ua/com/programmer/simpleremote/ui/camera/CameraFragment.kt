@@ -91,13 +91,19 @@ class CameraFragment: Fragment() {
         binding.buttonConfirm.setOnClickListener {
             takePhoto()
         }
+        sharedViewModel.product.observe(viewLifecycleOwner) {
+            if (it != null) {
+                binding.textItemDescription.text = it.description
+                //binding.textValue.text = it.barcode
+            }
+        }
         viewModel.scanMode.observe(viewLifecycleOwner) {
             if (it) {
-                binding.textLines.visibility = View.GONE
                 binding.buttonConfirm.visibility = View.GONE
                 binding.delimiter.visibility = View.GONE
-            } else {
                 binding.textLines.visibility = View.GONE
+            } else {
+                binding.textLines.visibility = View.VISIBLE
             }
             setupCamera(it)
         }
@@ -134,7 +140,9 @@ class CameraFragment: Fragment() {
                             makeBeep()
                             if (code.isNotEmpty()) {
                                 sharedViewModel.onBarcodeRead(barCode ?: "")
-                                findNavController().popBackStack()
+                                stopCamera {
+                                    findNavController().popBackStack()
+                                }
                             }
                         }
 

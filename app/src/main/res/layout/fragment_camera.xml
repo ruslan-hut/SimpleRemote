@@ -4,17 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.camera.view.PreviewView
+   <androidx.camera.view.PreviewView
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/overlay_transparent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/text_lines"
@@ -32,25 +29,25 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:text="@string/barcode_value" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+<!--                    android:text="@string/barcode_value" />-->
 
-                <TextView
-                    android:id="@+id/text_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textStyle="bold"
-                    android:text="@string/sample_text" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/text_value"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:text="@string/sample_text" />-->
+<!--            </LinearLayout>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,15 +125,15 @@
 
     </LinearLayout>
 
-   <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            app:layout_constraintBottom_toTopOf="@id/buttonPanel"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:indeterminate="true" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:indeterminate="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
