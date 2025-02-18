@@ -35,7 +35,8 @@ class BarcodeImageAnalyzer(barcodeFoundListener: BarcodeFoundListener) : ImageAn
             scanner.process(inputImage)
                 .addOnSuccessListener(
                     OnSuccessListener { barcodes: MutableList<Barcode>? ->
-                        for (barcode in barcodes!!) {
+                        val barcode = barcodes?.firstOrNull()
+                        if (barcode != null) {
                             listener.onBarcodeFound(barcode.rawValue, barcode.format)
                         }
                     }
