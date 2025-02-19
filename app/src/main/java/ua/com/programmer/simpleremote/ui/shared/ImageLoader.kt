@@ -1,0 +1,88 @@
+package ua.com.programmer.simpleremote.ui.shared
+
+import android.content.Context
+import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import ua.com.programmer.simpleremote.R
+import ua.com.programmer.simpleremote.dao.entity.getBaseImageUrl
+import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
+import ua.com.programmer.simpleremote.repository.NetworkRepository
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class ImageLoader @Inject constructor(context: Context) {
+
+    private val requestManager: RequestManager? = Glide.with(context)
+    private var loadImages: Boolean = false
+    private var baseImageURL: String? = null
+    private var authHeaders: LazyHeaders? = null
+
+    fun setToken(token: String) {
+        authHeaders = LazyHeaders.Builder()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+    }
+
+    fun setLoadImages(loadImages: Boolean) {
+        this.loadImages = loadImages
+    }
+
+    fun setBaseImageURL(baseImageURL: String) {
+        this.baseImageURL = baseImageURL
+    }
+
+    /**
+     * Construct an image URL using image GUID with the base URL combined
+     *
+     * @param imageGUID image GUID
+     * @return image URL
+     */
+    private fun imageURL(imageGUID: String): String {
+        if (!imageGUID.isEmpty()) return baseImageURL + imageGUID
+        return ""
+    }
+
+    /**
+     * Load image by GUID into given ImageView.
+     *
+     * @param imageGUID image GUID
+     * @param view image showing view
+     */
+    fun load(imageGUID: String, view: ImageView) {
+        if (!loadImages) {
+            view.visibility = View.GONE
+            return
+        }
+
+        val url = imageURL(imageGUID)
+
+        if (!url.isEmpty()) {
+            view.visibility = View.VISIBLE
+            val glideUrl = GlideUrl(url, authHeaders)
+            requestManager!!.load(glideUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.sharp_more_horiz_black_36)
+                .error(R.drawable.sharp_help_outline_black_36)
+                .into(view)
+        } else {
+            view.visibility = View.INVISIBLE
+        }
+    }
+
+    /**
+     * Stop all current and pending requests on activity onDestroy event.
+     */
+    fun stop() {
+        requestManager?.pauseAllRequests()
+    }
+}

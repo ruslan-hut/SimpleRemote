@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Product
+import ua.com.programmer.simpleremote.entity.getImage
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +24,7 @@ class ItemEditViewModel @Inject constructor(): ViewModel() {
             collect = newQty
             modified = true
             checked = newQty.toDoubleOrNull() == quantity.toDoubleOrNull()
+            image = product.getImage()
         }
         return list
     }

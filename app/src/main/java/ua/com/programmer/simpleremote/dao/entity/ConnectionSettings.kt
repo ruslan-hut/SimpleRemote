@@ -65,6 +65,10 @@ fun ConnectionSettings.getBaseUrl(): String {
     return url
 }
 
+fun ConnectionSettings.getBaseImageUrl(): String {
+    return getBaseUrl() + "hs/rc/image/"
+}
+
 // check settings for changes to perform reconnection
 fun ConnectionSettings.isDifferent(other: ConnectionSettings): Boolean {
     return this.guid != other.guid ||

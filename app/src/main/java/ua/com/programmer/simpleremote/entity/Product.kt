@@ -13,5 +13,13 @@ data class Product(
     val rest: Int = 0,
     val price: Int = 0,
     val barcode: String = "",
-    val contentItem: Content? = null
+    val contentItem: Content? = null,
 )
+
+fun Product.setImage(image: String): Product {
+    return this.copy(contentItem = this.contentItem?.copy(image = image))
+}
+
+fun Product.getImage(): String {
+    return this.contentItem?.image ?: ""
+}

@@ -224,7 +224,7 @@ class CameraFragment: Fragment() {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 Log.d("RC_CameraFragment", "Image saved: ${outputFileResults.savedUri}")
                 stopCamera {
-                    //sharedViewModel.onImageCaptured(imageFileName ?: "")
+                    sharedViewModel.onImageCaptured(imageFileName ?: "")
                     findNavController().popBackStack()
                 }
             }

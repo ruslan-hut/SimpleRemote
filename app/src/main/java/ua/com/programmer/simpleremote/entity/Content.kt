@@ -16,5 +16,5 @@ data class Content(
     val rest: String = "",
     val price: String = "",
     val sum: String = "",
-    val image: String = ""
+    var image: String = "",
 )

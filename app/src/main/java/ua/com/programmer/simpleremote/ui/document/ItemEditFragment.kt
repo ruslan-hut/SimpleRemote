@@ -9,10 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.databinding.FragmentItemEditBinding
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
+import java.io.File
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -26,10 +28,12 @@ class ItemEditFragment: Fragment() {
 
     var product: Product? = null
     var productCode = ""
+    var fileDir: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         productCode = navigationArgs.code ?: ""
+        fileDir = requireContext().filesDir
     }
 
     override fun onCreateView(
@@ -92,6 +96,12 @@ class ItemEditFragment: Fragment() {
                 collectEdit.text = it.quantity
                 restEdit.text = it.rest
                 editQuantity.setText(it.collect)
+
+                if (it.image.isNotEmpty()) {
+                    Glide.with(requireContext())
+                        .load(File(fileDir, it.image))
+                        .into(itemImage)
+                }
             }
         }
     }

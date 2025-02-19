@@ -43,7 +43,7 @@ import ua.com.programmer.simpleremote.deprecated.settings.Constants
 import ua.com.programmer.simpleremote.deprecated.specialItems.Cache
 import ua.com.programmer.simpleremote.deprecated.specialItems.DataBaseItem
 import ua.com.programmer.simpleremote.deprecated.specialItems.DocumentField
-import ua.com.programmer.simpleremote.deprecated.utility.ImageLoader
+import ua.com.programmer.simpleremote.ui.shared.ImageLoader
 import ua.com.programmer.simpleremote.deprecated.utility.Utils
 import java.lang.Exception
 import java.util.ArrayList
@@ -128,7 +128,7 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
         database = getInstance(this)
         loadImages = appSettings?.isLoadImages() == true
         workingMode = appSettings?.getWorkingMode()
-        imageLoader = ImageLoader(this)
+        //imageLoader = ImageLoader(this)
         progressBar = findViewById<ProgressBar>(R.id.progress_bar)
 
         val intent = getIntent()
@@ -915,7 +915,7 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
         fun showImage(code: String?) {
             if (loadImages) {
                 image.visibility = View.VISIBLE
-                imageLoader!!.load(code, image)
+                //imageLoader!!.load(code, image)
             } else {
                 image.visibility = View.GONE
             }

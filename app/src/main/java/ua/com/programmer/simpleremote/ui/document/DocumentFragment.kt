@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -39,9 +40,12 @@ class DocumentFragment: Fragment(), MenuProvider {
     private val binding get() = _binding!!
     private val navigationArgs: DocumentFragmentArgs by navArgs()
 
+    private var loadImages = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.setDocumentType(navigationArgs.type, navigationArgs.title)
+        loadImages = sharedViewModel.userOptions.loadImages
     }
 
     override fun onCreateView(
@@ -95,6 +99,9 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         val adapter = ItemsListAdapter(
+            imageLoader = { code, imageView ->
+                sharedViewModel.loadImage(code, imageView)
+            },
             onItemClicked = { item ->
                 viewModel.onItemClicked(item)
             },
@@ -224,11 +231,12 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private class ItemsListAdapter(
+        private val imageLoader: (String, ImageView) -> Unit,
         private val onItemClicked: (Content) -> Unit
     ): ListAdapter<Content, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
         class ItemViewHolder(private var binding: DocumentContentItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: Content) {
+            fun bind(item: Content, imageLoader: (String, ImageView) -> Unit) {
                 binding.apply {
                     itemLineNumber.text = "${item.line}"
                     itemDescription.text = item.description
@@ -250,7 +258,6 @@ class DocumentFragment: Fragment(), MenuProvider {
                     itemQuantity.text = item.quantity
                     itemUnit.text = item.unit
 
-
                     itemCollect.text = item.collect
                     itemUnitCollect.text = item.unit
                     itemUnitCollect.visibility = if (item.collect.isEmpty()) View.GONE else View.VISIBLE
@@ -258,8 +265,8 @@ class DocumentFragment: Fragment(), MenuProvider {
                     itemNotes.text = item.notes
                     itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
-                    itemImage.visibility = if (item.image.isEmpty()) View.GONE else View.VISIBLE
-                    //itemImage.setImageURI(item.image.toUri())
+                    imageLoader(item.code, itemImage)
+                    //itemImage.visibility = if (loadImages) View.GONE else View.VISIBLE
 
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
@@ -296,7 +303,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            holder.bind(getItem(position))
+            holder.bind(getItem(position), imageLoader)
         }
     }
 }
