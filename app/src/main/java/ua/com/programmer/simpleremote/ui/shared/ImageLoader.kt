@@ -22,7 +22,7 @@ class ImageLoader @Inject constructor(context: Context) {
 
     fun setToken(token: String) {
         authHeaders = LazyHeaders.Builder()
-            .addHeader("Authorization", "Bearer $token")
+            .addHeader("Authorization", token)
             .build()
     }
 
@@ -64,8 +64,8 @@ class ImageLoader @Inject constructor(context: Context) {
             val glideUrl = GlideUrl(url, authHeaders)
             requestManager!!.load(glideUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.sharp_more_horiz_black_36)
-                .error(R.drawable.sharp_help_outline_black_36)
+                .placeholder(R.drawable.baseline_downloading_24)
+                .error(R.drawable.baseline_block_24)
                 .into(view)
         } else {
             view.visibility = View.INVISIBLE

@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
+import ua.com.programmer.simpleremote.dao.entity.getAuthToken
 import ua.com.programmer.simpleremote.dao.entity.getBaseImageUrl
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
@@ -58,13 +59,13 @@ class SharedViewModel @Inject constructor(
                     connectionRepo.updateUserData(conn)
                 }
                 imageLoader.setBaseImageURL(conn.getBaseImageUrl())
+                imageLoader.setToken(conn.getAuthToken())
             }
         }
         viewModelScope.launch {
             networkRepository.userOptions.collect {
                 _userOptions.value = it
                 imageLoader.setLoadImages(it.loadImages)
-                imageLoader.setToken(it.token)
             }
         }
     }

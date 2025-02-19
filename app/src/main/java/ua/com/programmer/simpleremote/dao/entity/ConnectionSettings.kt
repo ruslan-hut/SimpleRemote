@@ -2,6 +2,7 @@ package ua.com.programmer.simpleremote.dao.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import okhttp3.Credentials
 import java.util.UUID
 
 @Entity(tableName = "connection_settings", primaryKeys = ["guid"])
@@ -65,8 +66,16 @@ fun ConnectionSettings.getBaseUrl(): String {
     return url
 }
 
+fun ConnectionSettings.getAuthToken(): String {
+    return if (user.isNotBlank()) {
+        Credentials.basic(user, password, Charsets.UTF_8)
+    } else{
+        ""
+    }
+}
+
 fun ConnectionSettings.getBaseImageUrl(): String {
-    return getBaseUrl() + "hs/rc/image/"
+    return getBaseUrl() + "image/"
 }
 
 // check settings for changes to perform reconnection
