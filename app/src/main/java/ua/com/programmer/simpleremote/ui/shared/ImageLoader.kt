@@ -8,14 +8,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.dao.entity.getBaseImageUrl
-import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
-import ua.com.programmer.simpleremote.repository.NetworkRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

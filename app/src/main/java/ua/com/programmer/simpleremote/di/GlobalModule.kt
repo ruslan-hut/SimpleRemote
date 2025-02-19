@@ -9,10 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
-import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
-import ua.com.programmer.simpleremote.http.impl.NetworkRepositoryImpl
-import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
-import ua.com.programmer.simpleremote.repository.NetworkRepository
 import ua.com.programmer.simpleremote.ui.shared.ImageLoader
 
 @Module
