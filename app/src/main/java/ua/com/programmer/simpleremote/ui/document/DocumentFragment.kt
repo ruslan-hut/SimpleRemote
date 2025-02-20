@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -91,11 +92,6 @@ class DocumentFragment: Fragment(), MenuProvider {
                 onProductReceived(it)
                 viewModel.resetProduct()
             }
-        }
-        viewModel.message.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) return@observe
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-            viewModel.clearMessage()
         }
 
         val adapter = ItemsListAdapter(
@@ -215,7 +211,8 @@ class DocumentFragment: Fragment(), MenuProvider {
             R.id.save_document -> {
                 viewModel.saveDocument(
                     document = sharedViewModel.getDocument(),
-                    onSuccess = ::onSuccess
+                    onSuccess = ::onSuccess,
+                    onError = ::onError
                 )
             }
             R.id.refresh -> {
@@ -227,7 +224,20 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private fun onSuccess() {
-        findNavController().popBackStack()
+        AlertDialog.Builder(requireContext())
+            .setMessage(R.string.toast_saved)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                findNavController().popBackStack()
+            }
+            .show()
+    }
+
+    private fun onError(message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.warning)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok) { _, _ -> }
+            .show()
     }
 
     private class ItemsListAdapter(

@@ -149,9 +149,9 @@ class NetworkRepositoryImpl @Inject constructor(
         try {
             val response = apiService?.saveDocument(options.token, body)
             if (response != null && response.isSuccessful()) {
-                return ""
+                return "OK"
             } else {
-                val message = response?.readError() ?: ""
+                val message = response?.readError() ?: "Unknown error"
                 Log.e("RC_NetworkRepository", "Failed to save document: $message")
                 return message
             }

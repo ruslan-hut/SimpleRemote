@@ -31,8 +31,6 @@ class DocumentViewModel @Inject constructor(
     private val _product = MutableLiveData<Product?>()
     val product: LiveData<Product?> get() = _product
 
-    val message = MutableLiveData<String>()
-
     var title = ""
     var type = ""
     var guid = ""
@@ -78,21 +76,21 @@ class DocumentViewModel @Inject constructor(
         _isEditable.value = true
     }
 
-    fun saveDocument(document: Document, onSuccess: () -> Unit = {}) {
+    fun saveDocument(document: Document, onSuccess: () -> Unit, onError: (String) -> Unit) {
         _isEditable.value = false
         viewModelScope.launch {
             _isLoading.value = true
             val msg = networkRepository.saveDocument(document.copy(
                 type = type,
             ))
-            _isLoading.value = false
-            if (msg.isNotBlank()) {
-                message.value = msg
-            }else{
-                withContext(Dispatchers.Main) {
-                    onSuccess
+            withContext(Dispatchers.Main) {
+                if (msg == "OK") {
+                    onSuccess()
+                }else{
+                    onError(msg)
                 }
             }
+            _isLoading.value = false
         }
     }
 
@@ -118,10 +116,6 @@ class DocumentViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
-    }
-
-    fun clearMessage() {
-        message.value = ""
     }
 
 }
