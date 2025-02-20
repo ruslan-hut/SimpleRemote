@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
+import ua.com.programmer.simpleremote.ui.shared.FileManager
 import ua.com.programmer.simpleremote.ui.shared.ImageLoader
 
 @Module
@@ -31,6 +32,12 @@ class GlobalModule {
     @Singleton
     fun provideImageLoader(@ApplicationContext context: Context): ImageLoader {
         return ImageLoader(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFileManager(@ApplicationContext context: Context): FileManager {
+        return FileManager(context)
     }
 
 }

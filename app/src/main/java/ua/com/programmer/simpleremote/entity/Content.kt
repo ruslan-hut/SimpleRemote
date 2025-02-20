@@ -17,4 +17,5 @@ data class Content(
     val price: String = "",
     val sum: String = "",
     var image: String = "",
+    var encodedImage: String = "",
 )

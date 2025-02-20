@@ -104,4 +104,8 @@ class SharedViewModel @Inject constructor(
     fun loadImage(imageGUID: String, view: ImageView) {
         imageLoader.load(imageGUID, view)
     }
+
+    fun loadLocalImage(file: String, view: ImageView) {
+        imageLoader.loadFile(file, view)
+    }
 }

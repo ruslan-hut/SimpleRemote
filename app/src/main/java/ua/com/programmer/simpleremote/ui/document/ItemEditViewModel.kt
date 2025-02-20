@@ -5,10 +5,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.getImage
+import ua.com.programmer.simpleremote.ui.shared.FileManager
 import javax.inject.Inject
 
 @HiltViewModel
-class ItemEditViewModel @Inject constructor(): ViewModel() {
+class ItemEditViewModel @Inject constructor(
+    private val fileManager: FileManager
+): ViewModel() {
 
     var content: List<Content> = listOf()
 
@@ -25,6 +28,7 @@ class ItemEditViewModel @Inject constructor(): ViewModel() {
             modified = true
             checked = newQty.toDoubleOrNull() == quantity.toDoubleOrNull()
             image = product.getImage()
+            encodedImage = fileManager.getFileData(product.getImage())
         }
         return list
     }

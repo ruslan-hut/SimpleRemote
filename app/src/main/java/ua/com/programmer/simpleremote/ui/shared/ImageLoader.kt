@@ -9,6 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import ua.com.programmer.simpleremote.R
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,6 +17,7 @@ import javax.inject.Singleton
 class ImageLoader @Inject constructor(context: Context) {
 
     private val requestManager: RequestManager? = Glide.with(context)
+    private val fileDir: File? = context.filesDir
     private var loadImages: Boolean = false
     private var baseImageURL: String? = null
     private var authHeaders: LazyHeaders? = null
@@ -69,6 +71,15 @@ class ImageLoader @Inject constructor(context: Context) {
                 .into(view)
         } else {
             view.visibility = View.INVISIBLE
+        }
+    }
+
+    fun loadFile(file: String, view: ImageView) {
+        if (file.isEmpty()) return
+        val imageFile = File(fileDir, file)
+        if (imageFile.exists()) {
+            requestManager!!.load(imageFile)
+                .into(view)
         }
     }
 
