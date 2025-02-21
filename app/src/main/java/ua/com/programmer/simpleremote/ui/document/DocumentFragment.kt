@@ -38,28 +38,28 @@ class DocumentFragment: Fragment(), MenuProvider {
     private val viewModel: DocumentViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentDocumentBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
     private val navigationArgs: DocumentFragmentArgs by navArgs()
 
-    private var loadImages = false
+    private var recycler: RecyclerView? = null
+    private var listAdapter: ItemsListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.setDocumentType(navigationArgs.type, navigationArgs.title)
-        loadImages = sharedViewModel.userOptions.loadImages
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentDocumentBinding.inflate(inflater)
 
         val menuHost : MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        return binding.root
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,7 +73,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
-                viewModel.onBarcodeRead(it)
+                viewModel.onBarcodeRead(it, ::onProductReceived)
                 sharedViewModel.clearBarcode()
             }
         }
@@ -82,39 +82,47 @@ class DocumentFragment: Fragment(), MenuProvider {
             sharedViewModel.setDocumentContent(it)
         }
         viewModel.isEditable.observe(viewLifecycleOwner) {
-            binding.bottomBar.visibility = if (it) View.VISIBLE else View.GONE
+            binding?.bottomBar?.visibility = if (it) View.VISIBLE else View.GONE
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.progressBar.visibility = if (it) View.VISIBLE else View.INVISIBLE
-        }
-        viewModel.product.observe(viewLifecycleOwner) { product ->
-            product?.let {
-                onProductReceived(it)
-                viewModel.resetProduct()
-            }
+            binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
 
-        val adapter = ItemsListAdapter(
+
+        listAdapter = ItemsListAdapter(
             imageLoader = { code, imageView ->
                 sharedViewModel.loadImage(code, imageView)
             },
             onItemClicked = { item ->
-                viewModel.onItemClicked(item)
+                viewModel.onItemClicked(item, ::onProductReceived)
             },
         )
-        val recycler = binding.documentContent
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(requireContext())
+        recycler = binding?.documentContent
+        recycler?.apply {
+            setHasFixedSize(true)
+            adapter = listAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                        val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                        viewModel.onListScrolled(firstVisibleItemPosition)
+                    }
+                }
+            })
+        }
 
         sharedViewModel.content.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            listAdapter?.submitList(it)
         }
 
     }
 
     private fun bind(item: Document) {
-        binding.apply {
-            documentTitle.text = viewModel.title
+        binding?.apply {
+            documentTitle.text = viewModel.getTitle()
             documentNumber.text = item.number
             documentDate.text = item.date
             documentHeaderNotes.text = item.notes
@@ -182,6 +190,12 @@ class DocumentFragment: Fragment(), MenuProvider {
             return
         }
 
+        val position = listAdapter?.findProductPosition(product) ?: -1
+        if (position >= 0) {
+            viewModel.onListScrolled(position)
+            recycler?.smoothScrollToPosition(position)
+        }
+
         val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
         findNavController().navigate(action)
     }
@@ -189,6 +203,12 @@ class DocumentFragment: Fragment(), MenuProvider {
     private fun openCamera() {
         val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment(mode = "barcode")
         findNavController().navigate(action)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val position = viewModel.getScrollPosition()
+        recycler?.smoothScrollToPosition(position)
     }
 
     override fun onDestroyView() {
@@ -250,7 +270,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 binding.apply {
                     itemLineNumber.text = "${item.line}"
                     itemDescription.text = item.description
-                    itemCode.text = item.code
+                    itemCode.text = item.art
 
                     itemCode2.text = item.code2
                     itemCode2.visibility = if (item.code2.isEmpty()) View.GONE else View.VISIBLE
@@ -314,6 +334,10 @@ class DocumentFragment: Fragment(), MenuProvider {
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
             holder.bind(getItem(position), imageLoader)
+        }
+
+        fun findProductPosition(product: Product): Int {
+            return currentList.indexOfFirst { it.code == product.code }
         }
     }
 }

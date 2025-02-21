@@ -10,8 +10,8 @@ data class Product(
     val unit: String = "",
     val groupName: String = "",
     val groupCode: String = "",
-    val rest: Int = 0,
-    val price: Int = 0,
+    val rest: Double = 0.0,
+    val price: Double = 0.0,
     val barcode: String = "",
     val contentItem: Content? = null,
 )

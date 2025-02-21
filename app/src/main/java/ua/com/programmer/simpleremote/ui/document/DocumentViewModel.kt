@@ -1,5 +1,6 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,12 +29,11 @@ class DocumentViewModel @Inject constructor(
     private val _isEditable = MutableLiveData<Boolean>(false)
     val isEditable: LiveData<Boolean> get() = _isEditable
 
-    private val _product = MutableLiveData<Product?>()
-    val product: LiveData<Product?> get() = _product
+    private var scrollPosition = 0
 
-    var title = ""
-    var type = ""
-    var guid = ""
+    private var title = ""
+    private var type = ""
+    private var guid = ""
 
     fun setDocumentType(type: String?, title: String?) {
         this.type = type ?: ""
@@ -46,6 +46,10 @@ class DocumentViewModel @Inject constructor(
         loadDocumentContent()
     }
 
+    fun getTitle(): String {
+        return title
+    }
+
     private fun loadDocumentContent() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -56,7 +60,7 @@ class DocumentViewModel @Inject constructor(
         }
     }
 
-    fun onItemClicked(item: Content) {
+    fun onItemClicked(item: Content, openProduct: (Product) -> Unit) {
         if (_isEditable.value == false) return
         val product = Product(
             id = item.code,
@@ -65,11 +69,7 @@ class DocumentViewModel @Inject constructor(
             unit = item.unit,
             contentItem = item
         )
-        _product.value = product
-    }
-
-    fun resetProduct() {
-        _product.value = null
+        openProduct(product)
     }
 
     fun enableEdit() {
@@ -102,20 +102,29 @@ class DocumentViewModel @Inject constructor(
         //
     }
 
-    fun onBarcodeRead(barcode: String) {
+    fun onBarcodeRead(barcode: String, onResult: (Product) -> Unit) {
         if (_isEditable.value == false) return
         viewModelScope.launch {
             _isLoading.value = true
             networkRepository.barcode(type, guid, barcode).collect { found ->
                 // find product in content
+                Log.d("RC_DocumentViewModel", "onBarcodeRead: found=$found")
                 val item = _content.value?.find { found.code == it.code }
                 val product = found.copy(
                     contentItem = item
                 )
-                _product.value = product
                 _isLoading.value = false
+                onResult(product)
             }
         }
+    }
+
+    fun onListScrolled(position: Int) {
+        scrollPosition = if (position > 0) position else 0
+    }
+
+    fun getScrollPosition(): Int {
+        return scrollPosition
     }
 
 }
