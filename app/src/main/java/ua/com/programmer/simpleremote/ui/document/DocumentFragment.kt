@@ -7,8 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -18,18 +16,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
-import ua.com.programmer.simpleremote.databinding.DocumentContentItemBinding
-import ua.com.programmer.simpleremote.databinding.FragmentDocumentBinding
-import ua.com.programmer.simpleremote.entity.Content
-import ua.com.programmer.simpleremote.entity.Document
-import ua.com.programmer.simpleremote.entity.Product
-import ua.com.programmer.simpleremote.entity.isEmpty
+import ua.com.programmer.simpleremote.databinding.FragmentDocumentPagedBinding
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
@@ -37,12 +28,9 @@ class DocumentFragment: Fragment(), MenuProvider {
 
     private val viewModel: DocumentViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-    private var _binding : FragmentDocumentBinding? = null
+    private var _binding : FragmentDocumentPagedBinding? = null
     private val binding get() = _binding
     private val navigationArgs: DocumentFragmentArgs by navArgs()
-
-    private var recycler: RecyclerView? = null
-    private var listAdapter: ItemsListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +42,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentDocumentBinding.inflate(inflater)
+        _binding = FragmentDocumentPagedBinding.inflate(inflater)
 
         val menuHost : MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -65,16 +53,18 @@ class DocumentFragment: Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.document.observe(viewLifecycleOwner) {
-            it?.let {
-                bind(it)
-                viewModel.setDocumentId(it.guid)
-            }
-        }
-        sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                viewModel.onBarcodeRead(it, ::onProductReceived)
-                sharedViewModel.clearBarcode()
+        val pagerAdapter = DocumentViewPagerAdapter(this, viewModel)
+
+        binding?.apply {
+            container.adapter = pagerAdapter
+            TabLayoutMediator(documentTabs, container) { tab, position ->
+                tab.text = when (position) {
+                    0 -> getString(R.string.tab_title)
+                    else -> getString(R.string.title_products)
+                }
+            }.attach()
+            scannerButton.setOnClickListener {
+                openCamera()
             }
         }
 
@@ -88,126 +78,11 @@ class DocumentFragment: Fragment(), MenuProvider {
             binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
 
-
-        listAdapter = ItemsListAdapter(
-            imageLoader = { code, imageView ->
-                sharedViewModel.loadImage(code, imageView)
-            },
-            onItemClicked = { item ->
-                viewModel.onItemClicked(item, ::onProductReceived)
-            },
-        )
-        recycler = binding?.documentContent
-        recycler?.apply {
-            adapter = listAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                        val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                        viewModel.onListScrolled(firstVisibleItemPosition)
-                    }
-                }
-            })
-        }
-
-        sharedViewModel.content.observe(viewLifecycleOwner) {
-            listAdapter?.submitList(it)
-        }
-
-    }
-
-    private fun bind(item: Document) {
-        binding?.apply {
-            documentTitle.text = viewModel.getTitle()
-            documentNumber.text = item.number
-            documentDate.text = item.date
-            documentHeaderNotes.text = item.notes
-
-            documentContractor.text = item.contractor
-            documentHeaderContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
-
-            if (item.cacheGUID.isNotEmpty()) {
-                documentIcon.setImageResource(R.drawable.sharp_help_outline_24)
-            }else if (item.isDeleted == 1) {
-                documentIcon.setImageResource(R.drawable.twotone_close_24)
-            }else if (item.isProcessed == 1) {
-                documentIcon.setImageResource(R.drawable.twotone_check_box_24)
-            }else{
-                documentIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
-            }
-
-            if (item.contractor.isNotEmpty()) {
-                documentContractor.text = item.contractor
-                documentContractor.visibility = View.VISIBLE
-            } else {
-                documentContractor.visibility = View.GONE
-            }
-
-            if (item.field1.isEmpty()) {
-                documentHeaderField1.visibility = View.GONE
-            } else {
-                documentField1Name.text = item.field1.description
-                documentField1Value.text = item.field1.value
-                documentHeaderField1.visibility = View.VISIBLE
-            }
-            if (item.field2.isEmpty()) {
-                documentHeaderField2.visibility = View.GONE
-            } else {
-                documentField2Name.text = item.field2.description
-                documentField2Value.text = item.field2.value
-                documentHeaderField2.visibility = View.VISIBLE
-            }
-            if (item.field3.isEmpty()) {
-                documentHeaderField3.visibility = View.GONE
-            } else {
-                documentField3Name.text = item.field3.description
-                documentField3Value.text = item.field3.value
-                documentHeaderField3.visibility = View.VISIBLE
-            }
-            if (item.field4.isEmpty()) {
-                documentHeaderField4.visibility = View.GONE
-            } else {
-                documentField4Name.text = item.field4.description
-                documentField4Value.text = item.field4.value
-                documentHeaderField4.visibility = View.VISIBLE
-            }
-
-            scannerButton.setOnClickListener {
-                openCamera()
-            }
-        }
-    }
-
-    private fun onProductReceived(product: Product) {
-        sharedViewModel.setProduct(product)
-
-        if (product.id.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.warn_no_barcode, Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val position = listAdapter?.findProductPosition(product) ?: -1
-        if (position >= 0) {
-            viewModel.onListScrolled(position)
-            recycler?.smoothScrollToPosition(position)
-        }
-
-        val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
-        findNavController().navigate(action)
     }
 
     private fun openCamera() {
         val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment(mode = "barcode")
         findNavController().navigate(action)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val position = viewModel.getScrollPosition()
-        recycler?.smoothScrollToPosition(position)
     }
 
     override fun onDestroyView() {
@@ -259,84 +134,21 @@ class DocumentFragment: Fragment(), MenuProvider {
             .show()
     }
 
-    private class ItemsListAdapter(
-        private val imageLoader: (String, ImageView) -> Unit,
-        private val onItemClicked: (Content) -> Unit
-    ): ListAdapter<Content, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
+}
 
-        class ItemViewHolder(private var binding: DocumentContentItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: Content, imageLoader: (String, ImageView) -> Unit) {
-                binding.apply {
-                    itemLineNumber.text = "${item.line}"
-                    itemDescription.text = item.description
-                    itemCode.text = item.art
+private class DocumentViewPagerAdapter(
+    fragment: Fragment,
+    private val viewModel: DocumentViewModel
+): FragmentStateAdapter(fragment) {
 
-                    itemCode2.text = item.code2
-                    itemCode2.visibility = if (item.code2.isEmpty()) View.GONE else View.VISIBLE
+    override fun getItemCount(): Int = 2
 
-                    itemCode3.text = item.code3
-                    itemCode3.visibility = if (item.code3.isEmpty()) View.GONE else View.VISIBLE
-
-                    itemRest.text = item.rest
-                    itemRest.visibility = if (item.rest.isEmpty()) View.GONE else View.VISIBLE
-                    itemRestTitle.visibility = if (item.rest.isEmpty()) View.GONE else View.VISIBLE
-
-                    itemPrice.text = item.price
-                    itemSum.text = item.sum
-
-                    itemQuantity.text = item.quantity
-                    itemUnit.text = item.unit
-
-                    itemCollect.text = item.collect
-                    itemUnitCollect.text = item.unit
-                    itemUnitCollect.visibility = if (item.collect.isEmpty()) View.GONE else View.VISIBLE
-
-                    itemNotes.text = item.notes
-                    itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
-
-                    imageLoader(item.code, itemImage)
-                    //itemImage.visibility = if (loadImages) View.GONE else View.VISIBLE
-
-                    iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
-                    isChecked.isChecked = item.checked
-
-                }
-            }
+    override fun createFragment(position: Int): Fragment {
+        val fragment: Fragment = when (position) {
+            0 -> DocumentTitleFragment(viewModel)
+            else -> DocumentContentFragment(viewModel)
         }
-
-        companion object {
-            private val DiffCallback = object : DiffUtil.ItemCallback<Content>() {
-
-                override fun areItemsTheSame(oldItem: Content, newItem: Content): Boolean {
-                    return oldItem.line == newItem.line
-                }
-
-                override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {
-                    return oldItem == newItem
-                }
-
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-            val viewHolder = ItemViewHolder(
-                DocumentContentItemBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-            )
-            viewHolder.itemView.setOnClickListener {
-                val position = viewHolder.absoluteAdapterPosition
-                onItemClicked(getItem(position))
-            }
-            return viewHolder
-        }
-
-        override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            holder.bind(getItem(position), imageLoader)
-        }
-
-        fun findProductPosition(product: Product): Int {
-            return currentList.indexOfFirst { it.code == product.code }
-        }
+        return fragment
     }
+
 }

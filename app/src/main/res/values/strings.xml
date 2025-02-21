@@ -97,4 +97,6 @@
     <string name="connections_list">Connections</string>
     <string name="check_connection">Check connection</string>
     <string name="click_to_retry">Click to retry</string>
+    <string name="tab_title">Parameters</string>
+    <string name="title_products">Products</string>
 </resources>

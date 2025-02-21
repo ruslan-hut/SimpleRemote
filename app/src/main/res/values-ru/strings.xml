@@ -97,4 +97,6 @@
     <string name="connections_list">Подключения</string>
     <string name="check_connection">Проверьте настройки подключения</string>
     <string name="click_to_retry">Нажмите здесь чтобы попробовать снова</string>
+    <string name="tab_title">Реквизиты</string>
+    <string name="title_products">Товары</string>
 </resources>
