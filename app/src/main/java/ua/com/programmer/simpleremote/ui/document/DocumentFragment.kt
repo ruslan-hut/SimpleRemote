@@ -99,7 +99,6 @@ class DocumentFragment: Fragment(), MenuProvider {
         )
         recycler = binding?.documentContent
         recycler?.apply {
-            setHasFixedSize(true)
             adapter = listAdapter
             layoutManager = LinearLayoutManager(requireContext())
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
