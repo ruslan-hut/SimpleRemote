@@ -139,9 +139,9 @@ class DocumentListFragment: Fragment() {
                     }else if (item.isDeleted == 1) {
                         itemIcon.setImageResource(R.drawable.twotone_close_24)
                     }else if (item.isProcessed == 1) {
-                        itemIcon.setImageResource(R.drawable.twotone_check_box_24)
+                        itemIcon.setImageResource(R.drawable.baseline_bookmark_added_24)
                     }else{
-                        itemIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
+                        itemIcon.setImageResource(R.drawable.baseline_bookmark_border_24)
                     }
                 }
             }

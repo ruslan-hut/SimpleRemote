@@ -61,9 +61,9 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
             }else if (item.isDeleted == 1) {
                 documentIcon.setImageResource(R.drawable.twotone_close_24)
             }else if (item.isProcessed == 1) {
-                documentIcon.setImageResource(R.drawable.twotone_check_box_24)
+                documentIcon.setImageResource(R.drawable.baseline_bookmark_added_24)
             }else{
-                documentIcon.setImageResource(R.drawable.twotone_check_box_outline_blank_24)
+                documentIcon.setImageResource(R.drawable.baseline_bookmark_border_24)
             }
 
             if (item.contractor.isNotEmpty()) {
