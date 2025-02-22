@@ -61,4 +61,5 @@
     <string name="title_products">Товари</string>
     <string name="total_articles">Кількість артикулів</string>
     <string name="total_price">Сума документа</string>
+    <string name="hint_enter_text">Введіть текст</string>
 </resources>

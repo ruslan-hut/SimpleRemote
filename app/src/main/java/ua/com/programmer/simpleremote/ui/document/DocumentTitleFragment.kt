@@ -1,9 +1,12 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,7 +57,11 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
             documentTitle.text = viewModel.getTitle()
             documentNumber.text = item.number
             documentDate.text = item.date
-            documentHeaderNotes.text = item.notes
+
+            documentNotes.text = item.notes
+            documentNotes.setOnClickListener {
+                showEditNotesDialog(item)
+            }
 
             documentContractor.text = item.contractor
             documentHeaderContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
@@ -106,6 +113,29 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
             }
 
             documentPrice.text = item.sum
+        }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showEditNotesDialog(item: Document) {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_edit_text, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.edit_text)
+
+        editText.setText(item.notes)
+
+        with(builder) {
+            setTitle(R.string.notes)
+            setView(dialogLayout)
+            setPositiveButton(android.R.string.ok) { _, _ ->
+                val newNotes = editText.text.toString()
+                sharedViewModel.setDocumentNotes(newNotes)
+            }
+            setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
+            show()
         }
     }
 

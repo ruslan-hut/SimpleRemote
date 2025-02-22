@@ -300,12 +300,12 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/document_header_notes"
+        android:id="@+id/document_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:background="?attr/android:colorBackground"
         android:hint="@string/notes"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
 </LinearLayout>

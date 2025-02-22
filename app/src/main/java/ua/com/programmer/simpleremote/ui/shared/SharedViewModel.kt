@@ -82,6 +82,10 @@ class SharedViewModel @Inject constructor(
         _content.value = content
     }
 
+    fun setDocumentNotes(notes: String) {
+        _document.value = _document.value?.copy(notes = notes)
+    }
+
     fun getDocument(): Document {
         return _document.value?.copy(
             lines = _content.value ?: emptyList()
