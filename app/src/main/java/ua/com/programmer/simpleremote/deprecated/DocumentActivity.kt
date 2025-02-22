@@ -808,7 +808,7 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
         var tvRest: TextView = view.findViewById<TextView>(R.id.item_rest)
         var tvCollect: TextView = view.findViewById<TextView>(R.id.item_collect)
         var tvRestTitle: LinearLayout = view.findViewById<LinearLayout>(R.id.item_rest_title)
-        var descriptionLine: LinearLayout
+        //var descriptionLine: LinearLayout
         var tvUnit: TextView = view.findViewById<TextView>(R.id.item_unit)
         var tvPrice: TextView = view.findViewById<TextView>(R.id.item_price)
         var tvSum: TextView = view.findViewById<TextView>(R.id.item_sum)
@@ -821,7 +821,7 @@ class DocumentActivity : AppCompatActivity(), DataLoaderListener {
         init {
             isChecked = view.findViewById<CheckBox>(R.id.is_checked)
             image = view.findViewById<ImageView>(R.id.item_image)
-            descriptionLine = view.findViewById<LinearLayout>(R.id.description_line)
+            //descriptionLine = view.findViewById<LinearLayout>(R.id.description_line)
         }
 
         fun setCode(str: String?) {
