@@ -23,6 +23,9 @@ class DocumentViewModel @Inject constructor(
     private val _content = MutableLiveData<List<Content>>(emptyList())
     val content: LiveData<List<Content>> get() = _content
 
+    private val _count = MutableLiveData<Int>(0)
+    val count: LiveData<Int> get() = _count
+
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
@@ -55,6 +58,7 @@ class DocumentViewModel @Inject constructor(
             _isLoading.value = true
             networkRepository.documentContent(type, guid).collect {
                 _content.value = it
+                _count.value = it.size
                 _isLoading.value = false
             }
         }

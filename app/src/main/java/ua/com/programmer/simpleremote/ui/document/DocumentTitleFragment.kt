@@ -39,6 +39,9 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
                 viewModel.setDocumentId(it.guid)
             }
         }
+        viewModel.count.observe(viewLifecycleOwner) {
+            binding?.documentArticles?.text = "$it"
+        }
     }
 
     override fun onDestroyView() {
@@ -102,6 +105,7 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
                 documentHeaderField4.visibility = View.VISIBLE
             }
 
+            documentPrice.text = item.sum
         }
     }
 

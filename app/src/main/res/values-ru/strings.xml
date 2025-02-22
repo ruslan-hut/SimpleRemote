@@ -59,4 +59,6 @@
     <string name="click_to_retry">Нажмите здесь чтобы попробовать снова</string>
     <string name="tab_title">Реквизиты</string>
     <string name="title_products">Товары</string>
+    <string name="total_articles">Количество артикулов</string>
+    <string name="total_price">Сумма документа</string>
 </resources>

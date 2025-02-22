@@ -223,15 +223,6 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/document_header_notes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:hint="@string/notes"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
     <LinearLayout
         android:id="@+id/document_header_checked"
         android:layout_width="match_parent"
@@ -253,5 +244,68 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="?attr/android:colorBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/total_articles"
+            android:textColor="?attr/colorOnBackground"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/document_articles"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:gravity="end"
+            android:text="@string/holder_text"
+            android:textColor="?attr/colorOnBackground"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="?attr/android:colorBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/total_price"
+            android:textColor="?attr/colorOnBackground"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/document_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:gravity="end"
+            android:text="@string/holder_text"
+            android:textColor="?attr/colorOnBackground"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/document_header_notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="?attr/android:colorBackground"
+        android:hint="@string/notes"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
 </LinearLayout>

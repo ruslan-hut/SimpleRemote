@@ -58,4 +58,6 @@
     <string name="click_to_retry">Click to retry</string>
     <string name="tab_title">Parameters</string>
     <string name="title_products">Products</string>
+    <string name="total_articles">Total articles</string>
+    <string name="total_price">Total price</string>
 </resources>
