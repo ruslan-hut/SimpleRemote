@@ -71,7 +71,8 @@ class DocumentViewModel @Inject constructor(
             code = item.code,
             description = item.description,
             unit = item.unit,
-            contentItem = item
+            notes = item.notes,
+            contentItem = item,
         )
         openProduct(product)
     }

@@ -19,13 +19,14 @@ class ItemEditViewModel @Inject constructor(
         this.content = content
     }
 
-    fun confirmQuantity(product: Product?, newQty: String): List<Content> {
+    fun confirmQuantity(product: Product?, newQty: String, editNotes: String): List<Content> {
         if (product == null) return content
         val list = content.toMutableList()
         val item = list.find { it.code == product.code }
         item?.apply {
             collect = newQty
             modified = true
+            notes = editNotes
             checked = newQty.toDoubleOrNull() == quantity.toDoubleOrNull()
             image = product.getImage()
             encodedImage = fileManager.getFileData(product.getImage())

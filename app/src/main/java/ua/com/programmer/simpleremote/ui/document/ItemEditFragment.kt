@@ -21,11 +21,11 @@ class ItemEditFragment: Fragment() {
     private val viewModel: ItemEditViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentItemEditBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
     private val navigationArgs: ItemEditFragmentArgs by navArgs()
 
-    var product: Product? = null
-    var productCode = ""
+    private var product: Product? = null
+    private var productCode = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class ItemEditFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentItemEditBinding.inflate(inflater)
-        return binding.root
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,22 +57,17 @@ class ItemEditFragment: Fragment() {
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty() && it == product?.barcode) {
                 sharedViewModel.clearBarcode()
-                sharedViewModel.setDocumentContent(
-                    viewModel.confirmQuantity(product, binding.collectEdit.text.toString())
-                )
-                findNavController().popBackStack()
+                binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
+                saveProduct()
             }
         }
-        binding.buttonCancel.setOnClickListener {
+        binding?.buttonCancel?.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.buttonYes.setOnClickListener {
-            sharedViewModel.setDocumentContent(
-                viewModel.confirmQuantity(product, binding.editQuantity.text.toString())
-            )
-            findNavController().popBackStack()
+        binding?.buttonYes?.setOnClickListener {
+            saveProduct()
         }
-        binding.itemImage.setOnClickListener {
+        binding?.itemImage?.setOnClickListener {
             findNavController().navigate(
                 ItemEditFragmentDirections.actionItemEditFragmentToCameraFragment(mode = "photo")
             )
@@ -81,12 +76,13 @@ class ItemEditFragment: Fragment() {
     }
 
     private fun bind(product: Product) {
-        binding.apply {
+        binding?.apply {
             itemDescription.text = product.description
             itemCode.text = product.code
             collectUnit.text = product.unit
             restUnit.text = product.unit
             itemUnit.text = product.unit
+            editNotes.setText(product.notes)
 
             product.contentItem?.let {
                 collectEdit.text = it.quantity
@@ -95,6 +91,15 @@ class ItemEditFragment: Fragment() {
                 sharedViewModel.loadLocalImage(it.image, itemImage)
             }
         }
+    }
+
+    private fun saveProduct() {
+        val qty = binding?.editQuantity?.text.toString()
+        val notes = binding?.editNotes?.text.toString()
+        sharedViewModel.setDocumentContent(
+            viewModel.confirmQuantity(product, qty, notes)
+        )
+        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {

@@ -7,15 +7,25 @@ data class Content(
     val code3: String = "",
     val art: String = "",
     val description: String = "",
-    val notes: String = "",
-    var checked: Boolean = false,
-    var modified: Boolean = false,
     val unit: String = "",
     val quantity: String = "",
-    var collect: String = "",
     val rest: String = "",
     val price: String = "",
     val sum: String = "",
+
+    // editable fields
+    var collect: String = "",
+    var notes: String = "",
+    var checked: Boolean = false,
+    var modified: Boolean = false,
     var image: String = "",
     var encodedImage: String = "",
 )
+
+fun Content.isEquals(other: Content): Boolean {
+    return this.code == other.code
+            && this.modified == other.modified
+            && this.checked == other.checked
+            && this.collect == other.collect
+            && this.notes == other.notes
+}

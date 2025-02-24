@@ -66,6 +66,11 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
             documentContractor.text = item.contractor
             documentHeaderContractor.visibility = if (item.contractor.isEmpty()) View.GONE else View.VISIBLE
 
+            documentIsChecked.isChecked = item.checked
+            documentIsChecked.setOnCheckedChangeListener { _, isChecked ->
+                sharedViewModel.setDocumentChecked(isChecked)
+            }
+
             if (item.cacheGUID.isNotEmpty()) {
                 documentIcon.setImageResource(R.drawable.sharp_help_outline_24)
             }else if (item.isDeleted == 1) {

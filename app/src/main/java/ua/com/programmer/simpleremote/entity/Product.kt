@@ -6,6 +6,7 @@ data class Product(
     val isGroup: Int = 0,
     val code: String = "",
     val description: String = "",
+    val notes: String = "",
     val art: String = "",
     val unit: String = "",
     val groupName: String = "",

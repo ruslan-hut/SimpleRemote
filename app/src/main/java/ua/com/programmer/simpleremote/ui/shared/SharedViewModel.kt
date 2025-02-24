@@ -32,7 +32,7 @@ class SharedViewModel @Inject constructor(
     val connection get() = _connection
 
     private val _userOptions = MutableLiveData<UserOptions>()
-    val userOptions: UserOptions get() = _userOptions.value ?: UserOptions(isEmpty = true)
+    //val userOptions: UserOptions get() = _userOptions.value ?: UserOptions(isEmpty = true)
 
     private val _document = MutableLiveData<Document>()
     val document get() = _document
@@ -51,7 +51,7 @@ class SharedViewModel @Inject constructor(
         }
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
-                val conn = it ?: ConnectionSettings.Builder.buildDemo()
+                val conn = it ?: ConnectionSettings.buildDemo()
                 withContext(Dispatchers.Main) {
                     _connection.value = conn
                 }
@@ -80,10 +80,35 @@ class SharedViewModel @Inject constructor(
 
     fun setDocumentContent(content: List<Content>) {
         _content.value = content
+        checkContent()
     }
 
     fun setDocumentNotes(notes: String) {
         _document.value = _document.value?.copy(notes = notes)
+    }
+
+    fun setDocumentChecked(checked: Boolean) {
+        _document.value = _document.value?.copy(checked = checked)
+    }
+
+    fun setItemChecked(code: String, isChecked: Boolean) {
+        val originalList = _content.value ?: emptyList()
+        val list = originalList.map { it.copy() }.toMutableList()
+        val item = list.find { it.code == code }
+        item?.apply {
+            checked = isChecked
+            modified = true
+        }
+        _content.value = list
+        checkContent()
+    }
+
+    // Check if all content items are checked and update the document's checked status
+    private fun checkContent() {
+        val list = _content.value?.toMutableList() ?: mutableListOf()
+        if (list.isEmpty()) return
+        val checked = list.all { it.checked }
+        _document.value = _document.value?.copy(checked = checked)
     }
 
     fun getDocument(): Document {

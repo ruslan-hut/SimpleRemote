@@ -41,7 +41,7 @@ class DocumentListFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentDocumentsListBinding.inflate(inflater, container, false)
         return binding.root
     }

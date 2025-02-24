@@ -19,6 +19,7 @@ import ua.com.programmer.simpleremote.databinding.DocumentContentItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentContentBinding
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Product
+import ua.com.programmer.simpleremote.entity.isEquals
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 import kotlin.getValue
 
@@ -47,6 +48,9 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
         listAdapter = ItemsListAdapter(
             imageLoader = { code, imageView ->
                 sharedViewModel.loadImage(code, imageView)
+            },
+            onItemChecked = { code, isChecked ->
+                sharedViewModel.setItemChecked(code, isChecked)
             },
             onItemClicked = { item ->
                 viewModel.onItemClicked(item, ::onProductReceived)
@@ -112,11 +116,12 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
     private class ItemsListAdapter(
         private val imageLoader: (String, ImageView) -> Unit,
+        private val onItemChecked: (String, Boolean) -> Unit,
         private val onItemClicked: (Content) -> Unit
     ): ListAdapter<Content, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
         class ItemViewHolder(private var binding: DocumentContentItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: Content, imageLoader: (String, ImageView) -> Unit) {
+            fun bind(item: Content, onItemChecked: (Boolean) -> Unit, imageLoader: (ImageView) -> Unit) {
                 binding.apply {
                     itemLineNumber.text = "${item.line}"
                     itemDescription.text = item.description
@@ -145,11 +150,16 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                     itemNotes.text = item.notes
                     itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
-                    imageLoader(item.code, itemImage)
+                    imageLoader(itemImage)
                     //itemImage.visibility = if (loadImages) View.GONE else View.VISIBLE
 
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
+                    isChecked.setOnCheckedChangeListener { view, isChecked ->
+                        if (view.isPressed) {
+                            onItemChecked(isChecked)
+                        }
+                    }
 
                 }
             }
@@ -163,7 +173,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                 }
 
                 override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {
-                    return oldItem == newItem
+                    return oldItem.isEquals(newItem)
                 }
 
             }
@@ -183,7 +193,12 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            holder.bind(getItem(position), imageLoader)
+            val item = getItem(position)
+            holder.bind(getItem(position), { isChecked ->
+                onItemChecked(item.code, isChecked)
+            }, { imageView ->
+                imageLoader(item.code, imageView)
+            })
         }
 
         fun findProductPosition(product: Product): Int {
