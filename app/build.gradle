@@ -81,7 +81,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.core:core-ktx:1.15.0'
@@ -113,7 +113,7 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
 
     //Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+    implementation platform('com.google.firebase:firebase-bom:33.10.0')
     //implementation 'com.google.firebase:firebase-core:20.0.0'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
@@ -126,8 +126,8 @@ dependencies {
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
 
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:2.8.7"
-    implementation "androidx.navigation:navigation-ui-ktx:2.8.7"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.8.8"
+    implementation "androidx.navigation:navigation-ui-ktx:2.8.8"
 
     // Room
     def room_version = "2.6.1"

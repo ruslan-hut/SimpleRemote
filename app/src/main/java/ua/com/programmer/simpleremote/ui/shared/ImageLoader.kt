@@ -77,9 +77,11 @@ class ImageLoader @Inject constructor(context: Context) {
     fun loadFile(file: String, view: ImageView) {
         if (file.isEmpty()) return
         val imageFile = File(fileDir, file)
-        if (imageFile.exists()) {
-            requestManager!!.load(imageFile)
-                .into(view)
+        requestManager?.let {
+            if (imageFile.exists()) {
+                it.load(imageFile)
+                    .into(view)
+            }
         }
     }
 
