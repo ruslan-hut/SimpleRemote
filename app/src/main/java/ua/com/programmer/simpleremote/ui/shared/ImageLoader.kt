@@ -64,11 +64,8 @@ class ImageLoader @Inject constructor(context: Context) {
         if (!url.isEmpty()) {
             view.visibility = View.VISIBLE
             val glideUrl = GlideUrl(url, authHeaders)
-            requestManager!!.load(glideUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.baseline_downloading_24)
-                .error(R.drawable.baseline_block_24)
-                .into(view)
+            requestManager?.load(glideUrl)?.diskCacheStrategy(DiskCacheStrategy.ALL)?.placeholder(R.drawable.baseline_downloading_24)
+                ?.error(R.drawable.baseline_block_24)?.into(view)
         } else {
             view.visibility = View.INVISIBLE
         }
@@ -88,7 +85,7 @@ class ImageLoader @Inject constructor(context: Context) {
     /**
      * Stop all current and pending requests on activity onDestroy event.
      */
-    fun stop() {
-        requestManager?.pauseAllRequests()
-    }
+//    fun stop() {
+//        requestManager?.pauseAllRequests()
+//    }
 }
