@@ -9,6 +9,7 @@ data class UserOptions(
     val read: Boolean = false,
     val mode: String = "",
     val loadImages: Boolean = false,
+    val confirmWithScan: Boolean = false, // allow confirm product quantity with barcode scan
     val user: String = "",
     val token: String = "",
     val catalog: List<ListType> = listOf(),

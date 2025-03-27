@@ -57,8 +57,12 @@ class ItemEditFragment: Fragment() {
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty() && it == product?.barcode) {
                 sharedViewModel.clearBarcode()
-                binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
-                saveProduct()
+                if (sharedViewModel.confirmWithScan()) {
+                    binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
+                    saveProduct()
+                } else {
+                    increaseQuantity()
+                }
             }
         }
         binding?.buttonCancel?.setOnClickListener {
@@ -100,6 +104,14 @@ class ItemEditFragment: Fragment() {
             viewModel.confirmQuantity(product, qty, notes)
         )
         findNavController().popBackStack()
+    }
+
+    private fun increaseQuantity() {
+        val qty = binding?.editQuantity?.text.toString().toIntOrNull()?.plus(1)?.toString() ?: "1"
+        val notes = binding?.editNotes?.text.toString()
+        sharedViewModel.setDocumentContent(
+            viewModel.confirmQuantity(product, qty, notes)
+        )
     }
 
     override fun onDestroyView() {

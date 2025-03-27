@@ -122,6 +122,10 @@ class SharedViewModel @Inject constructor(
         barcode.value = value
     }
 
+    fun confirmWithScan(): Boolean {
+        return _userOptions.value?.confirmWithScan ?: false
+    }
+
     fun clearBarcode() {
         barcode.value = ""
     }
