@@ -108,6 +108,7 @@ class ItemEditFragment: Fragment() {
 
     private fun increaseQuantity() {
         val qty = binding?.editQuantity?.text.toString().toIntOrNull()?.plus(1)?.toString() ?: "1"
+        binding?.editQuantity?.setText(qty)
         val notes = binding?.editNotes?.text.toString()
         sharedViewModel.setDocumentContent(
             viewModel.confirmQuantity(product, qty, notes)

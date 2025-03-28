@@ -1,6 +1,7 @@
 package ua.com.programmer.simpleremote.ui.document
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,14 +94,19 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
             return
         }
 
-        val position = listAdapter?.findProductPosition(product) ?: -1
+       val position = listAdapter?.findProductPosition(product) ?: -1
         if (position >= 0) {
+            Log.d("RC_DocumentContentFragment", "onProductReceived: position=$position")
             viewModel.onListScrolled(position)
             recycler?.smoothScrollToPosition(position)
+            recycler?.post {
+                val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+                findNavController().navigate(action)
+            }
+        } else {
+            val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+            findNavController().navigate(action)
         }
-
-        val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
-        findNavController().navigate(action)
     }
 
     override fun onResume() {
