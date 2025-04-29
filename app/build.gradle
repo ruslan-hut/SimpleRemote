@@ -84,7 +84,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
@@ -93,7 +93,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:21.3.0'
 
     // Worker
-    implementation "androidx.work:work-runtime-ktx:2.10.0"
+    implementation "androidx.work:work-runtime-ktx:2.10.1"
 
     // Lifecycle libraries
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7"
@@ -113,7 +113,7 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
 
     //Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.11.0')
+    implementation platform('com.google.firebase:firebase-bom:33.13.0')
     //implementation 'com.google.firebase:firebase-core:20.0.0'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
@@ -130,7 +130,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.8.9"
 
     // Room
-    def room_version = "2.6.1"
+    def room_version = "2.7.1"
     implementation "androidx.room:room-common:${room_version}"
     implementation "androidx.room:room-runtime:${room_version}"
     ksp "androidx.room:room-compiler:${room_version}"
