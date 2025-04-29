@@ -54,7 +54,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                 sharedViewModel.setItemChecked(code, isChecked)
             },
             onItemClicked = { item ->
-                viewModel.onItemClicked(item, ::onProductReceived)
+                viewModel.onItemClicked(item, ::openProductScreen)
             },
         )
         recycler = binding?.documentContent
@@ -79,14 +79,20 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
-                viewModel.onBarcodeRead(it, ::onProductReceived)
+                viewModel.onBarcodeRead(it, ::scrollToProduct)
                 sharedViewModel.clearBarcode()
             }
         }
 
     }
 
-    private fun onProductReceived(product: Product) {
+    private fun openProductScreen(product: Product) {
+        sharedViewModel.setProduct(product)
+        val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+        findNavController().navigate(action)
+    }
+
+    private fun scrollToProduct(product: Product) {
         sharedViewModel.setProduct(product)
 
         if (product.id.isEmpty()) {
@@ -94,18 +100,11 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
             return
         }
 
-       val position = listAdapter?.findProductPosition(product) ?: -1
+        val position = listAdapter?.findProductPosition(product) ?: -1
         if (position >= 0) {
             Log.d("RC_DocumentContentFragment", "onProductReceived: position=$position")
             viewModel.onListScrolled(position)
             recycler?.smoothScrollToPosition(position)
-            recycler?.post {
-                val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
-                findNavController().navigate(action)
-            }
-        } else {
-            val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
-            findNavController().navigate(action)
         }
     }
 
