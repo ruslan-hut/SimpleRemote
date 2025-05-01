@@ -1,5 +1,6 @@
 package ua.com.programmer.simpleremote.ui.shared
 
+import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -78,6 +79,22 @@ class SharedViewModel @Inject constructor(
         _product.value = prod
     }
 
+    fun setProductOnScan(product: Product) {
+        _product.value = product
+        if (collectMode()) {
+            // find product in content an increase quantity
+            val list = _content.value?.toMutableList() ?: mutableListOf()
+            val item = list.find { it.code == product.code }
+            item?.apply {
+                collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
+                modified = true
+                checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+            }
+            _content.value = list
+            checkContent()
+        }
+    }
+
     fun setDocumentContent(content: List<Content>) {
         _content.value = content
         checkContent()
@@ -123,7 +140,11 @@ class SharedViewModel @Inject constructor(
     }
 
     fun confirmWithScan(): Boolean {
-        return _userOptions.value?.confirmWithScan ?: false
+        return _userOptions.value?.confirmWithScan == true
+    }
+
+    fun collectMode(): Boolean {
+        return true //_userOptions.value?.mode == "collect"
     }
 
     fun clearBarcode() {

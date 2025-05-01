@@ -62,4 +62,5 @@
     <string name="total_articles">Количество артикулов</string>
     <string name="total_price">Сумма документа</string>
     <string name="hint_enter_text">Введите текст</string>
+    <string name="no_product_in_document">Такого товара в документе нет</string>
 </resources>

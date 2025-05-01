@@ -113,8 +113,9 @@ class DocumentViewModel @Inject constructor(
             _isLoading.value = true
             networkRepository.barcode(type, guid, barcode).collect { found ->
                 // find product in content
-                Log.d("RC_DocumentViewModel", "onBarcodeRead: found=$found")
-                val item = _content.value?.find { found.code == it.code }
+                Log.d("RC_DocumentViewModel", "onBarcodeRead: code=${found.code} ${found.description}")
+                val list = _content.value?.toMutableList() ?: mutableListOf()
+                val item = list.find { found.code == it.code }
                 val product = found.copy(
                     contentItem = item
                 )
