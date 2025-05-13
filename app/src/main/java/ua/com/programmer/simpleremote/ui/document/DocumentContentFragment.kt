@@ -1,12 +1,12 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -24,7 +24,6 @@ import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.isEquals
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
-import kotlin.getValue
 
 @AndroidEntryPoint
 class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragment() {
@@ -179,27 +178,29 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
             private fun showImageDialog(imageView: ImageView) {
                 val context = imageView.context
+                val dialog = Dialog(context, R.style.FullscreenImageDialog)
                 val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_fullscreen_image, null)
                 val fullscreenImage = dialogView.findViewById<ImageView>(R.id.fullscreen_image)
+                val container = dialogView.findViewById<FrameLayout>(R.id.fullscreen_container)
 
                 fullscreenImage.setImageDrawable(imageView.drawable)
 
-                // Set margin programmatically to 20% of screen width
-                val screenWidth = Resources.getSystem().displayMetrics.widthPixels
-                val margin = (screenWidth * 0.2).toInt()
+                // Set padding to 20% of screen width and height
+                val metrics = Resources.getSystem().displayMetrics
+                val horizontalPadding = (metrics.widthPixels * 0.2).toInt()
+                val verticalPadding = (metrics.heightPixels * 0.2).toInt()
 
-                val params = fullscreenImage.layoutParams as ViewGroup.MarginLayoutParams
-                params.setMargins(margin, margin, margin, margin)
-                fullscreenImage.layoutParams = params
+                container.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
 
-                val dialog = AlertDialog.Builder(context, R.style.FullscreenImageDialog)
-                    .setView(dialogView)
-                    .create()
-
+                dialog.setContentView(dialogView)
+                dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
                 dialog.show()
 
-                dialogView.setOnClickListener { dialog.dismiss() }
+                // Dismiss on click outside the image
+                container.setOnClickListener { dialog.dismiss() }
+
+                // Prevent dismissal on image click
                 fullscreenImage.setOnClickListener { /* do nothing */ }
             }
 
