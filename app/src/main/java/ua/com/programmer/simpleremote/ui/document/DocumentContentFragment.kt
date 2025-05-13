@@ -1,5 +1,7 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.app.AlertDialog
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -159,6 +161,9 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
                     imageLoader(itemImage)
                     //itemImage.visibility = if (loadImages) View.GONE else View.VISIBLE
+                    itemImage.setOnClickListener {
+                        showImageDialog(itemImage)
+                    }
 
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
@@ -169,7 +174,35 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                     }
 
                 }
+
             }
+
+            private fun showImageDialog(imageView: ImageView) {
+                val context = imageView.context
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_fullscreen_image, null)
+                val fullscreenImage = dialogView.findViewById<ImageView>(R.id.fullscreen_image)
+
+                fullscreenImage.setImageDrawable(imageView.drawable)
+
+                // Set margin programmatically to 20% of screen width
+                val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+                val margin = (screenWidth * 0.2).toInt()
+
+                val params = fullscreenImage.layoutParams as ViewGroup.MarginLayoutParams
+                params.setMargins(margin, margin, margin, margin)
+                fullscreenImage.layoutParams = params
+
+                val dialog = AlertDialog.Builder(context, R.style.FullscreenImageDialog)
+                    .setView(dialogView)
+                    .create()
+
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+                dialog.show()
+
+                dialogView.setOnClickListener { dialog.dismiss() }
+                fullscreenImage.setOnClickListener { /* do nothing */ }
+            }
+
         }
 
         companion object {
@@ -204,7 +237,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
             holder.bind(getItem(position), { isChecked ->
                 onItemChecked(item.code, isChecked)
             }, { imageView ->
-                imageLoader(item.code, imageView)
+                imageLoader(item.image, imageView)
             })
         }
 

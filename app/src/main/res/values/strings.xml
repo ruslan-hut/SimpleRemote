@@ -62,4 +62,5 @@
     <string name="total_price">Total price</string>
     <string name="hint_enter_text">Enter text</string>
     <string name="no_product_in_document">No such product in the document</string>
+    <string name="fullscreen_image">fullscreen image</string>
 </resources>
