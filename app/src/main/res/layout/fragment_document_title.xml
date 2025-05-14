@@ -224,28 +224,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/document_header_checked"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/checked"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="16sp" />
-
-        <CheckBox
-            android:id="@+id/document_is_checked"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -303,11 +281,36 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/document_header_checked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        android:background="?attr/android:colorBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/checked"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/document_is_checked"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"/>
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/document_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
         android:background="?attr/android:colorBackground"
         android:hint="@string/notes"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />

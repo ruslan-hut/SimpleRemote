@@ -187,8 +187,8 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
                 // Set padding to 20% of screen width and height
                 val metrics = Resources.getSystem().displayMetrics
-                val horizontalPadding = (metrics.widthPixels * 0.2).toInt()
-                val verticalPadding = (metrics.heightPixels * 0.2).toInt()
+                val horizontalPadding = (metrics.widthPixels * 0.1).toInt()
+                val verticalPadding = (metrics.heightPixels * 0.1).toInt()
 
                 container.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
 
@@ -201,7 +201,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                 container.setOnClickListener { dialog.dismiss() }
 
                 // Prevent dismissal on image click
-                fullscreenImage.setOnClickListener { /* do nothing */ }
+                fullscreenImage.setOnClickListener { dialog.dismiss() }
             }
 
         }
