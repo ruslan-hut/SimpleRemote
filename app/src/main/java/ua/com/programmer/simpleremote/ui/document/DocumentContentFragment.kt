@@ -3,6 +3,7 @@ package ua.com.programmer.simpleremote.ui.document
 import android.app.Dialog
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,7 +81,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
-                viewModel.onBarcodeRead(it, ::scrollToProduct)
+                viewModel.onBarcodeRead(sharedViewModel.placementMode(), it, ::scrollToProduct)
                 sharedViewModel.clearBarcode()
             }
         }
@@ -90,6 +91,12 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
     private fun openProductScreen(product: Product) {
         sharedViewModel.setProduct(product)
         val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
+        findNavController().navigate(action)
+    }
+
+    private fun openProductPlacementScreen(product: Product) {
+        sharedViewModel.setProduct(product)
+        val action = DocumentFragmentDirections.actionDocumentFragmentToItemPlacementFragment(product.code)
         findNavController().navigate(action)
     }
 
@@ -106,6 +113,9 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
             listAdapter?.notifyItemChanged(position)
             viewModel.onListScrolled(position)
             recycler?.smoothScrollToPosition(position)
+            if (sharedViewModel.placementMode()){
+                openProductPlacementScreen(product)
+            }
         }else{
             Toast.makeText(requireContext(), R.string.no_product_in_document, Toast.LENGTH_SHORT).show()
         }

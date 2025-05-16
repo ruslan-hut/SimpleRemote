@@ -63,4 +63,7 @@
     <string name="hint_enter_text">Enter text</string>
     <string name="no_product_in_document">No such product in the document</string>
     <string name="fullscreen_image">fullscreen image</string>
+    <string name="place">Place</string>
+    <string name="item_placement">Item placement\n</string>
+    <string name="enter_quantity">Enter quantity</string>
 </resources>

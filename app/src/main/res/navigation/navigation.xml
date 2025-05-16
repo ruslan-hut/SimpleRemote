@@ -68,6 +68,9 @@
             android:id="@+id/action_documentFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
         <action
+            android:id="@+id/action_documentFragment_to_itemPlacementFragment"
+            app:destination="@id/itemPlacementFragment" />
+        <action
             android:id="@+id/action_documentFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
     </fragment>
@@ -81,6 +84,18 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_itemEditFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemPlacementFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.ItemPlacementFragment"
+        android:label="@string/item_placement" >
+        <argument
+            android:name="code"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_itemPlacementFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
     </fragment>
     <fragment

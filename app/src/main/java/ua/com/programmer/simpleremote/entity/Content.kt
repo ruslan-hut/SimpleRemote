@@ -20,6 +20,12 @@ data class Content(
     var modified: Boolean = false,
     var image: String = "",
     var encodedImage: String = "",
+    var place: List<Place> = emptyList(),
+)
+
+data class Place(
+    var quantity: Int = 0,
+    var code: String = "",
 )
 
 fun Content.isEquals(other: Content): Boolean {

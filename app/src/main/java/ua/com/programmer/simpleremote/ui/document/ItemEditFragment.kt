@@ -55,14 +55,17 @@ class ItemEditFragment: Fragment() {
             bind(it)
         }
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty() && it == product?.barcode) {
-                sharedViewModel.clearBarcode()
-                if (sharedViewModel.confirmWithScan()) {
-                    binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
-                    saveProduct()
-                } else {
-                    increaseQuantity()
+            if (it.isNotEmpty()) {
+                if (sharedViewModel.collectMode() && it == product?.barcode){
+                    if (sharedViewModel.confirmWithScan()) {
+                        binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
+                        saveProduct()
+                    } else {
+                        increaseQuantity()
+                    }
                 }
+
+                sharedViewModel.clearBarcode()
             }
         }
         binding?.buttonCancel?.setOnClickListener {

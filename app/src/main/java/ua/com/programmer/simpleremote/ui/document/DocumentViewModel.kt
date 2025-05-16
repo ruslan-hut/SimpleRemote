@@ -107,8 +107,8 @@ class DocumentViewModel @Inject constructor(
         //
     }
 
-    fun onBarcodeRead(barcode: String, onResult: (Product) -> Unit) {
-        if (_isEditable.value == false) return
+    fun onBarcodeRead(placementMode: Boolean, barcode: String, onResult: (Product) -> Unit) {
+        if (_isEditable.value == false && !placementMode) return
         viewModelScope.launch {
             _isLoading.value = true
             networkRepository.barcode(type, guid, barcode).collect { found ->
