@@ -25,7 +25,8 @@
                         android:layout_height="120dp"
                         android:contentDescription="@string/header_goods_list"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
                     <TextView
                         android:id="@+id/item_line_number"
