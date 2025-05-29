@@ -64,6 +64,10 @@
             android:name="type"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="prodCode"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_documentFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -73,6 +77,9 @@
         <action
             android:id="@+id/action_documentFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_catalogListFragment"
+            app:destination="@id/catalogListFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemEditFragment"
@@ -118,9 +125,16 @@
             android:name="docGuid"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="docType"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_catalogListFragment_self"
             app:destination="@id/catalogListFragment" />
+        <action
+            android:id="@+id/action_catalogListFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"

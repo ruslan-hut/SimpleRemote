@@ -70,7 +70,7 @@ class DocumentListFragment: Fragment() {
     }
 
     private fun openDocument(type: String, title: String) {
-        val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type)
+        val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type, "")
         this.findNavController().navigate(action)
     }
 

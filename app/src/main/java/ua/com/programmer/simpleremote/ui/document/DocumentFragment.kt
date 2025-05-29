@@ -34,7 +34,7 @@ class DocumentFragment: Fragment(), MenuProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setDocumentType(navigationArgs.type, navigationArgs.title)
+        viewModel.setDocumentType(navigationArgs.type, navigationArgs.title, navigationArgs.prodCode)
     }
 
     override fun onCreateView(
@@ -76,6 +76,17 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        }
+
+        binding?.addItemButton?.setOnClickListener {
+            val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
+                type = "Товары",
+                title = "Товары",
+                group = "",
+                docGuid = viewModel.getDocGuid(),
+                docType = viewModel.getType()
+            )
+            findNavController().navigate(action)
         }
 
     }

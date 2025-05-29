@@ -25,6 +25,7 @@ class CatalogListViewModel @Inject constructor(
     var type: String = ""
     private var group: String = ""
     var docGuid: String = ""
+    var docType: String = ""
 
     private fun fetchElements() {
         _isLoading.value = true
@@ -36,11 +37,12 @@ class CatalogListViewModel @Inject constructor(
         }
     }
 
-    fun setCatalogType(type: String?, title: String?, group: String?, docGuid: String?) {
+    fun setCatalogType(type: String?, title: String?, group: String?, docGuid: String?, docType: String? = null) {
         this.title = title ?: ""
         this.type = type ?: ""
         this.group = group ?: ""
         this.docGuid = docGuid ?: ""
+        this.docType = docType ?: ""
         fetchElements()
     }
 }

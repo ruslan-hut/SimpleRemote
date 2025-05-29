@@ -1,12 +1,14 @@
 package ua.com.programmer.simpleremote.ui.catalog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
@@ -15,10 +17,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.CatalogListItemGoodsBinding
 import ua.com.programmer.simpleremote.databinding.CatalogListItemGroupBinding
 import ua.com.programmer.simpleremote.databinding.FragmentSwipeListBinding
 import ua.com.programmer.simpleremote.entity.Catalog
+import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.getPrice
 import ua.com.programmer.simpleremote.entity.getRest
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -34,7 +38,13 @@ class CatalogListFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCatalogType(navigationArgs.type, navigationArgs.title, navigationArgs.group, navigationArgs.docGuid)
+        viewModel.setCatalogType(navigationArgs.type, navigationArgs.title, navigationArgs.group, navigationArgs.docGuid, navigationArgs.docType)
+        Log.d("CatalogListFragment",
+            "onCreate: type=${viewModel.type}, " +
+                    "title=${viewModel.title}, " +
+                    "group=${navigationArgs.group}, " +
+                    "docGuid=${navigationArgs.docGuid}, " +
+                    "docType=${navigationArgs.docType}")
     }
 
     override fun onCreateView(
@@ -54,6 +64,14 @@ class CatalogListFragment: Fragment() {
                     if (item.isGroup == 1) {
                         nextPage(item.code)
                     }
+
+                    if (item.isGroup == 0 && viewModel.docType != "") {
+                        val action = CatalogListFragmentDirections.actionCatalogListFragmentToDocumentFragment(viewModel.docType, viewModel.docType, item.code)
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.documentFragment, true)
+                            .build()
+                        findNavController().navigate(action, navOptions)
+                    }
                 },
             )
         val recycler = binding.listRecycler
@@ -72,7 +90,7 @@ class CatalogListFragment: Fragment() {
     }
 
     private fun nextPage(group: String) {
-        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group, viewModel.docGuid)
+        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group, viewModel.docGuid, viewModel.docType)
         findNavController().navigate(action)
     }
 
@@ -115,6 +133,10 @@ class CatalogListFragment: Fragment() {
                     } else {
                         restValue.text = rest
                         restContainer.visibility = View.VISIBLE
+                    }
+
+                    itemView.setOnClickListener {
+                        onItemClicked(catalog)
                     }
                 }
             }

@@ -65,7 +65,7 @@ class SelectCatalogTypeFragment: Fragment() {
     }
 
     private fun openCatalog(type: String, title: String) {
-        val action = SelectCatalogTypeFragmentDirections.actionSelectCatalogTypeFragmentToCatalogListFragment(type, title, "", "")
+        val action = SelectCatalogTypeFragmentDirections.actionSelectCatalogTypeFragmentToCatalogListFragment(type, title, "", "", "")
         findNavController().navigate(action)
     }
 

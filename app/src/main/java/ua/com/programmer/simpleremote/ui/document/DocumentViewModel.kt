@@ -37,10 +37,12 @@ class DocumentViewModel @Inject constructor(
     private var title = ""
     private var type = ""
     private var guid = ""
+    private var productCode = ""
 
-    fun setDocumentType(type: String?, title: String?) {
+    fun setDocumentType(type: String?, title: String?, productCode: String?) {
         this.type = type ?: ""
         this.title = title ?: ""
+        this.productCode = productCode ?: ""
     }
 
     fun setDocumentId(id: String) {
@@ -53,6 +55,14 @@ class DocumentViewModel @Inject constructor(
         return title
     }
 
+    fun getType(): String {
+        return type
+    }
+
+    fun getDocGuid(): String {
+        return guid
+    }
+
     private fun loadDocumentContent() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -61,6 +71,8 @@ class DocumentViewModel @Inject constructor(
                 _count.value = it.size
                 _isLoading.value = false
             }
+        }.invokeOnCompletion {
+            addProduct(this.productCode)
         }
     }
 
@@ -75,6 +87,51 @@ class DocumentViewModel @Inject constructor(
             contentItem = item,
         )
         openProduct(product)
+    }
+
+    private fun addProduct(code: String) {
+        if (code == "") return
+        viewModelScope.launch {
+            _isLoading.value = true
+            networkRepository.barcode(type, guid, code).collect { found ->
+                // find product in content
+                val list = _content.value?.toMutableList() ?: mutableListOf()
+                val item = list.find { found.code == it.code }
+                if (item != null) {
+                    // Update existing item
+                    item.apply {
+                        collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
+                        modified = true
+                        checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+                    }
+                } else {
+                    val newContent = Content(
+                        line = list.size + 1,
+                        code = found.code,
+                        code2 = found.barcode,
+                        code3 = found.id,
+                        art = found.art,
+                        description = found.description,
+                        unit = found.unit,
+                        quantity = "1",
+                        rest = found.rest.toString(),
+                        price = found.price.toString(),
+                        sum = found.price.toString(), // assuming quantity = 1
+                        collect = "1",
+                        notes = found.notes,
+                        checked = false,
+                        modified = true,
+                        image = found.art,
+                        encodedImage = "", // you can encode the image if needed
+                        place = emptyList()
+                    )
+                    list.add(newContent)
+                }
+                _content.value = list
+                _count.value = list.size
+                _isLoading.value = false
+            }
+        }
     }
 
     fun enableEdit() {
