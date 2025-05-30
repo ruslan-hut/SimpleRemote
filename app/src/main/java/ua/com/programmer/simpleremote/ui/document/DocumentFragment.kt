@@ -1,6 +1,7 @@
 package ua.com.programmer.simpleremote.ui.document
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -34,7 +35,7 @@ class DocumentFragment: Fragment(), MenuProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setDocumentType(navigationArgs.type, navigationArgs.title, navigationArgs.prodCode)
+        viewModel.setDocumentType(navigationArgs.type, navigationArgs.title)
     }
 
     override fun onCreateView(
@@ -68,8 +69,10 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
         }
 
-        viewModel.content.observe(viewLifecycleOwner) {
-            sharedViewModel.setDocumentContent(it)
+        sharedViewModel.content.observe(viewLifecycleOwner) {
+            viewModel.setDocumentContent(it){
+                sharedViewModel.checkContent()
+            }
         }
         viewModel.isEditable.observe(viewLifecycleOwner) {
             binding?.bottomBar?.visibility = if (it) View.VISIBLE else View.GONE
@@ -83,8 +86,6 @@ class DocumentFragment: Fragment(), MenuProvider {
                 type = "Товары",
                 title = "Товары",
                 group = "",
-                docGuid = viewModel.getDocGuid(),
-                docType = viewModel.getType()
             )
             findNavController().navigate(action)
         }
@@ -121,7 +122,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 )
             }
             R.id.refresh -> {
-                viewModel.refresh()
+                sharedViewModel.loadDocumentContent(viewModel.getType(), viewModel.getDocGuid())
             }
             else -> return false
         }

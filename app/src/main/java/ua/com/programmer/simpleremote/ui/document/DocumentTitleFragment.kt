@@ -39,7 +39,9 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
         sharedViewModel.document.observe(viewLifecycleOwner) {
             it?.let {
                 bind(it)
-                viewModel.setDocumentId(it.guid)
+                viewModel.setDocumentId(it.guid){type, guid ->
+                    sharedViewModel.loadDocumentContent(type, guid)
+                }
             }
         }
         viewModel.count.observe(viewLifecycleOwner) {

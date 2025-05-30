@@ -31,3 +31,26 @@ fun Catalog.getPrice(): String {
         ""
     }
 }
+
+fun Catalog.toContent(lineNumber: Int = 1): Content {
+    return Content(
+        line = lineNumber,
+        code = this.code,
+        code2 = "", // no barcode in Catalog
+        code3 = this.id,
+        art = this.art,
+        description = this.description,
+        unit = this.unit,
+        quantity = "1", // default scanned quantity
+        rest = this.getRest(),
+        price = this.getPrice(),
+        sum = this.getPrice(), // assuming quantity = 1
+        collect = "1",
+        notes = "",
+        checked = true, // 1 >= 1
+        modified = true,
+        image = this.art,
+        encodedImage = "",
+        place = emptyList()
+    )
+}

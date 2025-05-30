@@ -38,13 +38,7 @@ class CatalogListFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCatalogType(navigationArgs.type, navigationArgs.title, navigationArgs.group, navigationArgs.docGuid, navigationArgs.docType)
-        Log.d("CatalogListFragment",
-            "onCreate: type=${viewModel.type}, " +
-                    "title=${viewModel.title}, " +
-                    "group=${navigationArgs.group}, " +
-                    "docGuid=${navigationArgs.docGuid}, " +
-                    "docType=${navigationArgs.docType}")
+        viewModel.setCatalogType(navigationArgs.type, navigationArgs.title, navigationArgs.group)
     }
 
     override fun onCreateView(
@@ -65,12 +59,11 @@ class CatalogListFragment: Fragment() {
                         nextPage(item.code)
                     }
 
-                    if (item.isGroup == 0 && viewModel.docType != "") {
-                        val action = CatalogListFragmentDirections.actionCatalogListFragmentToDocumentFragment(viewModel.docType, viewModel.docType, item.code)
-                        val navOptions = NavOptions.Builder()
-                            .setPopUpTo(R.id.documentFragment, true)
-                            .build()
-                        findNavController().navigate(action, navOptions)
+                    if (item.isGroup == 0) {
+                        sharedViewModel.addProduct(item) {
+                            Log.d("DocCont", "onResult ${sharedViewModel.content.value.size}")
+                            findNavController().popBackStack(R.id.documentFragment, false)
+                        }
                     }
                 },
             )
@@ -90,7 +83,7 @@ class CatalogListFragment: Fragment() {
     }
 
     private fun nextPage(group: String) {
-        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group, viewModel.docGuid, viewModel.docType)
+        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group)
         findNavController().navigate(action)
     }
 

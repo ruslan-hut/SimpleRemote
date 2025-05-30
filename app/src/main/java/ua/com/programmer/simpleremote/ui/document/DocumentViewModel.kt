@@ -37,18 +37,16 @@ class DocumentViewModel @Inject constructor(
     private var title = ""
     private var type = ""
     private var guid = ""
-    private var productCode = ""
 
-    fun setDocumentType(type: String?, title: String?, productCode: String?) {
+    fun setDocumentType(type: String?, title: String?) {
         this.type = type ?: ""
         this.title = title ?: ""
-        this.productCode = productCode ?: ""
     }
 
-    fun setDocumentId(id: String) {
-        if (_content.value?.isNotEmpty() == true) return
+    fun setDocumentId(id: String, onResult: (String, String) -> Unit) {
+        if (this.guid == id) return
         this.guid = id
-        loadDocumentContent()
+        onResult(type, guid)
     }
 
     fun getTitle(): String {
@@ -63,19 +61,6 @@ class DocumentViewModel @Inject constructor(
         return guid
     }
 
-    private fun loadDocumentContent() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            networkRepository.documentContent(type, guid).collect {
-                _content.value = it
-                _count.value = it.size
-                _isLoading.value = false
-            }
-        }.invokeOnCompletion {
-            addProduct(this.productCode)
-        }
-    }
-
     fun onItemClicked(item: Content, openProduct: (Product) -> Unit) {
         if (_isEditable.value == false) return
         val product = Product(
@@ -87,51 +72,6 @@ class DocumentViewModel @Inject constructor(
             contentItem = item,
         )
         openProduct(product)
-    }
-
-    private fun addProduct(code: String) {
-        if (code == "") return
-        viewModelScope.launch {
-            _isLoading.value = true
-            networkRepository.barcode(type, guid, code).collect { found ->
-                // find product in content
-                val list = _content.value?.toMutableList() ?: mutableListOf()
-                val item = list.find { found.code == it.code }
-                if (item != null) {
-                    // Update existing item
-                    item.apply {
-                        collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
-                        modified = true
-                        checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
-                    }
-                } else {
-                    val newContent = Content(
-                        line = list.size + 1,
-                        code = found.code,
-                        code2 = found.barcode,
-                        code3 = found.id,
-                        art = found.art,
-                        description = found.description,
-                        unit = found.unit,
-                        quantity = "1",
-                        rest = found.rest.toString(),
-                        price = found.price.toString(),
-                        sum = found.price.toString(), // assuming quantity = 1
-                        collect = "1",
-                        notes = found.notes,
-                        checked = false,
-                        modified = true,
-                        image = found.art,
-                        encodedImage = "", // you can encode the image if needed
-                        place = emptyList()
-                    )
-                    list.add(newContent)
-                }
-                _content.value = list
-                _count.value = list.size
-                _isLoading.value = false
-            }
-        }
     }
 
     fun enableEdit() {
@@ -156,16 +96,18 @@ class DocumentViewModel @Inject constructor(
         }
     }
 
-    fun refresh() {
-        loadDocumentContent()
+    fun setDocumentContent(content: List<Content>, onResult: () -> Unit) {
+        _content.value = content
+        _count.value = content.size
+        onResult()
     }
 
     fun deleteDocument() {
         //
     }
 
-    fun onBarcodeRead(placementMode: Boolean, barcode: String, onResult: (Product) -> Unit) {
-        if (_isEditable.value == false && !placementMode) return
+    fun onBarcodeRead(barcode: String, onResult: (Product) -> Unit) {
+        if (_isEditable.value == false) return
         viewModelScope.launch {
             _isLoading.value = true
             networkRepository.barcode(type, guid, barcode).collect { found ->
@@ -178,6 +120,16 @@ class DocumentViewModel @Inject constructor(
                 )
                 _isLoading.value = false
                 onResult(product)
+            }
+        }
+    }
+
+    fun addProduct(barcode: String, onResult: (Product) -> Unit) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            networkRepository.barcode(type, guid, barcode).collect { found ->
+                _isLoading.value = false
+                onResult(found)
             }
         }
     }

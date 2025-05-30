@@ -64,10 +64,6 @@
             android:name="type"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="prodCode"
-            app:argType="string"
-            app:nullable="true" />
         <action
             android:id="@+id/action_documentFragment_to_itemEditFragment"
             app:destination="@id/itemEditFragment" />
@@ -121,14 +117,10 @@
             android:name="group"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="docGuid"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="docType"
-            app:argType="string"
-            app:nullable="true" />
+<!--        <argument-->
+<!--            android:name="docGuid"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
         <action
             android:id="@+id/action_catalogListFragment_self"
             app:destination="@id/catalogListFragment" />

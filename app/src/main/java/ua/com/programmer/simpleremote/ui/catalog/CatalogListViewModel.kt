@@ -37,12 +37,10 @@ class CatalogListViewModel @Inject constructor(
         }
     }
 
-    fun setCatalogType(type: String?, title: String?, group: String?, docGuid: String?, docType: String? = null) {
+    fun setCatalogType(type: String?, title: String?, group: String?) {
         this.title = title ?: ""
         this.type = type ?: ""
         this.group = group ?: ""
-        this.docGuid = docGuid ?: ""
-        this.docType = docType ?: ""
         fetchElements()
     }
 }

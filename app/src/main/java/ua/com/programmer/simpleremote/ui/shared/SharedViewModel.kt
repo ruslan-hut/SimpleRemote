@@ -13,11 +13,13 @@ import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getAuthToken
 import ua.com.programmer.simpleremote.dao.entity.getBaseImageUrl
+import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.UserOptions
 import ua.com.programmer.simpleremote.entity.setImage
+import ua.com.programmer.simpleremote.entity.toContent
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import javax.inject.Inject
@@ -92,12 +94,77 @@ class SharedViewModel @Inject constructor(
             }
             _content.value = list
             checkContent()
+        } else if (editMode()) {
+            val list = _content.value?.toMutableList() ?: mutableListOf()
+            val item = list.find { it.code == product.code }
+            if (item != null) {
+                // Update existing item
+                item.apply {
+                    collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
+                    modified = true
+                    checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+                }
+            } else {
+                val newContent = Content(
+                    line = list.size + 1,
+                    code = product.code,
+                    code2 = product.barcode,
+                    code3 = product.id,
+                    art = product.art,
+                    description = product.description,
+                    unit = product.unit,
+                    quantity = "1",
+                    rest = product.rest.toString(),
+                    price = product.price.toString(),
+                    sum = product.price.toString(), // assuming quantity = 1
+                    collect = "1",
+                    notes = product.notes,
+                    checked = false,
+                    modified = true,
+                    image = product.art,
+                    encodedImage = "", // you can encode the image if needed
+                    place = emptyList()
+                )
+                list.add(newContent)
+            }
+            _content.value = list
+            checkContent()
         }
+    }
+
+    fun addProduct(catalog: Catalog, onResult: () -> Unit){
+        if (editMode()) {
+            val list = _content.value?.toMutableList() ?: mutableListOf()
+            val item = list.find { it.code == catalog.code }
+            if (item != null) {
+                // Update existing item
+                item.apply {
+                    collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
+                    modified = true
+                    checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+                }
+            } else {
+                val newContent = catalog.toContent(list.size+1)
+                list.add(newContent)
+            }
+            _content.value = list
+            checkContent()
+        }
+
+        onResult()
     }
 
     fun setDocumentContent(content: List<Content>) {
         _content.value = content
         checkContent()
+    }
+
+    fun loadDocumentContent(type:String, guid: String) {
+        viewModelScope.launch {
+            networkRepository.documentContent(type, guid).collect {
+                _content.value = it
+            }
+        }
     }
 
     fun setDocumentNotes(notes: String) {
@@ -121,7 +188,7 @@ class SharedViewModel @Inject constructor(
     }
 
     // Check if all content items are checked and update the document's checked status
-    private fun checkContent() {
+    fun checkContent() {
         val list = _content.value?.toMutableList() ?: mutableListOf()
         if (list.isEmpty()) return
         val checked = list.all { it.checked }
@@ -144,11 +211,15 @@ class SharedViewModel @Inject constructor(
     }
 
     fun collectMode(): Boolean {
-        return _userOptions.value?.mode == "collect"
+        return false//_userOptions.value?.mode == "collect"
     }
 
     fun placementMode(): Boolean {
-        return _userOptions.value?.mode == "placement"
+        return false//_userOptions.value?.mode == "placement"
+    }
+
+    fun editMode(): Boolean {
+        return true//_userOptions.value?.mode == "edit"
     }
 
     fun clearBarcode() {

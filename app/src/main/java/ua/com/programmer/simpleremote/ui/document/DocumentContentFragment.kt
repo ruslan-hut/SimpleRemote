@@ -76,15 +76,22 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
         }
 
         sharedViewModel.content.observe(viewLifecycleOwner) {
+            Log.d("DocCont", "it size ${it.size}")
             listAdapter?.submitList(it)
         }
 
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
-                viewModel.onBarcodeRead(sharedViewModel.placementMode(), it, ::scrollToProduct)
+                if (sharedViewModel.placementMode()){
+                    viewModel.onBarcodeRead(it, ::scrollToProduct)
+                }else if(sharedViewModel.editMode()){
+                    viewModel.addProduct(it, ::scrollToProduct)
+                }
+
                 sharedViewModel.clearBarcode()
             }
         }
+        Log.d("DocCont", "size ${sharedViewModel.content.value.size}")
 
     }
 
