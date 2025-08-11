@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
@@ -64,7 +65,12 @@ class ImageLoader @Inject constructor(context: Context) {
         if (!url.isEmpty()) {
             view.visibility = View.VISIBLE
             val glideUrl = GlideUrl(url, authHeaders)
-            requestManager?.load(glideUrl)?.diskCacheStrategy(DiskCacheStrategy.ALL)?.placeholder(R.drawable.baseline_downloading_24)
+            requestManager
+                ?.load(glideUrl)
+                ?.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                ?.format(DecodeFormat.PREFER_ARGB_8888)
+                ?.dontAnimate()
+                ?.placeholder(R.drawable.baseline_downloading_24)
                 ?.error(R.drawable.baseline_block_24)?.into(view)
         } else {
             view.visibility = View.INVISIBLE

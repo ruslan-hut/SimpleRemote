@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
@@ -22,7 +21,6 @@ import ua.com.programmer.simpleremote.databinding.CatalogListItemGoodsBinding
 import ua.com.programmer.simpleremote.databinding.CatalogListItemGroupBinding
 import ua.com.programmer.simpleremote.databinding.FragmentSwipeListBinding
 import ua.com.programmer.simpleremote.entity.Catalog
-import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.getPrice
 import ua.com.programmer.simpleremote.entity.getRest
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -61,7 +59,7 @@ class CatalogListFragment: Fragment() {
 
                     if (item.isGroup == 0) {
                         sharedViewModel.addProduct(item) {
-                            Log.d("DocCont", "onResult ${sharedViewModel.content.value.size}")
+                            Log.d("DocCont", "onResult ${sharedViewModel.content.value?.size}")
                             findNavController().popBackStack(R.id.documentFragment, false)
                         }
                     }

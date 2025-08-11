@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace 'ua.com.programmer.simpleremote'
-    compileSdk 35
+    compileSdk 36
     def _patch
     def versionPropsFile = file("version.properties")
     if (versionPropsFile.canRead()) {
@@ -29,7 +29,8 @@ android {
     defaultConfig {
         applicationId "ua.com.programmer.simpleremote"
         minSdk 23
-        targetSdk 35
+        targetSdk 36
+        versionCode _patch
         versionName _versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -78,7 +79,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
@@ -86,18 +87,18 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.core:core-ktx:1.16.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.6.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 
     // Play service
-    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation 'com.google.android.gms:play-services-auth:21.4.0'
 
     // Worker
-    implementation "androidx.work:work-runtime-ktx:2.10.1"
+    implementation "androidx.work:work-runtime-ktx:2.10.3"
 
     // Lifecycle libraries
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.2"
 
     //volley
     implementation 'com.android.volley:volley:1.2.1'
@@ -113,7 +114,7 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
 
     //Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.13.0')
+    implementation platform('com.google.firebase:firebase-bom:34.1.0')
     //implementation 'com.google.firebase:firebase-core:20.0.0'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
@@ -121,27 +122,27 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 
     // Hilt
-    implementation 'com.google.dagger:hilt-android:2.54'
-    ksp 'com.google.dagger:hilt-compiler:2.54'
+    implementation 'com.google.dagger:hilt-android:2.57'
+    ksp 'com.google.dagger:hilt-compiler:2.57'
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
 
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:2.9.0"
-    implementation "androidx.navigation:navigation-ui-ktx:2.9.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.9.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.9.3"
 
     // Room
-    def room_version = "2.7.1"
+    def room_version = "2.7.2"
     implementation "androidx.room:room-common:${room_version}"
     implementation "androidx.room:room-runtime:${room_version}"
     ksp "androidx.room:room-compiler:${room_version}"
     implementation "androidx.room:room-ktx:${room_version}"
 
     // Retrofit (+ Moshi, Gson)
-    def retrofit_version = "2.11.0"
+    def retrofit_version = "3.0.0"
     implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
     implementation "com.squareup.retrofit2:converter-moshi:${retrofit_version}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.11.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:5.1.0"
 }
 
 apply plugin: 'com.google.gms.google-services'

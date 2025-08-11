@@ -91,7 +91,7 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                 sharedViewModel.clearBarcode()
             }
         }
-        Log.d("DocCont", "size ${sharedViewModel.content.value.size}")
+        Log.d("DocCont", "size ${sharedViewModel.content.value?.size}")
 
     }
 
