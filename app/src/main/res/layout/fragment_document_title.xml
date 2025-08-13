@@ -56,14 +56,6 @@
             android:textColor="?attr/colorOnBackground"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,6 +76,12 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorSurfaceVariant"
+        />
+
     <LinearLayout
         android:id="@+id/document_header_contractor"
         android:layout_width="match_parent"
@@ -92,22 +90,21 @@
         android:background="?attr/android:colorBackground"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/contractor"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/contractor"-->
+<!--            android:textColor="?attr/colorOnBackground"-->
+<!--            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />-->
 
         <TextView
             android:id="@+id/document_contractor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:text="@string/holder_text"
             android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -133,6 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:gravity="end"
             android:text="@string/holder_text"
             android:textColor="?attr/colorOnBackground"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -161,6 +159,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:gravity="end"
             android:text="@string/holder_text"
             android:textColor="?attr/colorOnBackground"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -189,6 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:gravity="end"
             android:text="@string/holder_text"
             android:textColor="?attr/colorOnBackground"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -217,6 +217,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:gravity="end"
             android:text="@string/holder_text"
             android:textColor="?attr/colorOnBackground"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -281,6 +282,12 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorSurfaceVariant"
+        />
+
     <LinearLayout
         android:id="@+id/document_header_checked"
         android:layout_width="match_parent"
@@ -294,6 +301,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="end"
             android:text="@string/checked"
             android:textColor="?attr/colorOnBackground"
             android:textSize="16sp" />
@@ -311,7 +319,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="8dp"
         android:paddingVertical="16dp"
-        android:background="?attr/android:colorBackground"
+        android:background="?attr/colorSurface"
         android:hint="@string/notes"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
