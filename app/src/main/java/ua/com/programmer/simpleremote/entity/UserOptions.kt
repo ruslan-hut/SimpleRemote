@@ -7,7 +7,7 @@ data class UserOptions(
     val userId: String = "",
     val write: Boolean = false,
     val read: Boolean = false,
-    val mode: String = "", // support: "full", "collect"
+    val mode: String = "", // support: input; inventory; assemble
     val loadImages: Boolean = false,
     val confirmWithScan: Boolean = false, // allow confirm product quantity with barcode scan
     val user: String = "",

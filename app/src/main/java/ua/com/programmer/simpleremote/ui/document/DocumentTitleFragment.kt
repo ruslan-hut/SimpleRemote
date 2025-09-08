@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +48,17 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
         viewModel.count.observe(viewLifecycleOwner) {
             binding?.documentArticles?.text = "$it"
         }
+        binding?.editPlaces?.doOnTextChanged { text, _, _, _ ->
+            // Only update the ViewModel if the text has actually changed
+            // from what the ViewModel currently holds for placesCollected.
+            // This assumes your SharedViewModel has a way to get the current
+            // placesCollected value or that you compare it to the last value
+            // that was set from the document.
+            // For simplicity, we'll compare with the current document's value.
+            if (text.toString() != sharedViewModel.document.value?.placesCollected) {
+                sharedViewModel.setDocumentPlacesCollected(text.toString())
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -59,6 +71,11 @@ class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment(
             documentTitle.text = viewModel.getTitle()
             documentNumber.text = item.number
             documentDate.text = item.date
+
+            // Check if the current text is different before setting it
+            if (editPlaces.text.toString() != item.placesCollected) {
+                editPlaces.setText(item.placesCollected) // TextView.BufferType.EDITABLE is the default for EditText
+            }
 
             documentNotes.text = item.notes
             documentNotes.setOnClickListener {

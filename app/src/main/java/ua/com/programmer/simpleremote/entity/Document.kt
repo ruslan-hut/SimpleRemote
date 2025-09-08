@@ -21,5 +21,6 @@ data class Document(
     val repeated: String = "",
     val currency: String = "",
     val cacheGUID: String = "",
+    val placesCollected: String = "",
     val lines: List<Content> = emptyList(),
 )

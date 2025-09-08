@@ -63,4 +63,9 @@
     <string name="total_price">Сума документа</string>
     <string name="hint_enter_text">Введіть текст</string>
     <string name="no_product_in_document">Такого товару в  документі немає</string>
+    <string name="item_placement">Розташування</string>
+    <string name="enter_quantity">Введіть кількість</string>
+    <string name="places_number">Зібрано місць</string>
+    <string name="fullscreen_image">повноекранне зображення</string>
+    <string name="place">Місце</string>
 </resources>

@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.shared
 
-import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -165,6 +164,10 @@ class SharedViewModel @Inject constructor(
                 _content.value = it
             }
         }
+    }
+
+    fun setDocumentPlacesCollected(places: String) {
+        _document.value = _document.value?.copy(placesCollected = places)
     }
 
     fun setDocumentNotes(notes: String) {

@@ -289,6 +289,38 @@
         />
 
     <LinearLayout
+        android:id="@+id/document_header_collected"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        android:background="?attr/android:colorBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="@string/places_number"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnBackground" />
+
+        <EditText
+            android:id="@+id/edit_places"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:inputType="number"
+            android:gravity="end"
+            android:text=""
+            android:textColor="?attr/colorOnBackground"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/document_header_checked"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
