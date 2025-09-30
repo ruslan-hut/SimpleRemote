@@ -18,9 +18,9 @@ data class Product(
 )
 
 fun Product.setImage(image: String): Product {
-    return this.copy(contentItem = this.contentItem?.copy(image = image))
+    return this.copy(contentItem = this.contentItem?.copy(userImage = image))
 }
 
 fun Product.getImage(): String {
-    return this.contentItem?.image ?: ""
+    return this.contentItem?.userImage ?: ""
 }

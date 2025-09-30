@@ -32,7 +32,7 @@ class ItemPlacementViewModel @Inject constructor(
             modified = true
             place = places
             checked = totalQuantity == (quantity.toIntOrNull() ?: 0)
-            image = product.getImage()
+            userImage = product.getImage()
             encodedImage = fileManager.getFileData(product.getImage())
         }
         return list

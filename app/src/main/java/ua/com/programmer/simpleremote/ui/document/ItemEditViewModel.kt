@@ -30,7 +30,7 @@ class ItemEditViewModel @Inject constructor(
             modified = true
             notes = editNotes
             checked = (newQty.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
-            image = product.getImage()
+            userImage = product.getImage()
             encodedImage = fileManager.getFileData(product.getImage())
         }
         return list

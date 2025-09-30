@@ -12,13 +12,14 @@ data class Content(
     val rest: String = "",
     val price: String = "",
     val sum: String = "",
+    var image: String = "",
 
     // editable fields
     var collect: String = "",
     var notes: String = "",
     var checked: Boolean = false,
     var modified: Boolean = false,
-    var image: String = "",
+    var userImage: String = "",
     var encodedImage: String = "",
     var place: List<Place> = emptyList(),
 )
