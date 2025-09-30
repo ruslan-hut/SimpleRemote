@@ -75,10 +75,14 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun enableEdit() {
-        _isEditable.value = true
+        _isEditable.value = _isEditable.value != true
     }
 
     fun saveDocument(document: Document, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        if (_isEditable.value == false) {
+            onError("Редагування не увімкнено")
+            return
+        }
         _isEditable.value = false
         viewModelScope.launch {
             _isLoading.value = true

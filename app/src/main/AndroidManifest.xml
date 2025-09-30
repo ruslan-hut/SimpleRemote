@@ -30,18 +30,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-<!--        <activity-->
-<!--            android:name=".deprecated.CameraActivity"-->
-<!--            android:screenOrientation="locked"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".deprecated.ItemEditScreen"-->
-<!--            android:exported="false"-->
-<!--            android:screenOrientation="locked" />-->
-<!--        <activity android:name="ua.com.programmer.simpleremote.deprecated.serviceUtils.DocumentsFilterActivity" />-->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -50,20 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity-->
-<!--            android:name=".deprecated.CatalogListActivity"-->
-<!--            android:screenOrientation="locked"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".deprecated.DocumentActivity"-->
-<!--            android:screenOrientation="locked"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".deprecated.ScannerActivity"-->
-<!--            android:screenOrientation="locked"-->
-<!--            android:exported="false" />-->
-<!--        <activity android:name="ua.com.programmer.simpleremote.deprecated.settings.ConnectionSettingsActivity" />-->
-<!--        <activity android:name=".deprecated.LoginActivity" />-->
 
     </application>
 

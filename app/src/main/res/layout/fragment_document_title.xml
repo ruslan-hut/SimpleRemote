@@ -1,358 +1,363 @@
-<LinearLayout android:id="@+id/document_header"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <LinearLayout
+    <LinearLayout android:id="@+id/document_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
+        android:layout_margin="8dp"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/document_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/document" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/document_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/document" />
+
+            <TextView
+                android:id="@+id/document_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/document_title_receive"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_sign"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_number"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="@string/holder_number"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="@string/holder_number"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/document_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_gravity="center_vertical"
-            android:text="@string/document_title_receive"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorSurfaceVariant"
+            />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/document_header_contractor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+    <!--        <TextView-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="@string/contractor"-->
+    <!--            android:textColor="?attr/colorOnBackground"-->
+    <!--            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />-->
+
+            <TextView
+                android:id="@+id/document_contractor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/document_header_field1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/document_field1_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_field1_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/document_header_field2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/document_field2_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_field2_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/document_header_field3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/document_field3_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_field3_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/document_header_field4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/document_field4_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_field4_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_articles"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_articles"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_price"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/document_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:gravity="end"
+                android:text="@string/holder_text"
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorSurfaceVariant"
+            />
+
+        <LinearLayout
+            android:id="@+id/document_header_collected"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/number_sign"
-            android:textColor="?attr/colorOnBackground"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="16dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                android:text="@string/places_number"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?attr/colorOnBackground" />
+
+            <EditText
+                android:id="@+id/edit_places"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:autofillHints=""
+                android:inputType="number"
+                android:gravity="end"
+                android:text=""
+                android:textColor="?attr/colorOnBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/document_header_checked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="16dp"
+            android:background="?attr/android:colorBackground"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="@string/checked"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/document_is_checked"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/document_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="16dp"
+            android:background="?attr/colorSurface"
+            android:hint="@string/notes"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <TextView
-            android:id="@+id/document_number"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="@string/holder_number"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="@string/holder_number"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorSurfaceVariant"
-        />
-
-    <LinearLayout
-        android:id="@+id/document_header_contractor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/contractor"-->
-<!--            android:textColor="?attr/colorOnBackground"-->
-<!--            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />-->
-
-        <TextView
-            android:id="@+id/document_contractor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/document_header_field1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/document_field1_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_field1_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/document_header_field2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/document_field2_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_field2_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/document_header_field3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/document_field3_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_field3_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/document_header_field4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/document_field4_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_field4_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/total_articles"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_articles"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-             />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/total_price"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/document_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:gravity="end"
-            android:text="@string/holder_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorSurfaceVariant"
-        />
-
-    <LinearLayout
-        android:id="@+id/document_header_collected"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="16dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:text="@string/places_number"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?attr/colorOnBackground" />
-
-        <EditText
-            android:id="@+id/edit_places"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:autofillHints=""
-            android:inputType="number"
-            android:gravity="end"
-            android:text=""
-            android:textColor="?attr/colorOnBackground"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/document_header_checked"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="16dp"
-        android:background="?attr/android:colorBackground"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:text="@string/checked"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="16sp" />
-
-        <CheckBox
-            android:id="@+id/document_is_checked"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"/>
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/document_notes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="16dp"
-        android:background="?attr/colorSurface"
-        android:hint="@string/notes"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
