@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.MainActivity
 import ua.com.programmer.simpleremote.databinding.FragmentItemEditBinding
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -121,5 +122,6 @@ class ItemEditFragment: Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        (requireActivity() as? MainActivity)?.hideSoftKeyboard()
     }
 }

@@ -1,12 +1,16 @@
 package ua.com.programmer.simpleremote
 
 import android.os.Bundle
+import android.view.InputDevice
 import android.view.KeyEvent
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -39,6 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -94,31 +100,60 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        event.let {
-            if (it.action == KeyEvent.ACTION_DOWN) {
-                val currentTime = System.currentTimeMillis()
 
+        if (event.action == KeyEvent.ACTION_DOWN) {
+
+            val device = event.device
+            val isFromScanner = isScannerDevice(device)
+
+            if (isFromScanner) {
+
+                val currentTime = System.currentTimeMillis()
                 if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > 60) {
                     barcode.clear()
                 }
-                when (it.keyCode) {
+
+                when (event.keyCode) {
                     KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_TAB -> {
                         viewModel.onBarcodeRead(barcode.toString())
                         barcode.clear()
                         return true
                     }
                     else -> {
-                        val char = it.unicodeChar.toChar()
-                        if (Character.isDigit(char) || Character.isLetter(char)) {
+                        val char = event.unicodeChar.toChar()
+                        if (char.isLetterOrDigit()) {
                             barcode.append(char)
                         }
                     }
                 }
 
                 lastKeystrokeTime = currentTime
+                return true
             }
         }
+
         return super.dispatchKeyEvent(event)
+    }
+
+    private fun isScannerDevice(device: InputDevice?): Boolean {
+        if (device == null || device.id == -1 || device.isVirtual) return false
+
+        val name = device.name.lowercase()
+        val sources = device.sources
+
+        if (name == "virtual") return false
+
+        return name.contains("scanner") || name.contains("honeywell") || name.contains("zebra") ||
+                (sources and InputDevice.SOURCE_KEYBOARD == InputDevice.SOURCE_KEYBOARD && !device.isVirtual)
+    }
+
+    fun hideSoftKeyboard() {
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        controller.hide(WindowInsetsCompat.Type.ime())
+
+        window.decorView.clearFocus()
+
+        binding.drawerLayout.requestFocus()
     }
 
     private fun scheduleUserCleanupWorker() {
