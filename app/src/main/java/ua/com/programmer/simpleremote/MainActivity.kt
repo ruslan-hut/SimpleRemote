@@ -66,17 +66,20 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(binding.navView, navController)
 
         onBackPressedDispatcher.addCallback(this) {
-            if (navController.previousBackStackEntry == null) {
+            val navController = findNavController(R.id.nav_host_container)
+
+            if (navController.previousBackStackEntry != null) {
+                navController.popBackStack()
+            } else {
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     finish()
-                }else {
+                } else {
                     Toast.makeText(this@MainActivity, R.string.hint_press_back, Toast.LENGTH_SHORT).show()
                     backPressedTime = System.currentTimeMillis()
                 }
-            } else {
-                navController.popBackStack()
             }
         }
+
 
         viewModel.connection.observe(this) {
             it?.let {
@@ -100,52 +103,58 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val device = event.device
+        if (!isScannerDevice(device)) {
+            return super.dispatchKeyEvent(event)
+        }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
+            val currentTime = System.currentTimeMillis()
+            if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > 60) {
+                barcode.clear()
+            }
 
-            val device = event.device
-            val isFromScanner = isScannerDevice(device)
+            val char = event.unicodeChar.toChar()
+            if (char.isLetterOrDigit()) {
+                barcode.append(char)
+            }
+            lastKeystrokeTime = currentTime
 
-            if (isFromScanner) {
-
-                val currentTime = System.currentTimeMillis()
-                if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > 60) {
+        } else if (event.action == KeyEvent.ACTION_UP) {
+            if (event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB) {
+                if (barcode.isNotEmpty()) {
+                    viewModel.onBarcodeRead(barcode.toString())
                     barcode.clear()
                 }
-
-                when (event.keyCode) {
-                    KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_TAB -> {
-                        viewModel.onBarcodeRead(barcode.toString())
-                        barcode.clear()
-                        return true
-                    }
-                    else -> {
-                        val char = event.unicodeChar.toChar()
-                        if (char.isLetterOrDigit()) {
-                            barcode.append(char)
-                        }
-                    }
-                }
-
-                lastKeystrokeTime = currentTime
                 return true
             }
         }
 
-        return super.dispatchKeyEvent(event)
+        return true
     }
+
 
     private fun isScannerDevice(device: InputDevice?): Boolean {
         if (device == null || device.id == -1 || device.isVirtual) return false
 
         val name = device.name.lowercase()
-        val sources = device.sources
-
         if (name == "virtual") return false
 
-        return name.contains("scanner") || name.contains("honeywell") || name.contains("zebra") ||
-                (sources and InputDevice.SOURCE_KEYBOARD == InputDevice.SOURCE_KEYBOARD && !device.isVirtual)
+        val isKnownScannerName = name.contains("scanner") || name.contains("honeywell") || name.contains("zebra")
+        if (isKnownScannerName) return true
+
+        // Это условие стоит оставить только если вы уверены,
+        // что есть сканеры, которые не попадают под проверку имени,
+        // но при этом не мешают работе с обычными клавиатурами.
+        val isGenericKeyboard = (device.sources and InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD
+
+        // Если это клавиатура общего типа, можно добавить дополнительную логику,
+        // например, разрешать ввод только если фокус не на EditText.
+        // Но для простоты, лучше полагаться на имена.
+
+        return isGenericKeyboard // Оставьте, если это необходимо для ваших устройств
     }
+
 
     fun hideSoftKeyboard() {
         val controller = WindowInsetsControllerCompat(window, window.decorView)
