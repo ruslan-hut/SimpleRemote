@@ -76,7 +76,6 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
         }
 
         sharedViewModel.content.observe(viewLifecycleOwner) {
-            Log.d("DocCont", "it size ${it.size}")
             listAdapter?.submitList(it)
         }
 
@@ -91,7 +90,6 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
                 sharedViewModel.clearBarcode()
             }
         }
-        Log.d("DocCont", "size ${sharedViewModel.content.value?.size}")
 
     }
 

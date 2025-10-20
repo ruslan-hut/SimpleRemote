@@ -59,7 +59,6 @@ class CatalogListFragment: Fragment() {
 
                     if (item.isGroup == 0) {
                         sharedViewModel.addProduct(item) {
-                            Log.d("DocCont", "onResult ${sharedViewModel.content.value?.size}")
                             findNavController().popBackStack(R.id.documentFragment, false)
                         }
                     }
