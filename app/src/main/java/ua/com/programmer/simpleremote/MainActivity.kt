@@ -102,6 +102,21 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
+    /**
+     * Intercepts key events to capture input from a barcode scanner.
+     *
+     * This method checks if the incoming [KeyEvent] is from a recognized scanner device.
+     * If it is, it captures the keystrokes to assemble a barcode string.
+     *
+     * The logic is as follows:
+     * 1. Identify if the event source is a scanner using [isScannerDevice]. If not, defer to the default system handling.
+     * 2. On `ACTION_DOWN`, append the character to an internal `barcode` buffer. It also implements a timeout (60ms) to clear the buffer between separate scans, ensuring that partial scans or delayed inputs don't corrupt the next valid scan.
+     * 3. On `ACTION_UP` for an `ENTER` or `TAB` key, it considers the barcode scan complete. The assembled barcode string is then passed to the [SharedViewModel.onBarcodeRead] for processing, and the buffer is cleared.
+     * 4. For all events handled by the scanner logic, it returns `true` to indicate that the event has been consumed and should not be propagated further.
+     *
+     * @param event The [KeyEvent] to be dispatched.
+     * @return `true` if the event was handled by the scanner logic, otherwise the result of `super.dispatchKeyEvent(event)`.
+     */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         val device = event.device
         if (!isScannerDevice(device)) {
@@ -134,6 +149,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Determines if the given [InputDevice] is a hardware barcode scanner.
+     *
+     * This function checks several properties of the device to heuristically identify it as a scanner.
+     * Scanners often present themselves as physical keyboards, so this logic helps distinguish them
+     * from the on-screen virtual keyboard or other input devices.
+     *
+     * The identification logic is as follows:
+     * 1.  It first filters out null, invalid (id = -1), or virtual devices.
+     * 2.  It checks if the device name contains common scanner-related keywords like "scanner",
+     *     "honeywell", or "zebra". This is the most reliable check.
+     * 3.  As a fallback, it checks if the device reports itself as a physical keyboard
+     *     (`InputDevice.SOURCE_KEYBOARD`). This is less specific and might incorrectly identify
+     *     external physical keyboards as scanners, but can be a useful heuristic for scanners
+     *     with generic names.
+     *
+     * @param device The [InputDevice] to check. Can be null.
+     * @return `true` if the device is likely a hardware barcode scanner, `false` otherwise.
+     */
     private fun isScannerDevice(device: InputDevice?): Boolean {
         if (device == null || device.id == -1 || device.isVirtual) return false
 
@@ -143,19 +177,20 @@ class MainActivity : AppCompatActivity() {
         val isKnownScannerName = name.contains("scanner") || name.contains("honeywell") || name.contains("zebra")
         if (isKnownScannerName) return true
 
-        // Это условие стоит оставить только если вы уверены,
-        // что есть сканеры, которые не попадают под проверку имени,
-        // но при этом не мешают работе с обычными клавиатурами.
+        // fallback logic
         val isGenericKeyboard = (device.sources and InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD
-
-        // Если это клавиатура общего типа, можно добавить дополнительную логику,
-        // например, разрешать ввод только если фокус не на EditText.
-        // Но для простоты, лучше полагаться на имена.
-
-        return isGenericKeyboard // Оставьте, если это необходимо для ваших устройств
+        return isGenericKeyboard
     }
 
 
+    /**
+     * Hides the soft (on-screen) keyboard if it is currently visible.
+     *
+     * This function uses the [WindowInsetsControllerCompat] to explicitly hide the keyboard.
+     * It also clears the focus from any currently focused view (like an EditText)
+     * and then requests focus for the root `DrawerLayout`. This ensures that no view
+     * retains focus that might trigger the keyboard to reappear.
+     */
     fun hideSoftKeyboard() {
         val controller = WindowInsetsControllerCompat(window, window.decorView)
         controller.hide(WindowInsetsCompat.Type.ime())
