@@ -96,7 +96,7 @@ class ItemEditFragment: Fragment() {
                 collectEdit.text = it.quantity
                 restEdit.text = it.rest
                 editQuantity.setText(it.collect)
-                sharedViewModel.loadLocalImage(it.image, itemImage)
+                sharedViewModel.loadLocalImage(it.userImage, itemImage)
             }
         }
     }
