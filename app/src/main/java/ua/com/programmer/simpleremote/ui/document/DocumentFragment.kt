@@ -130,6 +130,7 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private fun onSuccess() {
+        sharedViewModel.setDocumentModified(false)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.toast_saved)
             .setPositiveButton(android.R.string.ok) { _, _ ->

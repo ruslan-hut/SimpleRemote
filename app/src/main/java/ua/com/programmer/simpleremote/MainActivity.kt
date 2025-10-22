@@ -1,6 +1,7 @@
 package ua.com.programmer.simpleremote
 
 import android.os.Bundle
+import android.util.Log
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -8,12 +9,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -62,14 +65,24 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         setupActionBarWithNavController(navController, appBarConfiguration)
-        NavigationUI.setupWithNavController(binding.toolbar, navController, appBarConfiguration)
+//        NavigationUI.setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(binding.navView, navController)
 
         onBackPressedDispatcher.addCallback(this) {
             val navController = findNavController(R.id.nav_host_container)
 
             if (navController.previousBackStackEntry != null) {
-                navController.popBackStack()
+                if (viewModel.getDocument().modified){
+                    AlertDialog.Builder(this@MainActivity)
+                        .setMessage(R.string.exit_without_saving)
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            navController.popBackStack()
+                        }
+                        .setNegativeButton(android.R.string.cancel){ _, _ -> }
+                        .show()
+                }else{
+                    navController.popBackStack()
+                }
             } else {
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     finish()
@@ -98,8 +111,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = this.findNavController(R.id.nav_host_container)
-        return NavigationUI.navigateUp(navController, drawerLayout)
+        val navController = findNavController(R.id.nav_host_container)
+
+        // Check if the NavController can navigate up
+        if (navController.previousBackStackEntry != null) {
+            // If it can, we are on a "deep" screen.
+            // Trigger our custom back press logic (which includes the dialog).
+            onBackPressedDispatcher.onBackPressed()
+            return true
+        } else {
+            // Otherwise, we are on a top-level screen.
+            // Let NavigationUI handle it, which will open the drawer.
+            val appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+            return NavigationUI.navigateUp(navController, appBarConfiguration)
+        }
     }
 
     /**

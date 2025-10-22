@@ -154,9 +154,15 @@ class SharedViewModel @Inject constructor(
     }
 
     fun setDocumentContent(content: List<Content>) {
+        setDocumentModified(true)
         _content.value = content
         checkContent()
     }
+
+    fun setDocumentModified(modified: Boolean) {
+        _document.value = _document.value?.copy(modified = modified)
+    }
+
 
     fun loadDocumentContent(type:String, guid: String) {
         viewModelScope.launch {
@@ -168,6 +174,7 @@ class SharedViewModel @Inject constructor(
 
     fun setDocumentPlacesCollected(places: String) {
         _document.value = _document.value?.copy(placesCollected = places)
+        setDocumentModified(true)
     }
 
     fun setDocumentNotes(notes: String) {
@@ -176,6 +183,9 @@ class SharedViewModel @Inject constructor(
 
     fun setDocumentChecked(checked: Boolean) {
         _document.value = _document.value?.copy(checked = checked)
+        if (checked){
+            setDocumentModified(true)
+        }
     }
 
     fun setItemChecked(code: String, isChecked: Boolean) {
@@ -188,6 +198,9 @@ class SharedViewModel @Inject constructor(
         }
         _content.value = list
         checkContent()
+        if (isChecked){
+            setDocumentModified(true)
+        }
     }
 
     // Check if all content items are checked and update the document's checked status

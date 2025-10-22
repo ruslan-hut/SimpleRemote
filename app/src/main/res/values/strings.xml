@@ -67,4 +67,5 @@
     <string name="item_placement">Item placement\n</string>
     <string name="enter_quantity">Enter quantity</string>
     <string name="places_number">Number of places</string>
+    <string name="exit_without_saving">Exit without saving?</string>
 </resources>

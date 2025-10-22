@@ -23,4 +23,5 @@ data class Document(
     val cacheGUID: String = "",
     val placesCollected: String = "",
     val lines: List<Content> = emptyList(),
+    val modified: Boolean = false,
 )
