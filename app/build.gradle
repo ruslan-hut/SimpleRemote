@@ -94,7 +94,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:21.4.0'
 
     // Worker
-    implementation "androidx.work:work-runtime-ktx:2.10.5"
+    implementation "androidx.work:work-runtime-ktx:2.11.0"
 
     // Lifecycle libraries
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4"
@@ -131,7 +131,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.9.5"
 
     // Room
-    def room_version = "2.8.2"
+    def room_version = "2.8.3"
     implementation "androidx.room:room-common:${room_version}"
     implementation "androidx.room:room-runtime:${room_version}"
     ksp "androidx.room:room-compiler:${room_version}"
