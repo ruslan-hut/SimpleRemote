@@ -68,4 +68,8 @@
     <string name="enter_quantity">Enter quantity</string>
     <string name="places_number">Number of places</string>
     <string name="exit_without_saving">Exit without saving?</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
+    <string name="warehouse">Warehouse</string>
+    <string name="document_number">Document number</string>
 </resources>

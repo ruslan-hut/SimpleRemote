@@ -22,6 +22,7 @@ import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
 import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.FilterParams
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.UserOptions
 import ua.com.programmer.simpleremote.http.entity.CheckRequest
@@ -84,6 +85,36 @@ class NetworkRepositoryImpl @Inject constructor(
             userID = options.userId,
             type = "documents",
             data = gson.toJson(DataType(type = type)).toString()
+        )
+        logger.log("request body: $body")
+
+        try {
+            val response = apiService?.getDocuments(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val documents = response.data.filterNotNull()
+                emit(documents)
+            } else {
+                Log.e("RC_NetworkRepository", "Failed to fetch documents: ${response?.message}")
+                emit(emptyList())
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
+            logger.recordException(e)
+            emit(emptyList())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun documentsByFilter(filterParams: FilterParams): Flow<List<Document>> = flow {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            emit(emptyList())
+            return@flow
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "documents",
+            data = gson.toJson(filterParams).toString()
         )
         logger.log("request body: $body")
 

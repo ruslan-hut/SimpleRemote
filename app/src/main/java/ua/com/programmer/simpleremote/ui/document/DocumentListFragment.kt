@@ -1,36 +1,56 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.PopupWindow
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
 import ua.com.programmer.simpleremote.entity.Document
-import kotlin.getValue
-import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.entity.isEmpty
 import ua.com.programmer.simpleremote.entity.presentation
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.getValue
+import androidx.core.graphics.drawable.toDrawable
+import ua.com.programmer.simpleremote.entity.FilterParams
 
 @AndroidEntryPoint
-class DocumentListFragment: Fragment() {
+class DocumentListFragment: Fragment(), MenuProvider  {
 
     private val viewModel: DocumentListViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentDocumentsListBinding? = null
     private val binding get() = _binding!!
     private val navigationArgs: DocumentListFragmentArgs by navArgs()
+    private val filterParams = FilterParams()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +63,10 @@ class DocumentListFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDocumentsListBinding.inflate(inflater, container, false)
+
+        val menuHost : MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         return binding.root
     }
 
@@ -83,6 +107,80 @@ class DocumentListFragment: Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.document_list_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.action_filter -> {
+                val anchorView = requireActivity().findViewById<View>(R.id.action_filter)
+                showFilterPopup(anchorView)
+                true
+            }
+            else -> false
+        }
+    }
+
+    private fun showFilterPopup(anchorView: View) {
+        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.filter_menu_action_layout, null)
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+
+        popupWindow.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+        val numberEditText = popupView.findViewById<TextInputEditText>(R.id.document_number_edittext)
+        val contractorEditText = popupView.findViewById<TextInputEditText>(R.id.contractor_edittext)
+        val warehouseEditText = popupView.findViewById<TextInputEditText>(R.id.warehouse_edittext)
+        val dateEditText = popupView.findViewById<TextInputEditText>(R.id.date_edittext)
+
+        numberEditText.setText(filterParams.documentNumber)
+        contractorEditText.setText(filterParams.contractor)
+        warehouseEditText.setText(filterParams.warehouse)
+        dateEditText.setText(filterParams.date)
+
+        popupWindow.setOnDismissListener {
+            filterParams.documentNumber = numberEditText.text.toString()
+            filterParams.contractor = contractorEditText.text.toString()
+            filterParams.warehouse = warehouseEditText.text.toString()
+            filterParams.date = dateEditText.text.toString()
+        }
+
+        dateEditText.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .build()
+            datePicker.addOnPositiveButtonClickListener {
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                dateEditText.setText(sdf.format(Date(it)))
+            }
+            datePicker.show(childFragmentManager, "datePicker")
+        }
+
+        val applyButton = popupView.findViewById<Button>(R.id.apply_button)
+        applyButton.setOnClickListener {
+            popupWindow.dismiss()
+            Log.d("FilterParams", filterParams.toString())
+//            viewModel.loadDocumentsByFilter(filterParams)
+        }
+
+        val clearButton = popupView.findViewById<Button>(R.id.clear_button)
+        clearButton.setOnClickListener {
+            numberEditText.text?.clear()
+            contractorEditText.text?.clear()
+            warehouseEditText.text?.clear()
+            dateEditText.text?.clear()
+        }
+
+        popupWindow.showAsDropDown(anchorView)
+    }
+
 
     private class ItemsListAdapter(
         private val onItemClicked: (Document) -> Unit

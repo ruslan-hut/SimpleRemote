@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.FilterParams
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import javax.inject.Inject
 
@@ -38,6 +39,20 @@ class DocumentListViewModel @Inject constructor(
         }
         viewModelScope.launch {
             networkRepository.documents(type).collect {
+                _documents.value = it
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadDocumentsByFilter(filterParams: FilterParams) {
+        _isLoading.value = true
+        if (type.isEmpty()) {
+            _isLoading.value = false
+            return
+        }
+        viewModelScope.launch {
+            networkRepository.documentsByFilter(filterParams).collect {
                 _documents.value = it
                 _isLoading.value = false
             }

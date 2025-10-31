@@ -69,4 +69,8 @@
     <string name="fullscreen_image">повноекранне зображення</string>
     <string name="place">Місце</string>
     <string name="exit_without_saving">Вийти без збереження?</string>
+    <string name="apply">Застосувати</string>
+    <string name="clear">Очистити</string>
+    <string name="warehouse">Склад</string>
+    <string name="document_number">Номер документу</string>
 </resources>

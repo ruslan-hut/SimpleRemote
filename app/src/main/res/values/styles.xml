@@ -18,4 +18,9 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="FilterCardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="strokeColor">@color/md_theme_outline</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
 </resources>
