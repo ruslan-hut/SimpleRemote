@@ -167,7 +167,7 @@ class DocumentListFragment: Fragment(), MenuProvider  {
         applyButton.setOnClickListener {
             popupWindow.dismiss()
             Log.d("FilterParams", filterParams.toString())
-//            viewModel.loadDocumentsByFilter(filterParams)
+            viewModel.loadDocumentsByFilter(filterParams)
         }
 
         val clearButton = popupView.findViewById<Button>(R.id.clear_button)
