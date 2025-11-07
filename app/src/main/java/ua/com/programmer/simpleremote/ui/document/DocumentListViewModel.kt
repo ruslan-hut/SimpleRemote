@@ -31,28 +31,14 @@ class DocumentListViewModel @Inject constructor(
         this.type = type ?: ""
     }
 
-    fun loadDocuments() {
+    fun loadDocuments(filterParams: FilterParams) {
         _isLoading.value = true
         if (type.isEmpty()) {
             _isLoading.value = false
             return
         }
         viewModelScope.launch {
-            networkRepository.documents(type).collect {
-                _documents.value = it
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun loadDocumentsByFilter(filterParams: FilterParams) {
-        _isLoading.value = true
-        if (type.isEmpty()) {
-            _isLoading.value = false
-            return
-        }
-        viewModelScope.launch {
-            networkRepository.documentsByFilter(filterParams).collect {
+            networkRepository.documents(type, filterParams).collect {
                 _documents.value = it
                 _isLoading.value = false
             }

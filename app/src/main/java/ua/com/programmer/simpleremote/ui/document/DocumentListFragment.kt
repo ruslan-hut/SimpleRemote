@@ -32,6 +32,7 @@ import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.FilterParams
 import ua.com.programmer.simpleremote.entity.isEmpty
 import ua.com.programmer.simpleremote.entity.presentation
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -40,7 +41,6 @@ import java.util.Date
 import java.util.Locale
 import kotlin.getValue
 import androidx.core.graphics.drawable.toDrawable
-import ua.com.programmer.simpleremote.entity.FilterParams
 
 @AndroidEntryPoint
 class DocumentListFragment: Fragment(), MenuProvider  {
@@ -86,10 +86,20 @@ class DocumentListFragment: Fragment(), MenuProvider  {
             adapter.submitList(it)
         }
         binding.documentsSwipe.setOnRefreshListener {
-            viewModel.loadDocuments()
+            viewModel.loadDocuments(filterParams)
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.documentsSwipe.isRefreshing = it
+        }
+        updateFilterBanner()
+    }
+
+    private fun updateFilterBanner() {
+        if (filterParams.isFilterSet()) {
+            binding.filterParameters.text = filterParams.getFilterString(requireContext())
+            binding.filterParameters.visibility = View.VISIBLE
+        } else {
+            binding.filterParameters.visibility = View.GONE
         }
     }
 
@@ -100,7 +110,7 @@ class DocumentListFragment: Fragment(), MenuProvider  {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadDocuments()
+        viewModel.loadDocuments(filterParams)
     }
 
     override fun onDestroyView() {
@@ -167,7 +177,8 @@ class DocumentListFragment: Fragment(), MenuProvider  {
         applyButton.setOnClickListener {
             popupWindow.dismiss()
             Log.d("FilterParams", filterParams.toString())
-            viewModel.loadDocumentsByFilter(filterParams)
+            viewModel.loadDocuments(filterParams)
+            updateFilterBanner()
         }
 
         val clearButton = popupView.findViewById<Button>(R.id.clear_button)
@@ -176,6 +187,9 @@ class DocumentListFragment: Fragment(), MenuProvider  {
             contractorEditText.text?.clear()
             warehouseEditText.text?.clear()
             dateEditText.text?.clear()
+            popupWindow.dismiss()
+            viewModel.loadDocuments(filterParams)
+            updateFilterBanner()
         }
 
         popupWindow.showAsDropDown(anchorView)

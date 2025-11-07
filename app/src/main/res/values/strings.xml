@@ -72,4 +72,8 @@
     <string name="clear">Clear</string>
     <string name="warehouse">Warehouse</string>
     <string name="document_number">Document number</string>
+    <string name="filter_label_number">Number: %1$s</string>
+    <string name="filter_label_contractor">Contractor: %1$s</string>
+    <string name="filter_label_warehouse">Warehouse: %1$s</string>
+    <string name="filter_label_date">Date: %1$s</string>
 </resources>
