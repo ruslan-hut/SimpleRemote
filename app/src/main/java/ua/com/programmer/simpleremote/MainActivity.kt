@@ -143,10 +143,6 @@ class MainActivity : AppCompatActivity() {
      * @return `true` if the event was handled by the scanner logic, otherwise the result of `super.dispatchKeyEvent(event)`.
      */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        val device = event.device
-        if (!isScannerDevice(device)) {
-            return super.dispatchKeyEvent(event)
-        }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
             val currentTime = System.currentTimeMillis()
@@ -163,6 +159,7 @@ class MainActivity : AppCompatActivity() {
         } else if (event.action == KeyEvent.ACTION_UP) {
             if (event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB) {
                 if (barcode.isNotEmpty()) {
+                    Log.d("RC_MainActivity", "barcode: $barcode")
                     viewModel.onBarcodeRead(barcode.toString())
                     barcode.clear()
                 }
@@ -172,41 +169,6 @@ class MainActivity : AppCompatActivity() {
 
         return true
     }
-
-
-    /**
-     * Determines if the given [InputDevice] is a hardware barcode scanner.
-     *
-     * This function checks several properties of the device to heuristically identify it as a scanner.
-     * Scanners often present themselves as physical keyboards, so this logic helps distinguish them
-     * from the on-screen virtual keyboard or other input devices.
-     *
-     * The identification logic is as follows:
-     * 1.  It first filters out null, invalid (id = -1), or virtual devices.
-     * 2.  It checks if the device name contains common scanner-related keywords like "scanner",
-     *     "honeywell", or "zebra". This is the most reliable check.
-     * 3.  As a fallback, it checks if the device reports itself as a physical keyboard
-     *     (`InputDevice.SOURCE_KEYBOARD`). This is less specific and might incorrectly identify
-     *     external physical keyboards as scanners, but can be a useful heuristic for scanners
-     *     with generic names.
-     *
-     * @param device The [InputDevice] to check. Can be null.
-     * @return `true` if the device is likely a hardware barcode scanner, `false` otherwise.
-     */
-    private fun isScannerDevice(device: InputDevice?): Boolean {
-        if (device == null || device.id == -1 || device.isVirtual) return false
-
-        val name = device.name.lowercase()
-        if (name == "virtual") return false
-
-        val isKnownScannerName = name.contains("scanner") || name.contains("honeywell") || name.contains("zebra")
-        if (isKnownScannerName) return true
-
-        // fallback logic
-        val isGenericKeyboard = (device.sources and InputDevice.SOURCE_KEYBOARD) == InputDevice.SOURCE_KEYBOARD
-        return isGenericKeyboard
-    }
-
 
     /**
      * Hides the soft (on-screen) keyboard if it is currently visible.
