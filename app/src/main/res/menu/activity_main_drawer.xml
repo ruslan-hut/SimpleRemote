@@ -7,11 +7,11 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/nav_documents"
+                    android:id="@+id/selectDocumentTypeFragment"
                     android:icon="@drawable/baseline_list_24"
                     android:title="@string/header_documents" />
                 <item
-                    android:id="@+id/nav_catalogs"
+                    android:id="@+id/selectCatalogTypeFragment"
                     android:icon="@drawable/baseline_list_24"
                     android:title="@string/header_catalogs" />
             </group>
@@ -23,13 +23,13 @@
         <menu>
             <group android:checkableBehavior="none">
                 <item
-                    android:id="@+id/nav_settings_connection"
+                    android:id="@+id/connectionsListFragment"
                     android:icon="@drawable/ic_phonelink_setup_black_24dp"
                     android:title="@string/action_connection_settings" />
-                <item
-                    android:id="@+id/nav_logoff"
-                    android:icon="@drawable/twotone_phonelink_erase_24"
-                    android:title="@string/action_logoff" />
+<!--                <item-->
+<!--                    android:id="@+id/nav_logoff"-->
+<!--                    android:icon="@drawable/twotone_phonelink_erase_24"-->
+<!--                    android:title="@string/action_logoff" />-->
             </group>
         </menu>
     </item>

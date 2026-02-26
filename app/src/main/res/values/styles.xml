@@ -1,30 +1,26 @@
 <resources>
-
-    <!-- Base application theme. -->
-<!--    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
-<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
-<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-<!--        <item name="colorAccent">@color/colorAccent</item>-->
-<!--    </style>-->
-
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/darkPrimary</item>
-        <item name="colorPrimaryDark">@color/darkPrimaryDark</item>
-        <item name="colorAccent">@color/darkAccent</item>
-        <item name="android:textColorPrimary">@color/darkPrimaryDark</item>
-<!--        <item name="android:textColorSecondary">@color/colorWhite</item>-->
-<!--        <item name="android:actionMenuTextColor">@color/colorWhite</item>-->
-        <item name="android:windowBackground">@color/darkBackground</item>
-    </style>
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/slide_right</item>
+        <item name="android:windowExitTransition">@android:transition/slide_left</item>
     </style>
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupMenu" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="FullscreenImageDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="FilterCardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="strokeColor">@color/md_theme_outline</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
 
 </resources>

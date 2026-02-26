@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/selectDocumentTypeFragment">
+
+    <fragment
+        android:id="@+id/selectDocumentTypeFragment"
+        android:name="ua.com.programmer.simpleremote.ui.selector.SelectDocumentTypeFragment"
+        android:label="@string/header_documents" >
+        <action
+            android:id="@+id/action_selectDocumentTypeFragment_to_documentListFragment"
+            app:destination="@id/documentListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/connectionsListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.connection.ConnectionsListFragment"
+        android:label="@string/connections_list" >
+        <action
+            android:id="@+id/action_connectionsListFragment_to_connectionFragment"
+            app:destination="@id/connectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/connectionFragment"
+        android:name="ua.com.programmer.simpleremote.ui.connection.ConnectionFragment"
+        android:label="@string/action_connection_settings" >
+        <argument
+            android:name="guid"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectCatalogTypeFragment"
+        android:name="ua.com.programmer.simpleremote.ui.selector.SelectCatalogTypeFragment"
+        android:label="@string/header_catalogs" >
+        <action
+            android:id="@+id/action_selectCatalogTypeFragment_to_catalogListFragment"
+            app:destination="@id/catalogListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/documentListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.DocumentListFragment"
+        android:label="@string/header_documents" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_documentListFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/documentFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.DocumentFragment"
+        android:label="@string/document" >
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_documentFragment_to_itemEditFragment"
+            app:destination="@id/itemEditFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_itemPlacementFragment"
+            app:destination="@id/itemPlacementFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_documentFragment_to_catalogListFragment"
+            app:destination="@id/catalogListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemEditFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.ItemEditFragment"
+        android:label="@string/item_edit" >
+        <argument
+            android:name="code"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_itemEditFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemPlacementFragment"
+        android:name="ua.com.programmer.simpleremote.ui.document.ItemPlacementFragment"
+        android:label="@string/item_placement" >
+        <argument
+            android:name="code"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_itemPlacementFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/catalogListFragment"
+        android:name="ua.com.programmer.simpleremote.ui.catalog.CatalogListFragment"
+        android:label="@string/header_catalogs" >
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="group"
+            app:argType="string"
+            app:nullable="true" />
+<!--        <argument-->
+<!--            android:name="docGuid"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="true" />-->
+        <action
+            android:id="@+id/action_catalogListFragment_self"
+            app:destination="@id/catalogListFragment" />
+        <action
+            android:id="@+id/action_catalogListFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="ua.com.programmer.simpleremote.ui.camera.CameraFragment"
+        android:label="@string/header_camera" >
+        <argument
+            android:name="mode"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>
