@@ -13,7 +13,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="?android:colorBackground"
+        app:cardBackgroundColor="@color/md_theme_cardBackground"
         app:cardCornerRadius="16dp">
 
         <LinearLayout

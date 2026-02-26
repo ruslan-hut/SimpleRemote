@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurfaceVariant">
+    android:background="@color/md_theme_listBackground">
 
     <TextView
         android:id="@+id/filter_parameters"

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurfaceVariant">
+    android:background="@color/md_theme_listBackground">
 
     <TextView
         android:id="@+id/item_description"
@@ -12,7 +12,7 @@
         android:background="?attr/colorSecondaryContainer"
         android:text="@string/holder_text"
         android:textColor="?attr/colorOnSecondaryContainer"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textStyle="bold"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
@@ -29,7 +29,7 @@
         android:textColor="?attr/colorOnSecondaryContainer"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         app:layout_constraintTop_toBottomOf="@+id/item_description" />
 
     <LinearLayout
@@ -54,7 +54,7 @@
             android:gravity="center"
             android:text="@string/title_quantity"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
 
         <TextView
@@ -64,7 +64,7 @@
             android:gravity="center"
             android:text="@string/place"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 

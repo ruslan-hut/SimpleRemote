@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <ImageView
@@ -32,7 +32,7 @@
                 android:layout_gravity="center_vertical"
                 android:text="@string/document_title_receive"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/number_sign"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_number"
@@ -58,7 +58,7 @@
                 android:layout_marginStart="8dp"
                 android:text="@string/holder_number"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
 
             <TextView
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/date"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_date"
@@ -76,14 +76,14 @@
                 android:layout_marginStart="8dp"
                 android:text="@string/holder_number"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?attr/colorSurfaceVariant"
+            android:background="?attr/colorOutlineVariant"
             />
 
         <LinearLayout
@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
     <!--        <TextView-->
@@ -99,7 +99,7 @@
     <!--            android:layout_height="wrap_content"-->
     <!--            android:text="@string/contractor"-->
     <!--            android:textColor="?attr/colorOnBackground"-->
-    <!--            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />-->
+    <!--            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />-->
 
             <TextView
                 android:id="@+id/document_contractor"
@@ -108,7 +108,7 @@
                 android:layout_weight="1"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -117,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_field1_value"
@@ -137,7 +137,7 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -146,7 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_field2_value"
@@ -166,7 +166,7 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -175,7 +175,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -184,7 +184,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_field3_value"
@@ -195,7 +195,7 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -204,7 +204,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -213,7 +213,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_field4_value"
@@ -224,7 +224,7 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -232,7 +232,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -240,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/total_articles"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_articles"
@@ -253,7 +253,7 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                  />
         </LinearLayout>
 
@@ -261,7 +261,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -269,7 +269,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/total_price"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <TextView
                 android:id="@+id/document_price"
@@ -282,14 +282,14 @@
                 android:gravity="end"
                 android:text="@string/holder_text"
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?attr/colorSurfaceVariant"
+            android:background="?attr/colorOutlineVariant"
             />
 
         <LinearLayout
@@ -298,7 +298,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="8dp"
             android:paddingVertical="16dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -307,7 +307,7 @@
                 android:layout_weight="2"
                 android:gravity="center_vertical"
                 android:text="@string/places_number"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:textColor="?attr/colorOnBackground" />
 
             <EditText
@@ -320,7 +320,7 @@
                 android:gravity="end"
                 android:text=""
                 android:textColor="?attr/colorOnBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
 
         </LinearLayout>
 
@@ -330,7 +330,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="8dp"
             android:paddingVertical="16dp"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:orientation="horizontal">
 
             <TextView
@@ -340,7 +340,7 @@
                 android:gravity="end"
                 android:text="@string/checked"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
             <CheckBox
                 android:id="@+id/document_is_checked"
@@ -355,9 +355,9 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="8dp"
             android:paddingVertical="16dp"
-            android:background="?attr/colorSurface"
+            android:background="@color/md_theme_cardBackground"
             android:hint="@string/notes"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?attr/colorSurfaceVariant">
+    android:background="@color/md_theme_listBackground">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_no_data"
@@ -24,14 +24,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="?attr/colorOnTertiaryContainer"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 android:text="@string/error_no_data"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="?attr/colorOnTertiaryContainer"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 android:text="@string/click_to_retry"/>
         </LinearLayout>
 

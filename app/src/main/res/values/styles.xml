@@ -6,20 +6,20 @@
         <item name="android:windowEnterTransition">@android:transition/slide_right</item>
         <item name="android:windowExitTransition">@android:transition/slide_left</item>
     </style>
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupMenu" parent="ThemeOverlay.AppCompat.Light">
+    <style name="AppTheme.PopupMenu" parent="ThemeOverlay.Material3.Light">
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="FullscreenImageDialog" parent="Theme.AppCompat.Dialog">
+    <style name="FullscreenImageDialog" parent="ThemeOverlay.Material3.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="FilterCardView" parent="Widget.Material3.CardView.Elevated">
-        <item name="strokeColor">@color/md_theme_outline</item>
+        <item name="strokeColor">?attr/colorOutline</item>
         <item name="strokeWidth">1dp</item>
     </style>
 

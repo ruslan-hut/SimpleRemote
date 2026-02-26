@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:padding="16dp"
-        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textStyle="bold"
         android:text="@string/sample_text"
         android:background="@drawable/button_surface"/>

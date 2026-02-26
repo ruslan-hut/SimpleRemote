@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         app:layout_constraintBottom_toTopOf="@id/buttonPanel"
-        app:cardBackgroundColor="?android:colorBackground"
+        app:cardBackgroundColor="@color/md_theme_cardBackground"
         app:cardElevation="4dp"
         app:cardCornerRadius="8dp">
 
@@ -37,14 +37,14 @@
 <!--                <TextView-->
 <!--                    android:layout_width="wrap_content"-->
 <!--                    android:layout_height="match_parent"-->
-<!--                    android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+<!--                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"-->
 <!--                    android:text="@string/barcode_value" />-->
 
 <!--                <TextView-->
 <!--                    android:id="@+id/text_value"-->
 <!--                    android:layout_width="wrap_content"-->
 <!--                    android:layout_height="match_parent"-->
-<!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"-->
 <!--                    android:textStyle="bold"-->
 <!--                    android:text="@string/sample_text" />-->
 <!--            </LinearLayout>-->
@@ -57,14 +57,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:text="@string/description" />
 
                 <TextView
                     android:id="@+id/text_item_description"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textStyle="bold"
                     android:text="@string/sample_text" />
             </LinearLayout>
@@ -96,7 +96,7 @@
             android:background="@drawable/button_surface"
             android:textAlignment="center"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:textStyle="bold"
             android:text="@string/restart_camera"
             app:drawableTopCompat="@drawable/twotone_autorenew_24" />
@@ -114,7 +114,7 @@
             android:background="@drawable/button_primary"
             android:textAlignment="center"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:textStyle="bold"
             android:text="@string/take_photo"
             app:drawableTopCompat="@drawable/baseline_add_a_photo_24" />

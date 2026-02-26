@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurfaceVariant">
+    android:background="@color/md_theme_listBackground">
 
     <TextView
         android:id="@+id/item_description"
@@ -12,7 +12,7 @@
         android:background="?attr/colorSecondaryContainer"
         android:text="@string/holder_text"
         android:textColor="?attr/colorOnSecondaryContainer"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textStyle="bold"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
@@ -29,7 +29,7 @@
         android:textColor="?attr/colorOnSecondaryContainer"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         app:layout_constraintTop_toBottomOf="@+id/item_description" />
 
     <LinearLayout
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="@string/have_to_collect"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/collect_edit"
@@ -59,14 +59,14 @@
             android:layout_height="40dp"
             android:text="@string/holder_number"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/collect_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:text="@string/title_rest"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/rest_edit"
@@ -97,14 +97,14 @@
             android:layout_height="40dp"
             android:text="@string/holder_number"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <TextView
             android:id="@+id/rest_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
@@ -125,7 +125,7 @@
             android:layout_weight="2"
             android:gravity="center_vertical"
             android:text="@string/title_quantity"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <EditText
             android:id="@+id/edit_quantity"
@@ -135,15 +135,15 @@
             android:layout_marginEnd="4dp"
             android:layout_marginStart="4dp"
             android:inputType="numberDecimal"
-            android:background="?attr/android:colorBackground"
+            android:background="@color/md_theme_cardBackground"
             android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
         <TextView
             android:id="@+id/item_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/holder_text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
     </LinearLayout>
 
@@ -162,7 +162,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/notes"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSecondaryContainer" />
         <EditText
             android:id="@+id/edit_notes"
@@ -171,7 +171,7 @@
             android:layout_height="wrap_content"
             android:inputType="textAutoCorrect"
             android:textColor="?attr/colorOnSecondaryContainer"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textStyle="bold"/>
 
     </LinearLayout>
