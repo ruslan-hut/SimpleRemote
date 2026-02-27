@@ -84,12 +84,14 @@ class DocumentListFragment: Fragment(), MenuProvider  {
 
         viewModel.documents.observe(viewLifecycleOwner) {
             adapter.submitList(it)
+            binding.emptyState.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
         binding.documentsSwipe.setOnRefreshListener {
             viewModel.loadDocuments(filterParams)
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.documentsSwipe.isRefreshing = it
+            if (it) binding.emptyState.visibility = View.GONE
         }
         updateFilterBanner()
     }

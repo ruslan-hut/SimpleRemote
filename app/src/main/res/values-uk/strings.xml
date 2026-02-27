@@ -77,6 +77,7 @@
     <string name="filter_label_contractor">Контрагент: %1$s</string>
     <string name="filter_label_warehouse">Склад: %1$s</string>
     <string name="filter_label_date">Дата: %1$s</string>
+    <string name="empty_list">Список порожній</string>
     <string name="edit_lock_progress">Намагаємось захопити документ…</string>
     <string name="edit_lock_success">Документ захоплено для редагування</string>
     <string name="edit_lock_error">Не вдалось захопити документ: %1$s</string>

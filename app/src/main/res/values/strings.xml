@@ -76,6 +76,7 @@
     <string name="filter_label_contractor">Contractor: %1$s</string>
     <string name="filter_label_warehouse">Warehouse: %1$s</string>
     <string name="filter_label_date">Date: %1$s</string>
+    <string name="empty_list">List is empty</string>
     <string name="edit_lock_progress">Trying to catch the document…</string>
     <string name="edit_lock_success">Document caught for editing</string>
     <string name="edit_lock_error">Unable to lock the document: %1$s</string>
