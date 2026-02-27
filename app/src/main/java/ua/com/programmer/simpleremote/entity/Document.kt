@@ -18,6 +18,8 @@ data class Document(
     val field2: DocumentField = DocumentField(),
     val field3: DocumentField = DocumentField(),
     val field4: DocumentField = DocumentField(),
+    val locked: Boolean = false,
+    val lockedBy: String = "",
     val repeated: String = "",
     val currency: String = "",
     val cacheGUID: String = "",

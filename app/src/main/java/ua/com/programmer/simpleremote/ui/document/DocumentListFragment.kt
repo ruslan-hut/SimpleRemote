@@ -240,6 +240,13 @@ class DocumentListFragment: Fragment(), MenuProvider  {
                         itemTextChecked.visibility = View.INVISIBLE
                     }
 
+                    if (item.lockedBy.isNotEmpty()) {
+                        itemLockedBy.text = item.lockedBy
+                        itemLockedBy.visibility = View.VISIBLE
+                    } else {
+                        itemLockedBy.visibility = View.GONE
+                    }
+
                     if (item.repeated == "1") {
                         iconRepeat.visibility = View.VISIBLE
                     } else {

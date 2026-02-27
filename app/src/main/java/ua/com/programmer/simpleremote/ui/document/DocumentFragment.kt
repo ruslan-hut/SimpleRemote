@@ -83,6 +83,12 @@ class DocumentFragment: Fragment(), MenuProvider {
             binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
 
+        sharedViewModel.document.observe(viewLifecycleOwner) { doc ->
+            if (doc.locked && sharedViewModel.collectMode() && viewModel.isEditable.value != true) {
+                viewModel.enableEdit()
+            }
+        }
+
         binding?.addItemButton?.setOnClickListener {
             val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
                 type = "Товары",
