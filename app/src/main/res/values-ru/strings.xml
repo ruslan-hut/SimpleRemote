@@ -73,4 +73,11 @@
     <string name="clear">Отчистить</string>
     <string name="warehouse">Склад</string>
     <string name="document_number">Номер документа</string>
+    <string name="filter_label_number">Номер: %1$s</string>
+    <string name="filter_label_contractor">Контрагент: %1$s</string>
+    <string name="filter_label_warehouse">Склад: %1$s</string>
+    <string name="filter_label_date">Дата: %1$s</string>
+    <string name="edit_lock_progress">Пытаемся захватить документ…</string>
+    <string name="edit_lock_success">Документ захвачен для редактирования</string>
+    <string name="edit_lock_error">Не удалось захватить документ: %1$s</string>
 </resources>

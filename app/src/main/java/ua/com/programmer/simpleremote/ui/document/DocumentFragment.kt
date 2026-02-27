@@ -1,13 +1,13 @@
 package ua.com.programmer.simpleremote.ui.document
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentPagedBinding
@@ -109,7 +110,11 @@ class DocumentFragment: Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.edit_document -> {
-                viewModel.enableEdit()
+                if (viewModel.isEditable.value == true) {
+                    viewModel.enableEdit()
+                } else {
+                    requestEditLock()
+                }
             }
             R.id.delete_document -> {
                 viewModel.deleteDocument()
@@ -127,6 +132,37 @@ class DocumentFragment: Fragment(), MenuProvider {
             else -> return false
         }
         return true
+    }
+
+    private fun requestEditLock() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setMessage(R.string.edit_lock_progress)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+
+        viewModel.requestEditLock(
+            documentGuid = sharedViewModel.getDocument().guid,
+            onSuccess = {
+                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorPrimaryContainer)
+                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnPrimaryContainer)
+                dialog.window?.decorView?.setBackgroundColor(bgColor)
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
+                dialog.setMessage(getString(R.string.edit_lock_success))
+                dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1000)
+            },
+            onError = { message ->
+                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorErrorContainer)
+                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnErrorContainer)
+                dialog.window?.decorView?.setBackgroundColor(bgColor)
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
+                dialog.setMessage(getString(R.string.edit_lock_error, message))
+                dialog.setCancelable(true)
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok)) { d, _ ->
+                    d.dismiss()
+                }
+            }
+        )
     }
 
     private fun onSuccess() {

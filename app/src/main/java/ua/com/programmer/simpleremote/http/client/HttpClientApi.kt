@@ -10,6 +10,7 @@ import ua.com.programmer.simpleremote.http.entity.DocumentContentResponse
 import ua.com.programmer.simpleremote.http.entity.ListRequest
 import ua.com.programmer.simpleremote.http.entity.DocumentListResponse
 import ua.com.programmer.simpleremote.http.entity.DocumentSaveResponse
+import ua.com.programmer.simpleremote.http.entity.EditLockResponse
 import ua.com.programmer.simpleremote.http.entity.ProductResponse
 
 interface HttpClientApi {
@@ -31,5 +32,8 @@ interface HttpClientApi {
 
     @POST("pst/{token}")
     suspend fun saveDocument(@Path("token") token: String, @Body data: ListRequest): DocumentSaveResponse
+
+    @POST("pst/{token}")
+    suspend fun lockDocument(@Path("token") token: String, @Body data: ListRequest): EditLockResponse
 
 }
