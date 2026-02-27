@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        return true
+        return super.dispatchKeyEvent(event)
     }
 
     /**
