@@ -56,14 +56,31 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:id="@+id/item_number"
                         android:textColor="?attr/colorOnBackground"
                         android:text="@string/sample_text"/>
+                    <TextView
+                        android:id="@+id/item_locked_by"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                        android:textColor="?attr/colorOnTertiaryContainer"
+                        android:background="@drawable/locked_by_badge_bg"
+                        android:visibility="gone" />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -71,20 +88,6 @@
                         android:textColor="?attr/colorSecondary"
                         android:text="@string/sample_text"/>
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/item_locked_by"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="6dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
-                    android:layout_marginTop="2dp"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                    android:textColor="?attr/colorOnTertiaryContainer"
-                    android:background="@drawable/locked_by_badge_bg"
-                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="match_parent"

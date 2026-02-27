@@ -76,6 +76,12 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
 
         sharedViewModel.content.observe(viewLifecycleOwner) {
             listAdapter?.submitList(it)
+            binding?.emptyState?.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        binding?.retryButton?.setOnClickListener {
+            binding?.emptyState?.visibility = View.GONE
+            sharedViewModel.loadDocumentContent(viewModel.getType(), viewModel.getDocGuid())
         }
 
         sharedViewModel.barcode.observe(viewLifecycleOwner) {
