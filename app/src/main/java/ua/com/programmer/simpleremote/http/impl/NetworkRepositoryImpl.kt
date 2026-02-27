@@ -193,6 +193,35 @@ class NetworkRepositoryImpl @Inject constructor(
         return "Connection error"
     }
 
+    override suspend fun unlockDocument(type: String, guid: String): String {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            return "Connection error"
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "unlockDocument",
+            data = gson.toJson(DataType(type = type, guid = guid)).toString()
+        )
+        logger.log("request body: $body")
+
+        try {
+            val response = apiService?.unlockDocument(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                return "OK"
+            } else {
+                val message = response?.readError()?.ifEmpty { null } ?: "Unknown error"
+                Log.e("RC_NetworkRepository", "Failed to unlock document: $message")
+                return message
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while unlocking document: ${e.message}")
+            logger.recordException(e)
+        }
+        return "Connection error"
+    }
+
     override fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>> = flow {
         val options = _activeOptions.value
         if (options.isEmpty) {

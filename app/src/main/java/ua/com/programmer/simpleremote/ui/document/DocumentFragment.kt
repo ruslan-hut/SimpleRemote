@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -91,6 +92,24 @@ class DocumentFragment: Fragment(), MenuProvider {
             findNavController().navigate(action)
         }
 
+        val backCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.exit_without_saving)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        requestEditUnlock(onSuccess = {
+                            findNavController().popBackStack()
+                        })
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backCallback)
+        viewModel.isEditable.observe(viewLifecycleOwner) {
+            backCallback.isEnabled = it
+        }
+
     }
 
     private fun openCamera() {
@@ -111,7 +130,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         when (menuItem.itemId) {
             R.id.edit_document -> {
                 if (viewModel.isEditable.value == true) {
-                    viewModel.enableEdit()
+                    requestEditUnlock()
                 } else {
                     requestEditLock()
                 }
@@ -132,6 +151,40 @@ class DocumentFragment: Fragment(), MenuProvider {
             else -> return false
         }
         return true
+    }
+
+    private fun requestEditUnlock(onSuccess: (() -> Unit)? = null) {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setMessage(R.string.edit_unlock_progress)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+
+        viewModel.requestEditUnlock(
+            documentGuid = sharedViewModel.getDocument().guid,
+            onSuccess = {
+                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorPrimaryContainer)
+                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnPrimaryContainer)
+                dialog.window?.decorView?.setBackgroundColor(bgColor)
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
+                dialog.setMessage(getString(R.string.edit_unlock_success))
+                dialog.window?.decorView?.postDelayed({
+                    dialog.dismiss()
+                    onSuccess?.invoke()
+                }, 1000)
+            },
+            onError = { message ->
+                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorErrorContainer)
+                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnErrorContainer)
+                dialog.window?.decorView?.setBackgroundColor(bgColor)
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
+                dialog.setMessage(getString(R.string.edit_unlock_error, message))
+                dialog.setCancelable(true)
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok)) { d, _ ->
+                    d.dismiss()
+                }
+            }
+        )
     }
 
     private fun requestEditLock() {

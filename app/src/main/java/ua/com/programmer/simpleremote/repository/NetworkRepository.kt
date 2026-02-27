@@ -14,6 +14,7 @@ interface NetworkRepository {
     fun documentContent(type: String, guid: String): Flow<List<Content>>
     suspend fun saveDocument(document: Document): String
     suspend fun lockDocument(type: String, guid: String): String
+    suspend fun unlockDocument(type: String, guid: String): String
     fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>>
     fun barcode(type: String, guid: String, value: String): Flow<Product>
     suspend fun reconnect()

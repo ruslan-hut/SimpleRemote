@@ -92,6 +92,20 @@ class DocumentViewModel @Inject constructor(
         }
     }
 
+    fun requestEditUnlock(documentGuid: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                networkRepository.unlockDocument(type, documentGuid)
+            }
+            if (result == "OK") {
+                _isEditable.value = false
+                onSuccess()
+            } else {
+                onError(result)
+            }
+        }
+    }
+
     fun saveDocument(document: Document, onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (_isEditable.value == false) {
             onError("Редагування не увімкнено")

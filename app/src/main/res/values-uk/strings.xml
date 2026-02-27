@@ -80,4 +80,7 @@
     <string name="edit_lock_progress">Намагаємось захопити документ…</string>
     <string name="edit_lock_success">Документ захоплено для редагування</string>
     <string name="edit_lock_error">Не вдалось захопити документ: %1$s</string>
+    <string name="edit_unlock_progress">Звільняємо документ…</string>
+    <string name="edit_unlock_success">Документ звільнено</string>
+    <string name="edit_unlock_error">Не вдалось звільнити документ: %1$s</string>
 </resources>
