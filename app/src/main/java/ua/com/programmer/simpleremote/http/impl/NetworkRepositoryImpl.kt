@@ -224,7 +224,7 @@ class NetworkRepositoryImpl @Inject constructor(
         return "Connection error"
     }
 
-    override fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>> = flow {
+    override fun catalog(type: String, group: String, docGuid: String, searchFilter: String): Flow<List<Catalog>> = flow {
         val options = _activeOptions.value
         if (options.isEmpty) {
             emit(emptyList())
@@ -238,6 +238,7 @@ class NetworkRepositoryImpl @Inject constructor(
                 type = type,
                 group = group,
                 documentGUID = docGuid,
+                searchFilter = searchFilter,
             ),
         )
         logger.log("request body: $body")

@@ -20,7 +20,7 @@ interface NetworkRepository {
     suspend fun saveDocument(document: Document): String
     suspend fun lockDocument(type: String, guid: String): String
     suspend fun unlockDocument(type: String, guid: String): String
-    fun catalog(type: String, group: String, docGuid: String): Flow<List<Catalog>>
+    fun catalog(type: String, group: String, docGuid: String, searchFilter: String = ""): Flow<List<Catalog>>
     fun barcode(type: String, guid: String, value: String): Flow<Product>
     suspend fun reconnect()
 }

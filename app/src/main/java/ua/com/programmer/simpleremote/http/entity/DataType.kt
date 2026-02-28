@@ -6,4 +6,5 @@ data class DataType(
     val value: String = "",
     val group: String = "",
     val documentGUID: String = "",
+    val searchFilter: String = "",
 )

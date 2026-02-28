@@ -2,11 +2,17 @@ package ua.com.programmer.simpleremote.ui.catalog
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
@@ -51,6 +57,9 @@ class CatalogListFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupMenu()
+
         val adapter =
             ItemsListAdapter(
                 onItemClicked = { item ->
@@ -83,6 +92,44 @@ class CatalogListFragment: Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.listSwipe.isRefreshing = it
         }
+    }
+
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.catalog_list_menu, menu)
+                val searchItem = menu.findItem(R.id.action_search)
+                val searchView = searchItem.actionView as SearchView
+                searchView.queryHint = getString(R.string.search)
+                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        return true
+                    }
+
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        val text = newText ?: ""
+                        if (text.length > 2) {
+                            viewModel.search(text)
+                        } else if (text.isEmpty()) {
+                            viewModel.clearSearch()
+                        }
+                        return true
+                    }
+                })
+                searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                    override fun onMenuItemActionExpand(item: MenuItem): Boolean = true
+
+                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                        viewModel.clearSearch()
+                        return true
+                    }
+                })
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun nextPage(group: String) {

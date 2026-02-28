@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -27,10 +28,14 @@ class CatalogListViewModel @Inject constructor(
     var docGuid: String = ""
     var docType: String = ""
 
+    private var searchFilter: String = ""
+    private var fetchJob: Job? = null
+
     private fun fetchElements() {
+        fetchJob?.cancel()
         _isLoading.value = true
-        viewModelScope.launch {
-            networkRepository.catalog(type, group, docGuid).collect { catalog ->
+        fetchJob = viewModelScope.launch {
+            networkRepository.catalog(type, group, docGuid, searchFilter).collect { catalog ->
                 _elements.value = catalog
                 _isLoading.value = false
             }
@@ -42,5 +47,17 @@ class CatalogListViewModel @Inject constructor(
         this.type = type ?: ""
         this.group = group ?: ""
         fetchElements()
+    }
+
+    fun search(query: String) {
+        searchFilter = query
+        fetchElements()
+    }
+
+    fun clearSearch() {
+        if (searchFilter.isNotEmpty()) {
+            searchFilter = ""
+            fetchElements()
+        }
     }
 }
