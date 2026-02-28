@@ -2,7 +2,6 @@ package ua.com.programmer.simpleremote.http.impl
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,7 +21,7 @@ import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
 import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
-import ua.com.programmer.simpleremote.entity.FilterParams
+import ua.com.programmer.simpleremote.entity.FilterItem
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.UserOptions
 import ua.com.programmer.simpleremote.http.entity.CheckRequest
@@ -35,6 +34,7 @@ import ua.com.programmer.simpleremote.http.entity.ListRequest
 import ua.com.programmer.simpleremote.http.entity.isSuccessful
 import ua.com.programmer.simpleremote.http.entity.readError
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
+import ua.com.programmer.simpleremote.repository.DocumentsResult
 import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -60,7 +60,6 @@ class NetworkRepositoryImpl @Inject constructor(
     private var baseUrl: String = ""
     private val tokenCounter = AtomicInteger(0)
     private val maxTokenRefresh = 3
-    private val gson = Gson()
     private val logger = FirebaseCrashlytics.getInstance()
 
     init {
@@ -74,18 +73,18 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override val userOptions: Flow<UserOptions> = _activeOptions
 
-    override fun documents(type: String, filter: FilterParams): Flow<List<Document>> = flow {
+    override fun documents(type: String, filter: List<FilterItem>): Flow<DocumentsResult> = flow {
         val options = _activeOptions.value
         if (options.isEmpty) {
-            emit(emptyList())
+            emit(DocumentsResult())
             return@flow
         }
 
         val body = ListRequest(
             userID = options.userId,
             type = "documents",
-            data = gson.toJson(DataType(type = type)).toString(),
-            filter = gson.toJson(filter).toString(),
+            data = DataType(type = type),
+            filter = filter,
         )
         logger.log("request body: $body")
 
@@ -93,15 +92,18 @@ class NetworkRepositoryImpl @Inject constructor(
             val response = apiService?.getDocuments(options.token, body)
             if (response != null && response.isSuccessful()) {
                 val documents = response.data.filterNotNull()
-                emit(documents)
+                emit(DocumentsResult(
+                    documents = documents,
+                    filterSchema = response.filter,
+                ))
             } else {
                 Log.e("RC_NetworkRepository", "Failed to fetch documents: ${response?.message}")
-                emit(emptyList())
+                emit(DocumentsResult())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
             logger.recordException(e)
-            emit(emptyList())
+            emit(DocumentsResult())
         }
     }.flowOn(Dispatchers.IO)
 
@@ -115,7 +117,7 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "documentContent",
-            data = gson.toJson(DataType(type = type, guid = guid)).toString()
+            data = DataType(type = type, guid = guid),
         )
         logger.log("request body: $body")
 
@@ -144,7 +146,7 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "saveDocument",
-            data = gson.toJson(document).toString()
+            data = document,
         )
         logger.log("request body: $body")
 
@@ -173,7 +175,7 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "lockDocument",
-            data = gson.toJson(DataType(type = type, guid = guid)).toString()
+            data = DataType(type = type, guid = guid),
         )
         logger.log("request body: $body")
 
@@ -202,7 +204,7 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "unlockDocument",
-            data = gson.toJson(DataType(type = type, guid = guid)).toString()
+            data = DataType(type = type, guid = guid),
         )
         logger.log("request body: $body")
 
@@ -232,13 +234,11 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "catalog",
-            data = gson.toJson(
-                DataType(
-                    type = type,
-                    group = group,
-                    documentGUID = docGuid
-                )
-            ).toString()
+            data = DataType(
+                type = type,
+                group = group,
+                documentGUID = docGuid,
+            ),
         )
         logger.log("request body: $body")
 
@@ -268,7 +268,7 @@ class NetworkRepositoryImpl @Inject constructor(
         val body = ListRequest(
             userID = options.userId,
             type = "barcode",
-            data = gson.toJson(DataType(type = type, guid = guid, value = value)).toString()
+            data = DataType(type = type, guid = guid, value = value),
         )
         logger.log("request body: $body")
 

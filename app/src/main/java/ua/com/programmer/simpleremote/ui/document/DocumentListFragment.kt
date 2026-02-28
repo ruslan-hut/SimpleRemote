@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -27,12 +28,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
 import ua.com.programmer.simpleremote.entity.Document
-import ua.com.programmer.simpleremote.entity.FilterParams
+import ua.com.programmer.simpleremote.entity.FilterItem
+import ua.com.programmer.simpleremote.entity.getFilterDisplayString
+import ua.com.programmer.simpleremote.entity.isAnyFilterSet
 import ua.com.programmer.simpleremote.entity.isEmpty
 import ua.com.programmer.simpleremote.entity.presentation
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -50,7 +54,7 @@ class DocumentListFragment: Fragment(), MenuProvider  {
     private var _binding : FragmentDocumentsListBinding? = null
     private val binding get() = _binding!!
     private val navigationArgs: DocumentListFragmentArgs by navArgs()
-    private val filterParams = FilterParams()
+    private var pendingFilterName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,18 +91,31 @@ class DocumentListFragment: Fragment(), MenuProvider  {
             binding.emptyState.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
         binding.documentsSwipe.setOnRefreshListener {
-            viewModel.loadDocuments(filterParams)
+            viewModel.loadDocuments()
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             binding.documentsSwipe.isRefreshing = it
             if (it) binding.emptyState.visibility = View.GONE
         }
+
+        observeCatalogPickerResult()
         updateFilterBanner()
     }
 
+    private fun observeCatalogPickerResult() {
+        val catalog = sharedViewModel.consumeSelectedCatalogItem()
+        if (catalog != null && pendingFilterName != null) {
+            viewModel.updateFilterValue(pendingFilterName!!, catalog.code, catalog.description)
+            pendingFilterName = null
+            viewModel.loadDocuments()
+            updateFilterBanner()
+        }
+    }
+
     private fun updateFilterBanner() {
-        if (filterParams.isFilterSet()) {
-            binding.filterParameters.text = filterParams.getFilterString(requireContext())
+        val filters = viewModel.getActiveFilters()
+        if (filters.isAnyFilterSet()) {
+            binding.filterParameters.text = filters.getFilterDisplayString()
             binding.filterParameters.visibility = View.VISIBLE
         } else {
             binding.filterParameters.visibility = View.GONE
@@ -112,7 +129,7 @@ class DocumentListFragment: Fragment(), MenuProvider  {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadDocuments(filterParams)
+        viewModel.loadDocuments()
     }
 
     override fun onDestroyView() {
@@ -136,6 +153,9 @@ class DocumentListFragment: Fragment(), MenuProvider  {
     }
 
     private fun showFilterPopup(anchorView: View) {
+        val filterSchema = viewModel.filterSchema.value ?: emptyList()
+        if (filterSchema.isEmpty()) return
+
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.filter_menu_action_layout, null)
 
@@ -145,58 +165,97 @@ class DocumentListFragment: Fragment(), MenuProvider  {
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true
         )
-
         popupWindow.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
-        val numberEditText = popupView.findViewById<TextInputEditText>(R.id.document_number_edittext)
-        val contractorEditText = popupView.findViewById<TextInputEditText>(R.id.contractor_edittext)
-        val warehouseEditText = popupView.findViewById<TextInputEditText>(R.id.warehouse_edittext)
-        val dateEditText = popupView.findViewById<TextInputEditText>(R.id.date_edittext)
+        val container = popupView.findViewById<LinearLayout>(R.id.filter_fields_container)
+        val activeFilters = viewModel.getActiveFilters()
+        val fieldMap = mutableMapOf<String, TextInputEditText>()
 
-        numberEditText.setText(filterParams.documentNumber)
-        contractorEditText.setText(filterParams.contractor)
-        warehouseEditText.setText(filterParams.warehouse)
-        dateEditText.setText(filterParams.date)
+        for (filterItem in activeFilters) {
+            val itemView = inflater.inflate(R.layout.filter_item_layout, container, false)
+            val inputLayout = itemView as TextInputLayout
+            val editText = itemView.findViewById<TextInputEditText>(R.id.filter_value_edittext)
 
-        popupWindow.setOnDismissListener {
-            filterParams.documentNumber = numberEditText.text.toString()
-            filterParams.contractor = contractorEditText.text.toString()
-            filterParams.warehouse = warehouseEditText.text.toString()
-            filterParams.date = dateEditText.text.toString()
-        }
+            inputLayout.hint = filterItem.name
+            inputLayout.helperText = filterItem.description
+            editText.setText(filterItem.displayValue())
 
-        dateEditText.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .build()
-            datePicker.addOnPositiveButtonClickListener {
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                dateEditText.setText(sdf.format(Date(it)))
+            fieldMap[filterItem.name] = editText
+
+            editText.setOnLongClickListener {
+                editText.text?.clear()
+                filterItem.clearValue()
+                true
             }
-            datePicker.show(childFragmentManager, "datePicker")
+
+            when (filterItem.meta) {
+                "date" -> {
+                    editText.setOnClickListener {
+                        val datePicker = MaterialDatePicker.Builder.datePicker().build()
+                        datePicker.addOnPositiveButtonClickListener { timestamp ->
+                            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            val dateStr = sdf.format(Date(timestamp))
+                            editText.setText(dateStr)
+                        }
+                        datePicker.show(childFragmentManager, "datePicker_${filterItem.name}")
+                    }
+                }
+                "reference" -> {
+                    editText.setOnClickListener {
+                        // Save current field values before navigating
+                        saveFieldValues(fieldMap, activeFilters)
+                        viewModel.setActiveFilters(activeFilters)
+                        pendingFilterName = filterItem.name
+                        popupWindow.dismiss()
+                        val action = DocumentListFragmentDirections
+                            .actionDocumentListFragmentToCatalogListFragment(
+                                type = filterItem.type,
+                                title = filterItem.name,
+                                group = "",
+                                pickerMode = true
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+            }
+
+            container.addView(itemView)
         }
 
         val applyButton = popupView.findViewById<Button>(R.id.apply_button)
         applyButton.setOnClickListener {
+            saveFieldValues(fieldMap, activeFilters)
+            viewModel.setActiveFilters(activeFilters)
             popupWindow.dismiss()
-            Log.d("FilterParams", filterParams.toString())
-            viewModel.loadDocuments(filterParams)
+            viewModel.loadDocuments()
             updateFilterBanner()
         }
 
         val clearButton = popupView.findViewById<Button>(R.id.clear_button)
         clearButton.setOnClickListener {
-            numberEditText.text?.clear()
-            contractorEditText.text?.clear()
-            warehouseEditText.text?.clear()
-            dateEditText.text?.clear()
+            fieldMap.values.forEach { it.text?.clear() }
+            activeFilters.forEach { it.clearValue() }
+            viewModel.setActiveFilters(activeFilters)
             popupWindow.dismiss()
-            viewModel.loadDocuments(filterParams)
+            viewModel.loadDocuments()
             updateFilterBanner()
         }
 
         popupWindow.showAsDropDown(anchorView)
     }
 
+    private fun saveFieldValues(
+        fieldMap: Map<String, TextInputEditText>,
+        filters: List<FilterItem>
+    ) {
+        for (filter in filters) {
+            if (filter.meta == "date") {
+                val text = fieldMap[filter.name]?.text?.toString() ?: ""
+                filter.value = text
+            }
+            // Reference values are set via catalog picker, no need to read from text field
+        }
+    }
 
     private class ItemsListAdapter(
         private val onItemClicked: (Document) -> Unit

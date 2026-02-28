@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_documentListFragment_to_documentFragment"
             app:destination="@id/documentFragment" />
+        <action
+            android:id="@+id/action_documentListFragment_to_catalogListFragment"
+            app:destination="@id/catalogListFragment" />
         <argument
             android:name="title"
             app:argType="string"
@@ -117,6 +120,10 @@
             android:name="group"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="pickerMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
 <!--        <argument-->
 <!--            android:name="docGuid"-->
 <!--            app:argType="string"-->

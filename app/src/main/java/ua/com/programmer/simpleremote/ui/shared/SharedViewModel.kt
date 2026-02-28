@@ -47,6 +47,19 @@ class SharedViewModel @Inject constructor(
 
     val barcode = MutableLiveData<String>()
 
+    private val _selectedCatalogItem = MutableLiveData<Catalog?>()
+    val selectedCatalogItem: LiveData<Catalog?> get() = _selectedCatalogItem
+
+    fun setSelectedCatalogItem(catalog: Catalog) {
+        _selectedCatalogItem.value = catalog
+    }
+
+    fun consumeSelectedCatalogItem(): Catalog? {
+        val item = _selectedCatalogItem.value
+        _selectedCatalogItem.value = null
+        return item
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             connectionRepo.checkAvailableConnection()

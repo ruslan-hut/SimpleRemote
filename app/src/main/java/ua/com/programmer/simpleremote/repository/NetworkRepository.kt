@@ -4,13 +4,18 @@ import kotlinx.coroutines.flow.Flow
 import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.entity.Content
 import ua.com.programmer.simpleremote.entity.Document
-import ua.com.programmer.simpleremote.entity.FilterParams
+import ua.com.programmer.simpleremote.entity.FilterItem
 import ua.com.programmer.simpleremote.entity.Product
 import ua.com.programmer.simpleremote.entity.UserOptions
 
+data class DocumentsResult(
+    val documents: List<Document> = emptyList(),
+    val filterSchema: List<FilterItem> = emptyList(),
+)
+
 interface NetworkRepository {
     val userOptions: Flow<UserOptions>
-    fun documents(type: String, filter: FilterParams): Flow<List<Document>>
+    fun documents(type: String, filter: List<FilterItem>): Flow<DocumentsResult>
     fun documentContent(type: String, guid: String): Flow<List<Content>>
     suspend fun saveDocument(document: Document): String
     suspend fun lockDocument(type: String, guid: String): String

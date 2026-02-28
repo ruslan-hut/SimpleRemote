@@ -47,6 +47,8 @@ class CatalogListFragment: Fragment() {
         return binding.root
     }
 
+    private val pickerMode: Boolean by lazy { navigationArgs.pickerMode }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val adapter =
@@ -57,8 +59,13 @@ class CatalogListFragment: Fragment() {
                     }
 
                     if (item.isGroup == 0) {
-                        sharedViewModel.addProduct(item) {
-                            findNavController().popBackStack(R.id.documentFragment, false)
+                        if (pickerMode) {
+                            sharedViewModel.setSelectedCatalogItem(item)
+                            findNavController().popBackStack(R.id.documentListFragment, false)
+                        } else {
+                            sharedViewModel.addProduct(item) {
+                                findNavController().popBackStack(R.id.documentFragment, false)
+                            }
                         }
                     }
                 },
@@ -79,7 +86,7 @@ class CatalogListFragment: Fragment() {
     }
 
     private fun nextPage(group: String) {
-        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group)
+        val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group, pickerMode)
         findNavController().navigate(action)
     }
 
