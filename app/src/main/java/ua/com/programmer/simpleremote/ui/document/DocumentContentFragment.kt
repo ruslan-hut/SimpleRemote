@@ -111,12 +111,12 @@ class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragmen
     }
 
     private fun scrollToProduct(product: Product) {
-        sharedViewModel.setProductOnScan(product)
-
         if (product.id.isEmpty()) {
             Toast.makeText(requireContext(), R.string.warn_no_barcode, Toast.LENGTH_SHORT).show()
             return
         }
+
+        sharedViewModel.setProductOnScan(product)
 
         val position = listAdapter?.findProductPosition(product) ?: -1
         if (position >= 0) {
