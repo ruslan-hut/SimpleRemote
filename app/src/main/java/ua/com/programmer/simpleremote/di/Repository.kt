@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
@@ -54,6 +55,9 @@ class NetworkModule {
             }
         }
         return OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .authenticator(authenticator)
