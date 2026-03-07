@@ -1,23 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext {
-        kotlin_version = '2.2.10'
-    }
     dependencies {
-        classpath 'com.android.tools.build:gradle:9.1.0'
-        classpath 'com.google.gms:google-services:4.4.4'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.6'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.9.7'
+        classpath "com.android.tools.build:gradle:${libs.versions.agp.get()}"
+        classpath libs.google.services.plugin
+        classpath libs.firebase.crashlytics.gradle
+        classpath libs.androidx.navigation.safeargs
     }
 }
 
 plugins {
-    id 'com.android.application' version '9.1.0' apply false
-    id 'com.android.library' version '9.1.0' apply false
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
-    id 'com.google.dagger.hilt.android' version '2.59.2' apply false
-    id 'com.google.devtools.ksp' version '2.3.4' apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.secrets) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
 }
 
 tasks.register('clean', Delete) {
