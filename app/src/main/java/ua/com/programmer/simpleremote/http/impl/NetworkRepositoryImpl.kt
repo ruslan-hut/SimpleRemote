@@ -64,6 +64,12 @@ class NetworkRepositoryImpl @Inject constructor(
     private val maxTokenRefresh = 3
     private val logger = FirebaseCrashlytics.getInstance()
 
+    private val catalogCache = object : LinkedHashMap<String, List<Catalog>>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<Catalog>>): Boolean {
+            return size > 50
+        }
+    }
+
     init {
         tokenRefresh.setRefreshToken { runBlocking(Dispatchers.IO) { refreshToken() } }
 
@@ -233,6 +239,13 @@ class NetworkRepositoryImpl @Inject constructor(
             return@flow
         }
 
+        val cacheKey = "$type|$group|$searchFilter"
+        val cached = synchronized(catalogCache) { catalogCache[cacheKey] }
+        if (cached != null) {
+            emit(cached)
+            return@flow
+        }
+
         val body = ListRequest(
             userID = options.userId,
             type = "catalog",
@@ -248,8 +261,9 @@ class NetworkRepositoryImpl @Inject constructor(
         try {
             val response = apiService?.getCatalog(options.token, body)
             if (response != null && response.isSuccessful()) {
-                val documents = response.data.filterNotNull()
-                emit(documents)
+                val items = response.data.filterNotNull()
+                synchronized(catalogCache) { catalogCache[cacheKey] = items }
+                emit(items)
             } else {
                 Log.e("RC_NetworkRepository", "Failed to fetch catalog: ${response?.message}")
                 emit(emptyList())
@@ -316,6 +330,8 @@ class NetworkRepositoryImpl @Inject constructor(
         httpAuthInterceptor.setCredentials(settings.user, settings.password)
 
         if (this.baseUrl == baseUrl) return
+
+        synchronized(catalogCache) { catalogCache.clear() }
 
         Log.d("RC_NetworkRepository", "init connection; base url: $baseUrl")
         try {
