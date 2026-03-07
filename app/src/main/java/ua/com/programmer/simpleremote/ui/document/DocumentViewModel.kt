@@ -1,12 +1,12 @@
 package ua.com.programmer.simpleremote.ui.document
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.entity.Content
@@ -20,17 +20,17 @@ class DocumentViewModel @Inject constructor(
     private val networkRepository: NetworkRepository
     ): ViewModel() {
 
-    private val _content = MutableLiveData<List<Content>>(emptyList())
-    val content: LiveData<List<Content>> get() = _content
+    private val _content = MutableStateFlow<List<Content>>(emptyList())
+    val content: StateFlow<List<Content>> get() = _content
 
-    private val _count = MutableLiveData<Int>(0)
-    val count: LiveData<Int> get() = _count
+    private val _count = MutableStateFlow(0)
+    val count: StateFlow<Int> get() = _count
 
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    private val _isEditable = MutableLiveData<Boolean>(false)
-    val isEditable: LiveData<Boolean> get() = _isEditable
+    private val _isEditable = MutableStateFlow(false)
+    val isEditable: StateFlow<Boolean> get() = _isEditable
 
     private var scrollPosition = 0
 
@@ -62,7 +62,7 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun onItemClicked(item: Content, openProduct: (Product) -> Unit) {
-        if (_isEditable.value == false) return
+        if (!_isEditable.value) return
         val product = Product(
             id = item.code,
             code = item.code,
@@ -75,7 +75,7 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun enableEdit() {
-        _isEditable.value = _isEditable.value != true
+        _isEditable.value = !_isEditable.value
     }
 
     fun requestEditLock(documentGuid: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
@@ -107,7 +107,7 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun saveDocument(document: Document, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (_isEditable.value == false) {
+        if (!_isEditable.value) {
             onError("Редагування не увімкнено")
             return
         }
@@ -137,13 +137,13 @@ class DocumentViewModel @Inject constructor(
     }
 
     fun onBarcodeRead(barcode: String, onResult: (Product) -> Unit) {
-        if (_isEditable.value == false) return
+        if (!_isEditable.value) return
         viewModelScope.launch {
             _isLoading.value = true
             networkRepository.barcode(type, guid, barcode).collect { found ->
                 // find product in content
                 Log.d("RC_DocumentViewModel", "onBarcodeRead: code=${found.code} ${found.description}")
-                val list = _content.value?.toMutableList() ?: mutableListOf()
+                val list = _content.value.toMutableList()
                 val item = list.find { found.code == it.code }
                 val product = found.copy(
                     contentItem = item

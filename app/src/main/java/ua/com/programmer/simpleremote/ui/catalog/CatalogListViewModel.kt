@@ -1,11 +1,11 @@
 package ua.com.programmer.simpleremote.ui.catalog
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Catalog
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -16,11 +16,11 @@ class CatalogListViewModel @Inject constructor(
     private val networkRepository: NetworkRepository
 ): ViewModel() {
 
-    private val _elements = MutableLiveData<List<Catalog>>()
-    val elements: LiveData<List<Catalog>> get() = _elements
+    private val _elements = MutableStateFlow<List<Catalog>>(emptyList())
+    val elements: StateFlow<List<Catalog>> get() = _elements
 
-    private val _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
     var title: String = ""
     var type: String = ""

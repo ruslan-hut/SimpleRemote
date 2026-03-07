@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
 import ua.com.programmer.simpleremote.entity.ListType
@@ -43,14 +47,24 @@ class SelectDocumentTypeFragment: Fragment() {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.documents.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.listSwipe.isRefreshing = it
-        }
-        viewModel.isError.observe(viewLifecycleOwner) {
-            binding.cardNoData.visibility = if (it) View.VISIBLE else View.GONE
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.documents.collect {
+                        adapter.submitList(it)
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect {
+                        binding.listSwipe.isRefreshing = it
+                    }
+                }
+                launch {
+                    viewModel.isError.collect {
+                        binding.cardNoData.visibility = if (it) View.VISIBLE else View.GONE
+                    }
+                }
+            }
         }
 
         binding.cardNoData.setOnClickListener {

@@ -9,12 +9,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.DocumentContentItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentContentBinding
@@ -73,28 +77,34 @@ class DocumentContentFragment: Fragment() {
             })
         }
 
-        sharedViewModel.content.observe(viewLifecycleOwner) {
-            listAdapter?.submitList(it)
-            binding?.emptyState?.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
-        }
-
         binding?.retryButton?.setOnClickListener {
             binding?.emptyState?.visibility = View.GONE
             sharedViewModel.loadDocumentContent(viewModel.getType(), viewModel.getDocGuid())
         }
 
-        sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                if (sharedViewModel.placementMode()){
-                    viewModel.onBarcodeRead(it, ::scrollToProduct)
-                }else if(sharedViewModel.editMode()){
-                    viewModel.addProduct(it, ::scrollToProduct)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.content.collect {
+                        listAdapter?.submitList(it)
+                        binding?.emptyState?.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                    }
                 }
+                launch {
+                    sharedViewModel.barcode.collect {
+                        if (it.isNotEmpty()) {
+                            if (sharedViewModel.placementMode()){
+                                viewModel.onBarcodeRead(it, ::scrollToProduct)
+                            }else if(sharedViewModel.editMode()){
+                                viewModel.addProduct(it, ::scrollToProduct)
+                            }
 
-                sharedViewModel.clearBarcode()
+                            sharedViewModel.clearBarcode()
+                        }
+                    }
+                }
             }
         }
-
     }
 
     private fun openProductScreen(product: Product) {
@@ -177,7 +187,6 @@ class DocumentContentFragment: Fragment() {
                     itemNotes.visibility = if (item.notes.isEmpty()) View.GONE else View.VISIBLE
 
                     imageLoader(itemImage)
-                    //itemImage.visibility = if (loadImages) View.GONE else View.VISIBLE
                     itemImage.setOnClickListener {
                         showImageDialog(itemImage)
                     }

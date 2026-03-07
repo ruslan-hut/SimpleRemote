@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.navArgs
@@ -59,25 +60,35 @@ class ItemEditFragment: Fragment(), MenuProvider {
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        sharedViewModel.content.observe(viewLifecycleOwner) {
-            viewModel.loadContent(it)
-        }
-        sharedViewModel.product.observe(viewLifecycleOwner) {
-            product = it
-            bind(it)
-        }
-        sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                if (sharedViewModel.collectMode() && it == product?.barcode){
-                    if (sharedViewModel.confirmWithScan()) {
-                        binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
-                        saveProduct()
-                    } else {
-                        increaseQuantity()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.content.collect {
+                        viewModel.loadContent(it)
                     }
                 }
+                launch {
+                    sharedViewModel.product.collect {
+                        product = it
+                        it?.let { bind(it) }
+                    }
+                }
+                launch {
+                    sharedViewModel.barcode.collect {
+                        if (it.isNotEmpty()) {
+                            if (sharedViewModel.collectMode() && it == product?.barcode){
+                                if (sharedViewModel.confirmWithScan()) {
+                                    binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
+                                    saveProduct()
+                                } else {
+                                    increaseQuantity()
+                                }
+                            }
 
-                sharedViewModel.clearBarcode()
+                            sharedViewModel.clearBarcode()
+                        }
+                    }
+                }
             }
         }
         binding?.editQuantity?.setOnEditorActionListener { _, actionId, _ ->

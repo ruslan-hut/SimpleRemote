@@ -20,7 +20,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -86,16 +89,24 @@ class DocumentListFragment: Fragment(), MenuProvider  {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.documents.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-            binding.emptyState.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.documents.collect {
+                        adapter.submitList(it)
+                        binding.emptyState.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect {
+                        binding.documentsSwipe.isRefreshing = it
+                        if (it) binding.emptyState.visibility = View.GONE
+                    }
+                }
+            }
         }
         binding.documentsSwipe.setOnRefreshListener {
             viewModel.loadDocuments()
-        }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.documentsSwipe.isRefreshing = it
-            if (it) binding.emptyState.visibility = View.GONE
         }
 
         observeCatalogPickerResult()

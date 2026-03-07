@@ -16,12 +16,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentPagedBinding
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -71,33 +74,6 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
         }
 
-        sharedViewModel.content.observe(viewLifecycleOwner) {
-            viewModel.setDocumentContent(it){
-                sharedViewModel.checkContent()
-            }
-        }
-        viewModel.isEditable.observe(viewLifecycleOwner) {
-            binding?.bottomBar?.visibility = if (it) View.VISIBLE else View.GONE
-        }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
-        }
-
-        sharedViewModel.document.observe(viewLifecycleOwner) { doc ->
-            if (doc.locked && sharedViewModel.collectMode() && viewModel.isEditable.value != true) {
-                viewModel.enableEdit()
-            }
-        }
-
-        binding?.addItemButton?.setOnClickListener {
-            val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
-                type = "Товары",
-                title = "Товары",
-                group = "",
-            )
-            findNavController().navigate(action)
-        }
-
         val backCallback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
                 AlertDialog.Builder(requireContext())
@@ -112,10 +88,45 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backCallback)
-        viewModel.isEditable.observe(viewLifecycleOwner) {
-            backCallback.isEnabled = it
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.content.collect {
+                        viewModel.setDocumentContent(it){
+                            sharedViewModel.checkContent()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.isEditable.collect {
+                        binding?.bottomBar?.visibility = if (it) View.VISIBLE else View.GONE
+                        backCallback.isEnabled = it
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect {
+                        binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                    }
+                }
+                launch {
+                    sharedViewModel.document.collect { doc ->
+                        if (doc != null && doc.locked && sharedViewModel.collectMode() && !viewModel.isEditable.value) {
+                            viewModel.enableEdit()
+                        }
+                    }
+                }
+            }
         }
 
+        binding?.addItemButton?.setOnClickListener {
+            val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
+                type = "Товары",
+                title = "Товары",
+                group = "",
+            )
+            findNavController().navigate(action)
+        }
     }
 
     private fun openCamera() {
@@ -135,7 +146,7 @@ class DocumentFragment: Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.edit_document -> {
-                if (viewModel.isEditable.value == true) {
+                if (viewModel.isEditable.value) {
                     requestEditUnlock()
                 } else {
                     requestEditLock()

@@ -1,11 +1,11 @@
 package ua.com.programmer.simpleremote.ui.selector
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.ListType
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -16,17 +16,17 @@ class SelectorViewModel @Inject constructor(
     private val networkRepo: NetworkRepository
 ): ViewModel() {
 
-    private val _documents = MutableLiveData<List<ListType>>()
-    val documents: LiveData<List<ListType>> get() = _documents
+    private val _documents = MutableStateFlow<List<ListType>>(emptyList())
+    val documents: StateFlow<List<ListType>> get() = _documents
 
-    private val _catalogs = MutableLiveData<List<ListType>>()
-    val catalogs: LiveData<List<ListType>> get() = _catalogs
+    private val _catalogs = MutableStateFlow<List<ListType>>(emptyList())
+    val catalogs: StateFlow<List<ListType>> get() = _catalogs
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    private val _isError = MutableLiveData<Boolean>()
-    val isError: LiveData<Boolean> get() = _isError
+    private val _isError = MutableStateFlow(false)
+    val isError: StateFlow<Boolean> get() = _isError
 
     init {
         viewModelScope.launch {

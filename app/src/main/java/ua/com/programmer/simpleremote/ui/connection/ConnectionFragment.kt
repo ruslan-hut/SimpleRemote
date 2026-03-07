@@ -17,9 +17,12 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.databinding.FragmentConnectionSettingsBinding
 import kotlin.getValue
 import ua.com.programmer.simpleremote.R
@@ -50,17 +53,21 @@ class ConnectionFragment: Fragment(), MenuProvider {
         val menuHost : MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        viewModel.connection.observe(viewLifecycleOwner) {
-            it?.let {
-                binding.apply {
-                    description.setText(it.description)
-                    server.setText(it.serverAddress)
-                    dbName.setText(it.databaseName)
-                    dbUser.setText(it.user)
-                    dbPassword.setText(it.password)
-                    userId.text = it.guid
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.connection.collect {
+                    it?.let {
+                        binding.apply {
+                            description.setText(it.description)
+                            server.setText(it.serverAddress)
+                            dbName.setText(it.databaseName)
+                            dbUser.setText(it.user)
+                            dbPassword.setText(it.password)
+                            userId.text = it.guid
+                        }
+                        _connection = it
+                    }
                 }
-                _connection = it
             }
         }
 

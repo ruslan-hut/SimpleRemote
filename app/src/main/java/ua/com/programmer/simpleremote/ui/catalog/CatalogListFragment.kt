@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.CatalogListItemGoodsBinding
 import ua.com.programmer.simpleremote.databinding.CatalogListItemGroupBinding
@@ -83,14 +86,23 @@ class CatalogListFragment: Fragment() {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.elements.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.elements.collect {
+                        adapter.submitList(it)
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect {
+                        binding.listSwipe.isRefreshing = it
+                    }
+                }
+            }
         }
+
         binding.listSwipe.setOnRefreshListener {
             binding.listSwipe.isRefreshing = false
-        }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            binding.listSwipe.isRefreshing = it
         }
     }
 

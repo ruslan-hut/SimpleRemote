@@ -1,12 +1,14 @@
 package ua.com.programmer.simpleremote.ui.connection
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
@@ -19,16 +21,16 @@ class ConnectionViewModel @Inject constructor(
     private val connectionRepo: ConnectionSettingsRepository
 ): ViewModel() {
 
-    private val _guid = MutableLiveData("")
+    private val _guid = MutableStateFlow("")
 
-    val connection get() = _guid.switchMap {
-        connectionRepo.getByGuid(it).asLiveData()
-    }
+    val connection: StateFlow<ConnectionSettings?> = _guid.flatMapLatest { guid ->
+        connectionRepo.getByGuid(guid)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     fun setCurrentConnection(guid: String?) {
         if (guid.isNullOrBlank()) {
             _guid.value = UUID.randomUUID().toString()
-        }else{
+        } else {
             _guid.value = guid
         }
     }

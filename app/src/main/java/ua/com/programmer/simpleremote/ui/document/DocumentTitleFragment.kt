@@ -12,7 +12,11 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentTitleBinding
 import ua.com.programmer.simpleremote.entity.Document
@@ -40,24 +44,27 @@ class DocumentTitleFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.document.observe(viewLifecycleOwner) {
-            it?.let {
-                bind(it)
-                viewModel.setDocumentId(it.guid){type, guid ->
-                    sharedViewModel.loadDocumentContent(type, guid)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.document.collect {
+                        it?.let {
+                            bind(it)
+                            viewModel.setDocumentId(it.guid){ type, guid ->
+                                sharedViewModel.loadDocumentContent(type, guid)
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.count.collect {
+                        binding?.documentArticles?.text = "$it"
+                    }
                 }
             }
         }
-        viewModel.count.observe(viewLifecycleOwner) {
-            binding?.documentArticles?.text = "$it"
-        }
+
         binding?.editPlaces?.doOnTextChanged { text, _, _, _ ->
-            // Only update the ViewModel if the text has actually changed
-            // from what the ViewModel currently holds for placesCollected.
-            // This assumes your SharedViewModel has a way to get the current
-            // placesCollected value or that you compare it to the last value
-            // that was set from the document.
-            // For simplicity, we'll compare with the current document's value.
             if (text.toString() != sharedViewModel.document.value?.placesCollected) {
                 sharedViewModel.setDocumentPlacesCollected(text.toString())
             }
@@ -75,9 +82,8 @@ class DocumentTitleFragment: Fragment() {
             documentNumber.text = item.number
             documentDate.text = item.date
 
-            // Check if the current text is different before setting it
             if (editPlaces.text.toString() != item.placesCollected) {
-                editPlaces.setText(item.placesCollected) // TextView.BufferType.EDITABLE is the default for EditText
+                editPlaces.setText(item.placesCollected)
             }
 
             documentNotes.text = item.notes

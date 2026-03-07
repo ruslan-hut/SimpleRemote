@@ -1,12 +1,12 @@
 package ua.com.programmer.simpleremote.ui.shared
 
 import android.widget.ImageView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
@@ -30,26 +30,25 @@ class SharedViewModel @Inject constructor(
     private val imageLoader: ImageLoader,
 ) : ViewModel() {
 
-    private val _connection = MutableLiveData<ConnectionSettings>()
-    val connection get() = _connection
+    private val _connection = MutableStateFlow<ConnectionSettings?>(null)
+    val connection: StateFlow<ConnectionSettings?> get() = _connection
 
-    private val _userOptions = MutableLiveData<UserOptions>()
-    //val userOptions: UserOptions get() = _userOptions.value ?: UserOptions(isEmpty = true)
+    private val _userOptions = MutableStateFlow<UserOptions?>(null)
 
-    private val _document = MutableLiveData<Document>()
-    val document get() = _document
+    private val _document = MutableStateFlow<Document?>(null)
+    val document: StateFlow<Document?> get() = _document
 
-    private val _content = MutableLiveData<List<Content>>(emptyList())
-    val content: LiveData<List<Content>> get() = _content
+    private val _content = MutableStateFlow<List<Content>>(emptyList())
+    val content: StateFlow<List<Content>> get() = _content
 
-    private val _product = MutableLiveData<Product>()
-    val product get() = _product
+    private val _product = MutableStateFlow<Product?>(null)
+    val product: StateFlow<Product?> get() = _product
 
-    private val _barcode = MutableLiveData<String>()
-    val barcode: LiveData<String> get() = _barcode
+    private val _barcode = MutableStateFlow("")
+    val barcode: StateFlow<String> get() = _barcode
 
-    private val _selectedCatalogItem = MutableLiveData<Catalog?>()
-    val selectedCatalogItem: LiveData<Catalog?> get() = _selectedCatalogItem
+    private val _selectedCatalogItem = MutableStateFlow<Catalog?>(null)
+    val selectedCatalogItem: StateFlow<Catalog?> get() = _selectedCatalogItem
 
     fun setSelectedCatalogItem(catalog: Catalog) {
         _selectedCatalogItem.value = catalog
@@ -68,9 +67,7 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
             connectionRepo.currentConnection.collect {
                 val conn = it ?: ConnectionSettings.buildDemo()
-                withContext(Dispatchers.Main) {
-                    _connection.value = conn
-                }
+                _connection.value = conn
                 withContext(Dispatchers.IO) {
                     connectionRepo.updateUserData(conn)
                 }
@@ -97,26 +94,30 @@ class SharedViewModel @Inject constructor(
     fun setProductOnScan(product: Product) {
         _product.value = product
         if (collectMode()) {
-            // find product in content an increase quantity
-            val list = _content.value?.toMutableList() ?: mutableListOf()
-            val item = list.find { it.code == product.code }
-            item?.apply {
-                collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
-                modified = true
-                checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+            val list = _content.value.toMutableList()
+            val index = list.indexOfFirst { it.code == product.code }
+            if (index >= 0) {
+                val item = list[index]
+                val newCollect = (item.collect.toIntOrNull() ?: 0).plus(1).toString()
+                list[index] = item.copy(
+                    collect = newCollect,
+                    modified = true,
+                    checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+                )
             }
             _content.value = list
             checkContent()
         } else if (editMode()) {
-            val list = _content.value?.toMutableList() ?: mutableListOf()
-            val item = list.find { it.code == product.code }
-            if (item != null) {
-                // Update existing item
-                item.apply {
-                    collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
-                    modified = true
-                    checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
-                }
+            val list = _content.value.toMutableList()
+            val index = list.indexOfFirst { it.code == product.code }
+            if (index >= 0) {
+                val item = list[index]
+                val newCollect = (item.collect.toIntOrNull() ?: 0).plus(1).toString()
+                list[index] = item.copy(
+                    collect = newCollect,
+                    modified = true,
+                    checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+                )
             } else {
                 val newContent = Content(
                     line = list.size + 1,
@@ -129,13 +130,13 @@ class SharedViewModel @Inject constructor(
                     quantity = "1",
                     rest = product.rest.toString(),
                     price = product.price.toString(),
-                    sum = product.price.toString(), // assuming quantity = 1
+                    sum = product.price.toString(),
                     collect = "1",
                     notes = product.notes,
                     checked = false,
                     modified = true,
                     image = product.art,
-                    encodedImage = "", // you can encode the image if needed
+                    encodedImage = "",
                     place = emptyList()
                 )
                 list.add(newContent)
@@ -147,14 +148,16 @@ class SharedViewModel @Inject constructor(
 
     fun addProduct(catalog: Catalog, onResult: () -> Unit){
         if (!editMode()) return
-        val list = _content.value?.toMutableList() ?: mutableListOf()
-        val item = list.find { it.code == catalog.code }
-        if (item != null) {
-            item.apply {
-                collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
-                modified = true
-                checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
-            }
+        val list = _content.value.toMutableList()
+        val index = list.indexOfFirst { it.code == catalog.code }
+        if (index >= 0) {
+            val item = list[index]
+            val newCollect = (item.collect.toIntOrNull() ?: 0).plus(1).toString()
+            list[index] = item.copy(
+                collect = newCollect,
+                modified = true,
+                checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+            )
         } else {
             val newContent = catalog.toContent(list.size+1)
             list.add(newContent)
@@ -200,8 +203,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun setItemChecked(code: String, isChecked: Boolean) {
-        val originalList = _content.value ?: emptyList()
-        val list = originalList.toMutableList()
+        val list = _content.value.toMutableList()
         val index = list.indexOfFirst { it.code == code }
         if (index >= 0) {
             list[index] = list[index].copy(checked = isChecked, modified = true)
@@ -213,9 +215,8 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    // Check if all content items are checked and update the document's checked status
     fun checkContent() {
-        val list = _content.value?.toMutableList() ?: mutableListOf()
+        val list = _content.value
         if (list.isEmpty()) return
         val checked = list.all { it.checked }
         _document.value = _document.value?.copy(checked = checked)
@@ -223,7 +224,7 @@ class SharedViewModel @Inject constructor(
 
     fun getDocument(): Document {
         return _document.value?.copy(
-            lines = _content.value ?: emptyList()
+            lines = _content.value
         ) ?: Document()
     }
 

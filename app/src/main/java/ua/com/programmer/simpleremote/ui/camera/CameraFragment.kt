@@ -23,10 +23,12 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +62,7 @@ class CameraFragment: Fragment() {
     ) { granted ->
         viewModel.setPermissionGranted(granted)
         if (granted) {
-            setupCamera(viewModel.scanMode.value == true)
+            setupCamera(viewModel.scanMode.value)
         }
     }
 
@@ -101,27 +103,33 @@ class CameraFragment: Fragment() {
         binding.buttonConfirm.setOnClickListener {
             takePhoto()
         }
-        sharedViewModel.product.observe(viewLifecycleOwner) {
-            if (it != null) {
-                binding.textItemDescription.text = it.description
-                //binding.textValue.text = it.barcode
-            }
-        }
-        viewModel.scanMode.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.buttonConfirm.visibility = View.GONE
-                binding.delimiter.visibility = View.GONE
-                binding.textLines.visibility = View.GONE
-            } else {
-                binding.textLines.visibility = View.VISIBLE
-            }
-            setupCamera(it)
-        }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.product.collect {
+                        if (it != null) {
+                            binding.textItemDescription.text = it.description
+                        }
+                    }
+                }
+                launch {
+                    viewModel.scanMode.collect {
+                        if (it) {
+                            binding.buttonConfirm.visibility = View.GONE
+                            binding.delimiter.visibility = View.GONE
+                            binding.textLines.visibility = View.GONE
+                        } else {
+                            binding.textLines.visibility = View.VISIBLE
+                        }
+                        setupCamera(it)
+                    }
+                }
+                launch {
+                    viewModel.isLoading.collect {
+                        binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
+                    }
+                }
             }
         }
     }
@@ -191,7 +199,7 @@ class CameraFragment: Fragment() {
     private fun resetCamera() {
         stopCamera {
             try {
-                setupCamera(viewModel.scanMode.value == true)
+                setupCamera(viewModel.scanMode.value)
             } catch (se: SecurityException) {
                 Log.e("RC_CameraFragment", "SecurityException: ${se.message}")
                 Toast.makeText(requireContext(), R.string.error_no_permission, Toast.LENGTH_SHORT)
@@ -255,4 +263,3 @@ class CameraFragment: Fragment() {
         _binding = null
     }
 }
-

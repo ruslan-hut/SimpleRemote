@@ -1,11 +1,11 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.FilterItem
@@ -17,14 +17,14 @@ class DocumentListViewModel @Inject constructor(
     private val networkRepository: NetworkRepository
 ): ViewModel() {
 
-    private val _documents = MutableLiveData<List<Document>>()
-    val documents: LiveData<List<Document>> get() = _documents
+    private val _documents = MutableStateFlow<List<Document>>(emptyList())
+    val documents: StateFlow<List<Document>> get() = _documents
 
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    private val _filterSchema = MutableLiveData<List<FilterItem>>(emptyList())
-    val filterSchema: LiveData<List<FilterItem>> get() = _filterSchema
+    private val _filterSchema = MutableStateFlow<List<FilterItem>>(emptyList())
+    val filterSchema: StateFlow<List<FilterItem>> get() = _filterSchema
 
     private val _activeFilters = mutableListOf<FilterItem>()
     private var fetchJob: Job? = null
@@ -65,7 +65,7 @@ class DocumentListViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             networkRepository.documents(type, _activeFilters).collect { result ->
                 _documents.value = result.documents
-                if (result.filterSchema.isNotEmpty() && _filterSchema.value.isNullOrEmpty()) {
+                if (result.filterSchema.isNotEmpty() && _filterSchema.value.isEmpty()) {
                     _filterSchema.value = result.filterSchema
                     if (_activeFilters.isEmpty()) {
                         _activeFilters.addAll(result.filterSchema.map { it.copy() })

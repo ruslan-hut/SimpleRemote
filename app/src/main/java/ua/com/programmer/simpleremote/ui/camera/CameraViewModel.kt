@@ -1,9 +1,10 @@
 package ua.com.programmer.simpleremote.ui.camera
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -14,11 +15,11 @@ class CameraViewModel @Inject constructor(
     private val networkRepository: NetworkRepository
 ): ViewModel() {
 
-    private val _scanMode = MutableLiveData<Boolean>(false)
-    val scanMode get() = _scanMode
+    private val _scanMode = MutableStateFlow(false)
+    val scanMode: StateFlow<Boolean> get() = _scanMode
 
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
 
     private var _permissionGranted = false
     val permissionGranted get() = _permissionGranted

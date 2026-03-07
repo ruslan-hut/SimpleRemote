@@ -12,7 +12,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.fragment.navArgs
@@ -61,32 +63,42 @@ class ItemPlacementFragment: Fragment() {
             findNavController().popBackStack()
         }
 
-        sharedViewModel.content.observe(viewLifecycleOwner) {
-            viewModel.loadContent(it)
-        }
-        sharedViewModel.product.observe(viewLifecycleOwner) {
-            product = it
-            bind(it)
-
-            val placeList = product?.contentItem?.place?.toMutableList() ?: mutableListOf()
-            adapter = ItemPlacementAdapter(placeList) { updatedList ->
-                product?.contentItem?.place = updatedList
-            }
-            binding?.placementRecycler?.adapter = adapter
-            binding?.placementRecycler?.layoutManager = LinearLayoutManager(requireContext())
-        }
-
-        sharedViewModel.barcode.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                val matchingPlace = adapter.places.find { place -> place.code == it }
-                if (matchingPlace != null) {
-                    matchingPlace.quantity += 1
-                } else {
-                    adapter.places.add(Place(quantity = 1, code = it))
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    sharedViewModel.content.collect {
+                        viewModel.loadContent(it)
+                    }
                 }
-                adapter.notifyDataSetChanged()
-                sharedViewModel.clearBarcode()
-                product?.contentItem?.place = adapter.places
+                launch {
+                    sharedViewModel.product.collect {
+                        product = it
+                        it ?: return@collect
+                        bind(it)
+
+                        val placeList = product?.contentItem?.place?.toMutableList() ?: mutableListOf()
+                        adapter = ItemPlacementAdapter(placeList) { updatedList ->
+                            product?.contentItem?.place = updatedList
+                        }
+                        binding?.placementRecycler?.adapter = adapter
+                        binding?.placementRecycler?.layoutManager = LinearLayoutManager(requireContext())
+                    }
+                }
+                launch {
+                    sharedViewModel.barcode.collect {
+                        if (it.isNotEmpty()) {
+                            val matchingPlace = adapter.places.find { place -> place.code == it }
+                            if (matchingPlace != null) {
+                                matchingPlace.quantity += 1
+                            } else {
+                                adapter.places.add(Place(quantity = 1, code = it))
+                            }
+                            adapter.notifyDataSetChanged()
+                            sharedViewModel.clearBarcode()
+                            product?.contentItem?.place = adapter.places
+                        }
+                    }
+                }
             }
         }
 

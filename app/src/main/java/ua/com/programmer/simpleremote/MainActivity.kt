@@ -25,7 +25,11 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
 import ua.com.programmer.simpleremote.firebase.DeleteOldUsersWorker
@@ -94,14 +98,18 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        viewModel.connection.observe(this) {
-            it?.let {
-                val textUserID = "${BuildConfig.VERSION_NAME} (${it.getGuid()})"
-                val header = binding.navView.getHeaderView(0)
-                val textVersion = header.findViewById<TextView>(R.id.nav_header_text1)
-                textVersion.text = textUserID
-                val textAccount = header.findViewById<TextView>(R.id.nav_header_text2)
-                textAccount.text = it.description
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.connection.collect {
+                    it?.let {
+                        val textUserID = "${BuildConfig.VERSION_NAME} (${it.getGuid()})"
+                        val header = binding.navView.getHeaderView(0)
+                        val textVersion = header.findViewById<TextView>(R.id.nav_header_text1)
+                        textVersion.text = textUserID
+                        val textAccount = header.findViewById<TextView>(R.id.nav_header_text2)
+                        textAccount.text = it.description
+                    }
+                }
             }
         }
 
