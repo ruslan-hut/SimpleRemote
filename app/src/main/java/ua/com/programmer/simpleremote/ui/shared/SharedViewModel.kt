@@ -240,15 +240,16 @@ class SharedViewModel @Inject constructor(
     }
 
     fun collectMode(): Boolean {
-        return false//_userOptions.value?.mode == "collect"
+        return _userOptions.value?.mode == "collect"
     }
 
     fun placementMode(): Boolean {
-        return false//_userOptions.value?.mode == "placement"
+        return _userOptions.value?.mode == "placement"
     }
 
     fun editMode(): Boolean {
-        return true//_userOptions.value?.mode == "edit"
+        val mode = _userOptions.value?.mode ?: ""
+        return mode == "edit" || mode.isEmpty()
     }
 
     fun clearBarcode() {

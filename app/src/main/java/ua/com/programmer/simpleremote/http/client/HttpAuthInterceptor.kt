@@ -6,6 +6,7 @@ import okhttp3.Response
 
 class HttpAuthInterceptor: Interceptor {
 
+    @Volatile
     private var credentials = ""
 
     fun setCredentials(user: String, pass: String) {
