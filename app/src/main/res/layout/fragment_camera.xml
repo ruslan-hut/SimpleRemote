@@ -65,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:fontFamily="@font/fira_sans_condensed"
                     android:textStyle="bold"
                     android:text="@string/sample_text" />
             </LinearLayout>

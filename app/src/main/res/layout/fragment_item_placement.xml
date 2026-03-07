@@ -12,6 +12,7 @@
         android:background="?attr/colorSecondaryContainer"
         android:text="@string/holder_text"
         android:textColor="?attr/colorOnSecondaryContainer"
+        android:fontFamily="@font/fira_sans_condensed"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textStyle="bold"
         android:paddingTop="16dp"

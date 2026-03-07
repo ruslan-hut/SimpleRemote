@@ -54,6 +54,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:fontFamily="@font/fira_sans_condensed"
                             android:textStyle="bold"
                             android:textColor="?attr/colorOnBackground"
                             android:text="@string/sample_text"

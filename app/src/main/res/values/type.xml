@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Fira Sans Condensed: titles, toolbar, headline -->
+    <style name="TextAppearance.App.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+
+    <style name="TextAppearance.App.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+
+    <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+    <style name="TextAppearance.App.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="fontFamily">@font/fira_sans_condensed</item>
+        <item name="android:fontFamily">@font/fira_sans_condensed</item>
+    </style>
+
+    <!-- Fira Sans: body, label, all other text -->
+    <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+    <style name="TextAppearance.App.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+    <style name="TextAppearance.App.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+    <style name="TextAppearance.App.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+    <style name="TextAppearance.App.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+    <style name="TextAppearance.App.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/fira_sans</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+</resources>

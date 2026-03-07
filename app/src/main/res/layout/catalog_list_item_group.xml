@@ -30,6 +30,7 @@
             android:paddingEnd="4dp"
             android:text="@string/sample_text"
             android:textColor="?attr/colorOnBackground"
+            android:fontFamily="@font/fira_sans_condensed"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textStyle="bold" />
 
