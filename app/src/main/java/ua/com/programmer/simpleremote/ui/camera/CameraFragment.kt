@@ -53,6 +53,7 @@ class CameraFragment: Fragment() {
 
     private var outputDirectory: File? = null
     private var imageFileName: String? = null
+    private var toneGenerator: ToneGenerator? = null
 
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
         ProcessCameraProvider.getInstance(requireContext())
@@ -206,8 +207,10 @@ class CameraFragment: Fragment() {
     }
 
     private fun makeBeep() {
-        val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP)
+        if (toneGenerator == null) {
+            toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+        }
+        toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP)
     }
 
     private fun takePhoto() {
@@ -250,6 +253,9 @@ class CameraFragment: Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        toneGenerator?.release()
+        toneGenerator = null
+        cameraExecutor.shutdown()
         _binding = null
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.FilterItem
@@ -26,6 +27,7 @@ class DocumentListViewModel @Inject constructor(
     val filterSchema: LiveData<List<FilterItem>> get() = _filterSchema
 
     private val _activeFilters = mutableListOf<FilterItem>()
+    private var fetchJob: Job? = null
 
     var title: String = ""
     var type: String = ""
@@ -59,7 +61,8 @@ class DocumentListViewModel @Inject constructor(
             _isLoading.value = false
             return
         }
-        viewModelScope.launch {
+        fetchJob?.cancel()
+        fetchJob = viewModelScope.launch {
             networkRepository.documents(type, _activeFilters).collect { result ->
                 _documents.value = result.documents
                 if (result.filterSchema.isNotEmpty() && _filterSchema.value.isNullOrEmpty()) {

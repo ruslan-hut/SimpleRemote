@@ -12,7 +12,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -200,10 +202,12 @@ class ItemPlacementFragment: Fragment() {
 
     private fun saveProduct() {
         val currentPlaces = product?.contentItem?.place ?: emptyList()
-        sharedViewModel.setDocumentContent(
-            viewModel.confirmPlace(product, currentPlaces)
-        )
-        findNavController().popBackStack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.setDocumentContent(
+                viewModel.confirmPlace(product, currentPlaces)
+            )
+            findNavController().popBackStack()
+        }
     }
 
 

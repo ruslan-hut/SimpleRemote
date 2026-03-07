@@ -20,7 +20,7 @@ class ItemEditViewModel @Inject constructor(
         this.content = content
     }
 
-    fun confirmQuantity(product: Product?, newQty: String, editNotes: String): List<Content> {
+    suspend fun confirmQuantity(product: Product?, newQty: String, editNotes: String): List<Content> {
         Log.d("RC_ItemEditViewModel", "confirmQuantity code: ${product?.code} qty: $newQty notes: $editNotes")
         if (product == null) return content
         val list = content.toMutableList()

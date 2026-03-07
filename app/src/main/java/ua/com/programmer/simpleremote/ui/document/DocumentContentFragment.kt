@@ -122,7 +122,6 @@ class DocumentContentFragment: Fragment() {
 
         val position = listAdapter?.findProductPosition(product) ?: -1
         if (position >= 0) {
-            listAdapter?.notifyItemChanged(position)
             viewModel.onListScrolled(position)
             recycler?.smoothScrollToPosition(position)
             if (sharedViewModel.placementMode()){
@@ -232,7 +231,7 @@ class DocumentContentFragment: Fragment() {
             private val DiffCallback = object : DiffUtil.ItemCallback<Content>() {
 
                 override fun areItemsTheSame(oldItem: Content, newItem: Content): Boolean {
-                    return oldItem.line == newItem.line
+                    return oldItem.code == newItem.code
                 }
 
                 override fun areContentsTheSame(oldItem: Content, newItem: Content): Boolean {

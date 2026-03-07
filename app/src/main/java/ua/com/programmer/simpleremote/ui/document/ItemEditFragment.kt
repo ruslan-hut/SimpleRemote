@@ -17,7 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.MainActivity
@@ -126,19 +128,23 @@ class ItemEditFragment: Fragment(), MenuProvider {
     private fun saveProduct() {
         val qty = binding?.editQuantity?.text.toString()
         val notes = binding?.editNotes?.text.toString()
-        sharedViewModel.setDocumentContent(
-            viewModel.confirmQuantity(product, qty, notes)
-        )
-        findNavController().popBackStack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.setDocumentContent(
+                viewModel.confirmQuantity(product, qty, notes)
+            )
+            findNavController().popBackStack()
+        }
     }
 
     private fun increaseQuantity() {
         val qty = binding?.editQuantity?.text.toString().toIntOrNull()?.plus(1)?.toString() ?: "1"
         binding?.editQuantity?.setText(qty)
         val notes = binding?.editNotes?.text.toString()
-        sharedViewModel.setDocumentContent(
-            viewModel.confirmQuantity(product, qty, notes)
-        )
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.setDocumentContent(
+                viewModel.confirmQuantity(product, qty, notes)
+            )
+        }
     }
 
     private fun showImageDialog(imageView: ImageView) {

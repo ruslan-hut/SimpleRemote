@@ -22,7 +22,7 @@ class ItemPlacementViewModel @Inject constructor(
         this.content = content
     }
 
-    fun confirmPlace(product: Product?, places: List<Place>): List<Content> {
+    suspend fun confirmPlace(product: Product?, places: List<Place>): List<Content> {
         Log.d("RC_ItemEditViewModel", "confirmQuantity code: ${product?.code} places: $places")
         if (product == null) return content
         val list = content.toMutableList()

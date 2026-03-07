@@ -203,11 +203,10 @@ class SharedViewModel @Inject constructor(
 
     fun setItemChecked(code: String, isChecked: Boolean) {
         val originalList = _content.value ?: emptyList()
-        val list = originalList.map { it.copy() }.toMutableList()
-        val item = list.find { it.code == code }
-        item?.apply {
-            checked = isChecked
-            modified = true
+        val list = originalList.toMutableList()
+        val index = list.indexOfFirst { it.code == code }
+        if (index >= 0) {
+            list[index] = list[index].copy(checked = isChecked, modified = true)
         }
         _content.value = list
         checkContent()

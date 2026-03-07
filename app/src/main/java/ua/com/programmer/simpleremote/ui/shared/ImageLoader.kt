@@ -67,6 +67,8 @@ class ImageLoader @Inject constructor(context: Context) {
             val glideUrl = GlideUrl(url, authHeaders)
             requestManager
                 ?.load(glideUrl)
+                ?.override(view.width.takeIf { it > 0 } ?: 240, view.height.takeIf { it > 0 } ?: 240)
+                ?.centerCrop()
                 ?.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 ?.format(DecodeFormat.PREFER_ARGB_8888)
                 ?.dontAnimate()
@@ -83,6 +85,8 @@ class ImageLoader @Inject constructor(context: Context) {
         requestManager?.let {
             if (imageFile.exists()) {
                 it.load(imageFile)
+                    .override(view.width.takeIf { w -> w > 0 } ?: 240, view.height.takeIf { h -> h > 0 } ?: 240)
+                    .centerCrop()
                     .into(view)
             }
         }
