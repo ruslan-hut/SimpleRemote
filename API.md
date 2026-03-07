@@ -403,7 +403,7 @@ Saves a document with its modified line items back to 1C.
 }
 ```
 
-The `data` field contains the full `Document` object. Only lines with `modified: true` are typically included in the `lines` array.
+The `data` field contains the full `Document` object. The `lines` array always includes all content lines, not just modified ones.
 
 **Response:**
 ```json
@@ -498,29 +498,29 @@ Releases the edit lock on a document.
 ## Data Flow Summary
 
 ```
-App                                     1C Server
- │                                         │
+App                                    1C Server
+ │                                        │
  ├─── POST pst/{userId}  [check] ────────►│  Authenticate
  │◄── token + user options ───────────────┤
- │                                         │
+ │                                        │
  ├─── POST pst/{token}  [documents] ─────►│  List documents
  │◄── document list + filter schema ──────┤
- │                                         │
- ├─── POST pst/{token}  [lockDocument] ──►│  Lock for editing
- │◄── lock result ────────────────────────┤
- │                                         │
+ │                                        │
  ├─── POST pst/{token}  [documentContent]►│  Get line items
  │◄── content lines ──────────────────────┤
- │                                         │
+ │                                        │ 
+ ├─── POST pst/{token}  [lockDocument] ──►│  Lock for editing
+ │◄── lock result ────────────────────────┤
+ │                                        │
  ├─── POST pst/{token}  [barcode] ───────►│  Scan barcode
  │◄── product info ───────────────────────┤
- │                                         │
+ │                                        │
  ├─── POST pst/{token}  [catalog] ───────►│  Browse catalog
  │◄── catalog items ──────────────────────┤
- │                                         │
+ │                                        │
  ├─── POST pst/{token}  [saveDocument] ──►│  Save changes
  │◄── save result ────────────────────────┤
- │                                         │
+ │                                        │
  ├─── POST pst/{token}  [unlockDocument]─►│  Release lock
  │◄── unlock result ──────────────────────┤
 ```
