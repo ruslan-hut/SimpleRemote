@@ -3,7 +3,6 @@ package ua.com.programmer.simpleremote.ui.camera
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.entity.Document

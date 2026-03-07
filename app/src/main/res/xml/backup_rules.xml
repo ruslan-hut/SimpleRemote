@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="database" path="simple_remote_database" />
+    <exclude domain="database" path="simple_remote_database-shm" />
+    <exclude domain="database" path="simple_remote_database-wal" />
+</full-backup-content>

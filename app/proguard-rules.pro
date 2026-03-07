@@ -12,16 +12,13 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve line number information for debugging stack traces (Crashlytics)
+-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Hide the original source file name
+-renamesourcefileattribute SourceFile
 
 -keep class kotlin.Metadata { *; }
--keep class retrofit2.** { *; }
 -keepattributes Exceptions
 
 # Keep generic signature of Call, Response (R8 full mode strips signatures from non-kept items).
