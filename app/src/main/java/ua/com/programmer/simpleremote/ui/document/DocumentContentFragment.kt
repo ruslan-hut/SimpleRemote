@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,8 +27,9 @@ import ua.com.programmer.simpleremote.entity.isEquals
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 
 @AndroidEntryPoint
-class DocumentContentFragment(private val viewModel: DocumentViewModel): Fragment() {
+class DocumentContentFragment: Fragment() {
 
+    private val viewModel: DocumentViewModel by viewModels(ownerProducer = { requireParentFragment() })
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentDocumentContentBinding? = null
     private val binding get() = _binding

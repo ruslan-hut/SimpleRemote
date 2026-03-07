@@ -56,7 +56,7 @@ class DocumentFragment: Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val pagerAdapter = DocumentViewPagerAdapter(this, viewModel)
+        val pagerAdapter = DocumentViewPagerAdapter(this)
 
         binding?.apply {
             container.adapter = pagerAdapter
@@ -246,17 +246,15 @@ class DocumentFragment: Fragment(), MenuProvider {
 
 private class DocumentViewPagerAdapter(
     fragment: Fragment,
-    private val viewModel: DocumentViewModel
 ): FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
-        val fragment: Fragment = when (position) {
-            0 -> DocumentTitleFragment(viewModel)
-            else -> DocumentContentFragment(viewModel)
+        return when (position) {
+            0 -> DocumentTitleFragment()
+            else -> DocumentContentFragment()
         }
-        return fragment
     }
 
 }

@@ -6,13 +6,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
 import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
-import ua.com.programmer.simpleremote.http.client.HttpClientApi
 import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
 import javax.inject.Singleton
@@ -60,20 +57,6 @@ class NetworkModule {
             .addInterceptor(loggingInterceptor)
             .authenticator(authenticator)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideRetrofitBuilder(okHttpClient: OkHttpClient): Retrofit.Builder {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-    }
-
-    @Provides
-    @Singleton
-    fun provideApiService(retrofit: Retrofit): HttpClientApi {
-        return retrofit.create(HttpClientApi::class.java)
     }
 
 }

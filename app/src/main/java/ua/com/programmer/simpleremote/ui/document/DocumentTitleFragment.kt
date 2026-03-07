@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentTitleBinding
@@ -20,8 +21,9 @@ import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 import kotlin.getValue
 
 @AndroidEntryPoint
-class DocumentTitleFragment(private val viewModel: DocumentViewModel): Fragment() {
+class DocumentTitleFragment: Fragment() {
 
+    private val viewModel: DocumentViewModel by viewModels(ownerProducer = { requireParentFragment() })
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var _binding : FragmentDocumentTitleBinding? = null
     private val binding get() = _binding

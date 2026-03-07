@@ -135,6 +135,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2'
 
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.59.2'

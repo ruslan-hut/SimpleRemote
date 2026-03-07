@@ -2,22 +2,28 @@ package ua.com.programmer.simpleremote.firebase
 
 import android.content.Context
 import android.util.Log
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import ua.com.programmer.simpleremote.entity.UserInfo
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : Worker(cont, parameters) {
+class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : CoroutineWorker(cont, parameters) {
 
-    override fun doWork(): Result {
-        deleteOldUserRecords()
-        return Result.success()
+    override suspend fun doWork(): Result {
+        return try {
+            deleteOldUserRecords()
+            Result.success()
+        } catch (e: Exception) {
+            Log.e("RC_DeleteOldUsersWorker", "Error during cleanup: ${e.message}")
+            Result.failure()
+        }
     }
 
-    private fun deleteOldUserRecords() {
+    private suspend fun deleteOldUserRecords() {
         Log.d("RC_DeleteOldUsersWorker", "Deleting old user records...")
         val firebase = FirebaseFirestore.getInstance()
         val usersCollection = firebase.collection("users")
@@ -27,31 +33,25 @@ class DeleteOldUsersWorker(cont: Context, parameters: WorkerParameters) : Worker
         calendar.add(Calendar.DAY_OF_YEAR, -30) // delete records older than 30 days
         val thresholdDate = calendar.time
 
-        usersCollection.get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val userInfo = document.toObject(UserInfo::class.java)
-                    if (userInfo.loginDate.isEmpty()) continue
-                    val loginDate = try {
-                        dateFormat.parse(userInfo.loginDate)
-                    } catch (e: Exception) {
-                        Log.e("RC_DeleteOldUsersWorker", "Error parsing date: ${userInfo.loginDate}; ${e.message}")
-                        null
-                    }
+        val documents = usersCollection.get().await()
+        for (document in documents) {
+            val userInfo = document.toObject(UserInfo::class.java)
+            if (userInfo.loginDate.isEmpty()) continue
+            val loginDate = try {
+                dateFormat.parse(userInfo.loginDate)
+            } catch (e: Exception) {
+                Log.e("RC_DeleteOldUsersWorker", "Error parsing date: ${userInfo.loginDate}; ${e.message}")
+                null
+            }
 
-                    if (loginDate != null && loginDate.before(thresholdDate)) {
-                        usersCollection.document(document.id).delete()
-                            .addOnSuccessListener {
-                                Log.d("RC_DeleteOldUsersWorker", "Deleted: ${document.id}")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("RC_DeleteOldUsersWorker", "Error deleting: ${document.id}, ${e.message}")
-                            }
-                    }
+            if (loginDate != null && loginDate.before(thresholdDate)) {
+                try {
+                    usersCollection.document(document.id).delete().await()
+                    Log.d("RC_DeleteOldUsersWorker", "Deleted: ${document.id}")
+                } catch (e: Exception) {
+                    Log.e("RC_DeleteOldUsersWorker", "Error deleting: ${document.id}, ${e.message}")
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e("RC_DeleteOldUsersWorker", "Error getting documents: ${e.message}")
-            }
+        }
     }
 }

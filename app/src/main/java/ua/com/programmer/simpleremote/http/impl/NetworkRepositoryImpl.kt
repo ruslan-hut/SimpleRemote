@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getBaseUrl
 import ua.com.programmer.simpleremote.entity.Catalog
@@ -44,7 +46,7 @@ import javax.inject.Singleton
 class NetworkRepositoryImpl @Inject constructor(
     connectionRepo: ConnectionSettingsRepository,
     tokenRefresh: TokenRefresh,
-    private val retrofitBuilder: Retrofit.Builder,
+    private val okHttpClient: OkHttpClient,
     private val httpAuthInterceptor: HttpAuthInterceptor,
 ) : NetworkRepository {
 
@@ -63,7 +65,7 @@ class NetworkRepositoryImpl @Inject constructor(
     private val logger = FirebaseCrashlytics.getInstance()
 
     init {
-        tokenRefresh.setRefreshToken { runBlocking { refreshToken() } }
+        tokenRefresh.setRefreshToken { runBlocking(Dispatchers.IO) { refreshToken() } }
 
         _activeConnection.filterNotNull().onEach { settings ->
             Log.w("RC_NetworkRepository", "connection changed: ${settings.description}")
@@ -318,7 +320,11 @@ class NetworkRepositoryImpl @Inject constructor(
         Log.d("RC_NetworkRepository", "init connection; base url: $baseUrl")
         try {
             this.baseUrl = baseUrl
-            val retrofit = retrofitBuilder.baseUrl(baseUrl).build()
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .baseUrl(baseUrl)
+                .build()
             apiService = retrofit.create(HttpClientApi::class.java)
 
             val updatedOptions = fetchUserOptions(settings)
@@ -348,11 +354,13 @@ class NetworkRepositoryImpl @Inject constructor(
 
     private suspend fun refreshToken(tag: String = "interceptor"): String {
         if (tokenCounter.incrementAndGet() > maxTokenRefresh) {
+            tokenCounter.set(0)
             throw Exception("Token refresh limit reached")
         }
         val connection = _activeConnection.value ?: throw Exception("No active connection settings")
         val response = executeCheck(connection) ?: throw Exception("$tag: Response is null")
         Log.d("RC_NetworkRepository", "new token: ${response.token}")
+        tokenCounter.set(0)
         _activeOptions.apply {
             value = value.copy(isEmpty = false, userId = connection.guid, token = response.token)
         }
