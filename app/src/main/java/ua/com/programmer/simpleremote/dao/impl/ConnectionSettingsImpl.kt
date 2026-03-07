@@ -1,25 +1,27 @@
 package ua.com.programmer.simpleremote.dao.impl
 
+import androidx.room.withTransaction
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ua.com.programmer.simpleremote.BuildConfig
+import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.isDemo
 import ua.com.programmer.simpleremote.entity.UserInfo
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ConnectionSettingsImpl @Inject constructor(
-   private val connectionSettingsDao: ConnectionSettingsDao
+   private val connectionSettingsDao: ConnectionSettingsDao,
+   private val database: AppDatabase,
 ) : ConnectionSettingsRepository {
 
     override val currentConnection = connectionSettingsDao.getCurrent()
@@ -49,8 +51,10 @@ class ConnectionSettingsImpl @Inject constructor(
 
     override suspend fun setCurrent(guid: String) {
         if (guid.isEmpty()) return
-        connectionSettingsDao.resetIsCurrent()
-        connectionSettingsDao.setIsCurrent(guid)
+        database.withTransaction {
+            connectionSettingsDao.resetIsCurrent()
+            connectionSettingsDao.setIsCurrent(guid)
+        }
     }
 
     override suspend fun checkAvailableConnection() {
@@ -68,9 +72,7 @@ class ConnectionSettingsImpl @Inject constructor(
     }
 
     private fun getCurrentDate(): String {
-        val currentDate = Date()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return dateFormat.format(currentDate)
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
     }
 
     private fun writeUserInfo(connection: ConnectionSettings) {

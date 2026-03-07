@@ -117,12 +117,10 @@ class DocumentViewModel @Inject constructor(
             val msg = networkRepository.saveDocument(document.copy(
                 type = type,
             ))
-            withContext(Dispatchers.Main) {
-                if (msg == "OK") {
-                    onSuccess()
-                }else{
-                    onError(msg)
-                }
+            if (msg == "OK") {
+                onSuccess()
+            } else {
+                onError(msg)
             }
             _isLoading.value = false
         }

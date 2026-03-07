@@ -38,9 +38,7 @@ class ConnectionViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 connectionRepo.save(connection)
             }
-            withContext(Dispatchers.Main) {
-                afterSave()
-            }
+            afterSave()
         }
     }
 
@@ -49,9 +47,7 @@ class ConnectionViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 connectionRepo.delete(guid)
             }
-            withContext(Dispatchers.Main) {
-                afterDelete()
-            }
+            afterDelete()
         }
     }
 

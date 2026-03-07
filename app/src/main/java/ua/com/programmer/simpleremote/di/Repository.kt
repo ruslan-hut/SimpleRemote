@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ua.com.programmer.simpleremote.BuildConfig
+import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
 import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
 import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
@@ -20,8 +21,8 @@ class Repository {
 
     @Provides
     @Singleton
-    fun provideConnectionRepository(dao: ConnectionSettingsDao): ConnectionSettingsRepository {
-        return ConnectionSettingsImpl(dao)
+    fun provideConnectionRepository(dao: ConnectionSettingsDao, database: AppDatabase): ConnectionSettingsRepository {
+        return ConnectionSettingsImpl(dao, database)
     }
 
 }

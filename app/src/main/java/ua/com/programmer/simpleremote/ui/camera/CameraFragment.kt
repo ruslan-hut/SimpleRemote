@@ -5,13 +5,12 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -27,16 +26,17 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.common.util.concurrent.ListenableFuture
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentCameraBinding
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 import java.io.File
-import java.lang.Exception
 import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import javax.annotation.Nonnull
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -54,6 +54,15 @@ class CameraFragment: Fragment() {
     private var outputDirectory: File? = null
     private var imageFileName: String? = null
     private var toneGenerator: ToneGenerator? = null
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        viewModel.setPermissionGranted(granted)
+        if (granted) {
+            setupCamera(viewModel.scanMode.value == true)
+        }
+    }
 
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
         ProcessCameraProvider.getInstance(requireContext())
@@ -81,7 +90,7 @@ class CameraFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (!viewModel.permissionGranted) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), 1)
+            permissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
         outputDirectory = requireContext().filesDir
@@ -195,15 +204,14 @@ class CameraFragment: Fragment() {
     }
 
     private fun stopCamera(onStop: () -> Unit) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post(Runnable {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             try {
                 cameraProvider.get().unbindAll()
                 onStop()
             } catch (e: Exception) {
                 Log.e("RC_CameraFragment", "stopCamera: $e")
             }
-        })
+        }
     }
 
     private fun makeBeep() {
@@ -237,18 +245,6 @@ class CameraFragment: Fragment() {
                 Log.e("RC_CameraFragment", "Image capture failed: ${exception.message}")
             }
         })
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        @Nonnull permissions: Array<String>,
-        @Nonnull grantResults: IntArray
-    ) {
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            viewModel.setPermissionGranted(true)
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onDestroyView() {

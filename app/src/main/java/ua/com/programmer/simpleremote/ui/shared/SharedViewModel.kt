@@ -45,7 +45,8 @@ class SharedViewModel @Inject constructor(
     private val _product = MutableLiveData<Product>()
     val product get() = _product
 
-    val barcode = MutableLiveData<String>()
+    private val _barcode = MutableLiveData<String>()
+    val barcode: LiveData<String> get() = _barcode
 
     private val _selectedCatalogItem = MutableLiveData<Catalog?>()
     val selectedCatalogItem: LiveData<Catalog?> get() = _selectedCatalogItem
@@ -145,24 +146,21 @@ class SharedViewModel @Inject constructor(
     }
 
     fun addProduct(catalog: Catalog, onResult: () -> Unit){
-        if (editMode()) {
-            val list = _content.value?.toMutableList() ?: mutableListOf()
-            val item = list.find { it.code == catalog.code }
-            if (item != null) {
-                // Update existing item
-                item.apply {
-                    collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
-                    modified = true
-                    checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
-                }
-            } else {
-                val newContent = catalog.toContent(list.size+1)
-                list.add(newContent)
+        if (!editMode()) return
+        val list = _content.value?.toMutableList() ?: mutableListOf()
+        val item = list.find { it.code == catalog.code }
+        if (item != null) {
+            item.apply {
+                collect = (collect.toIntOrNull() ?: 0).plus(1).toString()
+                modified = true
+                checked = (collect.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
             }
-            _content.value = list
-            checkContent()
+        } else {
+            val newContent = catalog.toContent(list.size+1)
+            list.add(newContent)
         }
-
+        _content.value = list
+        checkContent()
         onResult()
     }
 
@@ -231,7 +229,7 @@ class SharedViewModel @Inject constructor(
 
     fun onBarcodeRead(value: String) {
         if (value.isBlank() || value.length < 10) return
-        barcode.value = value
+        _barcode.value = value
     }
 
     fun confirmWithScan(): Boolean {
@@ -252,7 +250,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun clearBarcode() {
-        barcode.value = ""
+        _barcode.value = ""
     }
 
     fun onImageCaptured(imagePath: String) {
