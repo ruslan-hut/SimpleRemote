@@ -88,6 +88,8 @@ class DocumentListFragment: Fragment(), MenuProvider  {
         val recycler = binding.documentsRecycler
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
+        recycler.setItemViewCacheSize(20)
+        recycler.setHasFixedSize(true)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

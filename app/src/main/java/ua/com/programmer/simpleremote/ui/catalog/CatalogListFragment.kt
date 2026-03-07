@@ -85,6 +85,8 @@ class CatalogListFragment: Fragment() {
         val recycler = binding.listRecycler
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
+        recycler.setItemViewCacheSize(20)
+        recycler.setHasFixedSize(true)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -65,6 +65,8 @@ class DocumentContentFragment: Fragment() {
         recycler?.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            setItemViewCacheSize(20)
+            setHasFixedSize(true)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
