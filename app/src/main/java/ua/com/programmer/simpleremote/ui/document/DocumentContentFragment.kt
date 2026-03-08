@@ -193,6 +193,9 @@ class DocumentContentFragment: Fragment() {
                         showImageDialog(itemImage)
                     }
 
+                    val restValue = item.rest.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    lowRestOverlay.visibility = if (restValue <= 0) View.VISIBLE else View.GONE
+                    uncheckedOverlay.visibility = if (item.checked) View.GONE else View.VISIBLE
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
                     isChecked.setOnCheckedChangeListener { view, isChecked ->
