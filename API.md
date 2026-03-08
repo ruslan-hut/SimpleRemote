@@ -386,24 +386,59 @@ Saves a document with its modified line items back to 1C.
   "data": {
     "guid": "doc-guid-1",
     "type": "sales",
+    "isProcessed": 0,
+    "isDeleted": 0,
+    "title": "Sales Order",
     "number": "00042",
     "date": "2025-01-15",
+    "company": "My Company",
+    "contractor": "Customer LLC",
+    "warehouse": "Main Warehouse",
+    "sum": "1500.00",
+    "checked": false,
     "notes": "Updated by SimpleRemote",
+    "field1": { "meta": "warehouse", "type": "ref", "name": "Warehouse", "description": "Main Warehouse", "code": "WH-001", "value": "Main Warehouse" },
+    "field2": { "meta": "", "type": "", "name": "", "description": "", "code": "", "value": "" },
+    "field3": { "meta": "", "type": "", "name": "", "description": "", "code": "", "value": "" },
+    "field4": { "meta": "", "type": "", "name": "", "description": "", "code": "", "value": "" },
+    "locked": true,
+    "lockedBy": "Warehouse Operator",
+    "repeated": "",
+    "currency": "UAH",
+    "cacheGUID": "",
+    "placesCollected": "0",
+    "modified": false,
     "lines": [
       {
         "line": 1,
         "code": "SKU-001",
+        "code2": "4820000001",
+        "code3": "item-guid",
+        "art": "ART-001",
+        "description": "Widget A",
+        "unit": "pcs",
+        "quantity": "10",
+        "rest": "25",
+        "price": "150.00",
+        "sum": "1500.00",
+        "image": "",
         "collect": "10",
-        "checked": true,
         "notes": "",
-        "encodedImage": ""
+        "checked": true,
+        "modified": true,
+        "userImage": "",
+        "encodedImage": "",
+        "place": [
+          { "quantity": 5, "code": "A1" },
+          { "quantity": 5, "code": "B2" }
+        ]
       }
     ]
   }
 }
 ```
 
-The `data` field contains the full `Document` object. The `lines` array always includes all content lines, not just modified ones.
+The `data` field contains the full `Document` object serialized as JSON. The `lines` array always includes all content lines, not just modified ones.
 
 **Response:**
 ```json
