@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
@@ -45,8 +48,8 @@ class SharedViewModel @Inject constructor(
     private val _product = MutableStateFlow<Product?>(null)
     val product: StateFlow<Product?> get() = _product
 
-    private val _barcode = MutableStateFlow("")
-    val barcode: StateFlow<String> get() = _barcode
+    private val _barcode = Channel<String>(Channel.BUFFERED)
+    val barcode: Flow<String> = _barcode.receiveAsFlow()
 
     private val _selectedCatalogItem = MutableStateFlow<Catalog?>(null)
     val selectedCatalogItem: StateFlow<Catalog?> get() = _selectedCatalogItem
@@ -233,8 +236,8 @@ class SharedViewModel @Inject constructor(
     }
 
     fun onBarcodeRead(value: String) {
-        if (value.isBlank() || value.length < 10) return
-        _barcode.value = value
+        if (value.isBlank()) return
+        _barcode.trySend(value)
     }
 
     fun confirmWithScan(): Boolean {
@@ -254,8 +257,9 @@ class SharedViewModel @Inject constructor(
         return mode == "edit" || mode.isEmpty()
     }
 
+    @Deprecated("No longer needed — Channel delivers each barcode exactly once")
     fun clearBarcode() {
-        _barcode.value = ""
+        // no-op: Channel-based delivery consumes values automatically
     }
 
     fun onImageCaptured(imagePath: String) {

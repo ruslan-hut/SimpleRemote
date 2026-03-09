@@ -86,17 +86,14 @@ class ItemPlacementFragment: Fragment() {
                 }
                 launch {
                     sharedViewModel.barcode.collect {
-                        if (it.isNotEmpty()) {
-                            val matchingPlace = adapter.places.find { place -> place.code == it }
-                            if (matchingPlace != null) {
-                                matchingPlace.quantity += 1
-                            } else {
-                                adapter.places.add(Place(quantity = 1, code = it))
-                            }
-                            adapter.notifyDataSetChanged()
-                            sharedViewModel.clearBarcode()
-                            product?.contentItem?.place = adapter.places
+                        val matchingPlace = adapter.places.find { place -> place.code == it }
+                        if (matchingPlace != null) {
+                            matchingPlace.quantity += 1
+                        } else {
+                            adapter.places.add(Place(quantity = 1, code = it))
                         }
+                        adapter.notifyDataSetChanged()
+                        product?.contentItem?.place = adapter.places
                     }
                 }
             }

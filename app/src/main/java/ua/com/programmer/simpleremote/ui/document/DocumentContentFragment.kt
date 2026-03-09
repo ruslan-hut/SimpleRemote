@@ -95,16 +95,12 @@ class DocumentContentFragment: Fragment() {
                 }
                 launch {
                     sharedViewModel.barcode.collect {
-                        if (it.isNotEmpty()) {
-                            if (!viewModel.isEditable.value) {
-                                showNotEditableWarning()
-                            } else if (sharedViewModel.placementMode()) {
-                                viewModel.onBarcodeRead(it, ::scrollToProduct)
-                            } else if (sharedViewModel.editMode()) {
-                                viewModel.addProduct(it, ::scrollToProduct)
-                            }
-
-                            sharedViewModel.clearBarcode()
+                        if (!viewModel.isEditable.value) {
+                            showNotEditableWarning()
+                        } else if (sharedViewModel.placementMode()) {
+                            viewModel.onBarcodeRead(it, ::scrollToProduct)
+                        } else if (sharedViewModel.editMode()) {
+                            viewModel.addProduct(it, ::scrollToProduct)
                         }
                     }
                 }

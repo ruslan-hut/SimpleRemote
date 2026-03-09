@@ -75,17 +75,13 @@ class ItemEditFragment: Fragment(), MenuProvider {
                 }
                 launch {
                     sharedViewModel.barcode.collect {
-                        if (it.isNotEmpty()) {
-                            if (sharedViewModel.collectMode() && it == product?.barcode){
-                                if (sharedViewModel.confirmWithScan()) {
-                                    binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
-                                    saveProduct()
-                                } else {
-                                    increaseQuantity()
-                                }
+                        if (sharedViewModel.collectMode() && it == product?.barcode) {
+                            if (sharedViewModel.confirmWithScan()) {
+                                binding?.editQuantity?.setText(binding?.collectEdit?.text.toString())
+                                saveProduct()
+                            } else {
+                                increaseQuantity()
                             }
-
-                            sharedViewModel.clearBarcode()
                         }
                     }
                 }

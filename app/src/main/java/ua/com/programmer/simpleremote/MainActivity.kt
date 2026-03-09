@@ -2,7 +2,6 @@ package ua.com.programmer.simpleremote
 
 import android.os.Bundle
 import android.util.Log
-import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.TextView
@@ -47,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var backPressedTime: Long = 0
     private var barcode = StringBuilder()
     private var lastKeystrokeTime = 0L
+    private var barcodeConsumed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,44 +138,61 @@ class MainActivity : AppCompatActivity() {
     /**
      * Intercepts key events to capture input from a barcode scanner.
      *
-     * This method checks if the incoming [KeyEvent] is from a recognized scanner device.
-     * If it is, it captures the keystrokes to assemble a barcode string.
+     * Barcode scanners connected as external keyboards send a rapid burst of
+     * keystrokes followed by an ENTER or TAB terminator. This method buffers
+     * those keystrokes using a timeout (200 ms) to separate consecutive scans.
      *
-     * The logic is as follows:
-     * 1. Identify if the event source is a scanner using [isScannerDevice]. If not, defer to the default system handling.
-     * 2. On `ACTION_DOWN`, append the character to an internal `barcode` buffer. It also implements a timeout (60ms) to clear the buffer between separate scans, ensuring that partial scans or delayed inputs don't corrupt the next valid scan.
-     * 3. On `ACTION_UP` for an `ENTER` or `TAB` key, it considers the barcode scan complete. The assembled barcode string is then passed to the [SharedViewModel.onBarcodeRead] for processing, and the buffer is cleared.
-     * 4. For all events handled by the scanner logic, it returns `true` to indicate that the event has been consumed and should not be propagated further.
-     *
-     * @param event The [KeyEvent] to be dispatched.
-     * @return `true` if the event was handled by the scanner logic, otherwise the result of `super.dispatchKeyEvent(event)`.
+     * When a terminator arrives and the buffer contains at least
+     * [MIN_BARCODE_LENGTH] characters, the assembled string is forwarded to
+     * [SharedViewModel.onBarcodeRead] and both ACTION_DOWN and ACTION_UP for
+     * the terminator are consumed so they never reach the focused view.
      */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
 
         if (event.action == KeyEvent.ACTION_DOWN) {
+            val isTerminator =
+                event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB
+
+            if (isTerminator) {
+                if (barcode.length >= MIN_BARCODE_LENGTH) {
+                    Log.d("RC_MainActivity", "barcode: $barcode")
+                    viewModel.onBarcodeRead(barcode.toString())
+                    barcode.clear()
+                    barcodeConsumed = true
+                    return true
+                }
+                barcode.clear()
+                barcodeConsumed = false
+                return super.dispatchKeyEvent(event)
+            }
+
             val currentTime = System.currentTimeMillis()
-            if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > 60) {
+            if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > SCANNER_TIMEOUT_MS) {
                 barcode.clear()
             }
 
             val char = event.unicodeChar.toChar()
-            if (char.isLetterOrDigit()) {
+            if (char.code in 0x20..0x7E) {
                 barcode.append(char)
+                lastKeystrokeTime = currentTime
             }
-            lastKeystrokeTime = currentTime
+        }
 
-        } else if (event.action == KeyEvent.ACTION_UP) {
+        if (event.action == KeyEvent.ACTION_UP) {
             if (event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB) {
-                if (barcode.isNotEmpty()) {
-                    Log.d("RC_MainActivity", "barcode: $barcode")
-                    viewModel.onBarcodeRead(barcode.toString())
-                    barcode.clear()
+                if (barcodeConsumed) {
+                    barcodeConsumed = false
+                    return true
                 }
-                return true
             }
         }
 
         return super.dispatchKeyEvent(event)
+    }
+
+    companion object {
+        private const val SCANNER_TIMEOUT_MS = 200L
+        private const val MIN_BARCODE_LENGTH = 4
     }
 
     /**
