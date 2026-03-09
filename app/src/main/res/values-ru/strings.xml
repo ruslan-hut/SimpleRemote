@@ -85,4 +85,5 @@
     <string name="edit_unlock_progress">Освобождаем документ…</string>
     <string name="edit_unlock_success">Документ освобождён</string>
     <string name="edit_unlock_error">Не удалось освободить документ: %1$s</string>
+    <string name="warn_not_editable">Документ не в режиме редактирования</string>
 </resources>

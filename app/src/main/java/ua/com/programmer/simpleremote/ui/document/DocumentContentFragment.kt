@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -95,9 +96,11 @@ class DocumentContentFragment: Fragment() {
                 launch {
                     sharedViewModel.barcode.collect {
                         if (it.isNotEmpty()) {
-                            if (sharedViewModel.placementMode()){
+                            if (!viewModel.isEditable.value) {
+                                showNotEditableWarning()
+                            } else if (sharedViewModel.placementMode()) {
                                 viewModel.onBarcodeRead(it, ::scrollToProduct)
-                            }else if(sharedViewModel.editMode()){
+                            } else if (sharedViewModel.editMode()) {
                                 viewModel.addProduct(it, ::scrollToProduct)
                             }
 
@@ -107,6 +110,15 @@ class DocumentContentFragment: Fragment() {
                 }
             }
         }
+    }
+
+    private fun showNotEditableWarning() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setMessage(R.string.warn_not_editable)
+            .setCancelable(true)
+            .create()
+        dialog.show()
+        dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1500)
     }
 
     private fun openProductScreen(product: Product) {

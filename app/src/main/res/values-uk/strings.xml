@@ -85,4 +85,5 @@
     <string name="edit_unlock_progress">Звільняємо документ…</string>
     <string name="edit_unlock_success">Документ звільнено</string>
     <string name="edit_unlock_error">Не вдалось звільнити документ: %1$s</string>
+    <string name="warn_not_editable">Документ не в режимі редагування</string>
 </resources>
