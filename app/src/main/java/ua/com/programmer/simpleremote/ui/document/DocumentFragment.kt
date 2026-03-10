@@ -237,12 +237,16 @@ class DocumentFragment: Fragment(), MenuProvider {
 
     private fun onSuccess() {
         sharedViewModel.setDocumentModified(false)
-        AlertDialog.Builder(requireContext())
-            .setMessage(R.string.toast_saved)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                findNavController().popBackStack()
-            }
-            .show()
+        if (sharedViewModel.autoCloseDocument()) {
+            findNavController().popBackStack()
+        } else {
+            AlertDialog.Builder(requireContext())
+                .setMessage(R.string.toast_saved)
+                .setPositiveButton(android.R.string.ok) { d, _ ->
+                    d.dismiss()
+                }
+                .show()
+        }
     }
 
     private fun onError(message: String) {

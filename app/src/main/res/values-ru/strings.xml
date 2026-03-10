@@ -106,4 +106,15 @@
     <string name="scanner_test_scan_number">Скан #%1$d</string>
     <string name="scanner_test_length">Длина: %1$d</string>
     <string name="scanner_test_raw">Оригинал: %1$s</string>
+    <string name="diag_section_title">Диагностика</string>
+    <string name="diag_description">Запись событий клавиш и данных распознавания штрихкодов для устранения неполадок. Включите, сканируйте как обычно, затем экспортируйте данные.</string>
+    <string name="diag_toggle">Записывать диагностику</string>
+    <string name="diag_status_idle">Запись не ведётся</string>
+    <string name="diag_status_recording">Запись… %1$d событий</string>
+    <string name="diag_status_stopped">Остановлено. %1$d событий записано</string>
+    <string name="diag_copy_clipboard">Копировать в буфер</string>
+    <string name="diag_upload_firebase">Отправить разработчику</string>
+    <string name="diag_no_data">Нет записанных данных</string>
+    <string name="diag_uploaded">Диагностика отправлена</string>
+    <string name="diag_upload_error">Не удалось отправить диагностику</string>
 </resources>

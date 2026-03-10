@@ -209,6 +209,17 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    fun setItemDeleted(code: String) {
+        val list = _content.value.toMutableList()
+        val index = list.indexOfFirst { it.code == code }
+        if (index >= 0) {
+            list[index] = list[index].copy(collect = "0", checked = true, modified = true)
+        }
+        _content.value = list
+        checkContent()
+        setDocumentModified(true)
+    }
+
     fun setItemChecked(code: String, isChecked: Boolean) {
         val list = _content.value.toMutableList()
         val index = list.indexOfFirst { it.code == code }
@@ -250,6 +261,10 @@ class SharedViewModel @Inject constructor(
 
     fun placementMode(): Boolean {
         return _userOptions.value?.mode == "placement"
+    }
+
+    fun autoCloseDocument(): Boolean {
+        return _userOptions.value?.autoCloseDocument == true
     }
 
     fun editMode(): Boolean {

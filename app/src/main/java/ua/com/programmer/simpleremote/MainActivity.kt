@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
 import ua.com.programmer.simpleremote.firebase.DeleteOldUsersWorker
+import ua.com.programmer.simpleremote.settings.ScannerDiagnostics
 import ua.com.programmer.simpleremote.settings.ScannerSettings
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 import java.util.concurrent.TimeUnit
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
 
     private lateinit var scannerSettings: ScannerSettings
+    lateinit var diagnostics: ScannerDiagnostics
+        private set
     private var keyEventListener: ((KeyEvent) -> Boolean)? = null
 
     private var backPressedTime: Long = 0
@@ -56,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 
         scannerSettings = ScannerSettings(this)
+        diagnostics = ScannerDiagnostics(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -113,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                         textVersion.text = textUserID
                         val textAccount = header.findViewById<TextView>(R.id.nav_header_text2)
                         textAccount.text = it.description
+                        diagnostics.deviceId = it.guid
                     }
                 }
             }
@@ -162,13 +167,17 @@ class MainActivity : AppCompatActivity() {
             if (listener(event)) return true
         }
 
+        diagnostics.recordKeyEvent(event)
+
         if (event.action == KeyEvent.ACTION_DOWN) {
             val isTerminator = scannerSettings.isTerminator(event.keyCode)
 
             if (isTerminator) {
                 if (barcode.length >= scannerSettings.minBarcodeLength) {
-                    val cleaned = scannerSettings.cleanBarcode(barcode.toString())
+                    val raw = barcode.toString()
+                    val cleaned = scannerSettings.cleanBarcode(raw)
                     Log.d("RC_MainActivity", "barcode: $cleaned")
+                    diagnostics.recordDetection(raw, cleaned, success = true)
                     viewModel.onBarcodeRead(cleaned)
                     barcode.clear()
                     barcodeConsumed = true
@@ -178,11 +187,13 @@ class MainActivity : AppCompatActivity() {
                 // terminator to prevent TAB from switching ViewPager2 tabs.
                 if (barcode.isNotEmpty()) {
                     Log.d("RC_MainActivity", "barcode too short: $barcode (${barcode.length} < ${scannerSettings.minBarcodeLength})")
+                    diagnostics.recordDetection(barcode.toString(), "", success = false)
                     barcode.clear()
                     barcodeConsumed = false
                     return true
                 }
                 // Buffer empty — normal keyboard TAB/ENTER, let it through
+                diagnostics.recordNote("terminator pass-through (empty buffer)")
                 barcode.clear()
                 barcodeConsumed = false
                 return super.dispatchKeyEvent(event)
@@ -190,6 +201,7 @@ class MainActivity : AppCompatActivity() {
 
             val currentTime = System.currentTimeMillis()
             if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > scannerSettings.keystrokeTimeout) {
+                diagnostics.recordBuffer("timeout_clear", barcode.toString(), barcode.length)
                 barcode.clear()
             }
 
@@ -197,6 +209,7 @@ class MainActivity : AppCompatActivity() {
             if (char.code in 0x20..0x7E) {
                 barcode.append(char)
                 lastKeystrokeTime = currentTime
+                diagnostics.recordBuffer("append", barcode.toString(), barcode.length)
             }
         }
 
@@ -227,6 +240,12 @@ class MainActivity : AppCompatActivity() {
         window.decorView.clearFocus()
 
         binding.drawerLayout.requestFocus()
+    }
+
+    override fun onDestroy() {
+        diagnostics.stop()
+        diagnostics.clear()
+        super.onDestroy()
     }
 
     private fun scheduleUserCleanupWorker() {

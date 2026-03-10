@@ -105,4 +105,15 @@
     <string name="scanner_test_scan_number">Scan #%1$d</string>
     <string name="scanner_test_length">Length: %1$d</string>
     <string name="scanner_test_raw">Raw: %1$s</string>
+    <string name="diag_section_title">Diagnostics</string>
+    <string name="diag_description">Record detailed key events and barcode detection data for troubleshooting. Enable, use the scanner normally, then export the data.</string>
+    <string name="diag_toggle">Record diagnostics</string>
+    <string name="diag_status_idle">Not recording</string>
+    <string name="diag_status_recording">Recording… %1$d events</string>
+    <string name="diag_status_stopped">Stopped. %1$d events recorded</string>
+    <string name="diag_copy_clipboard">Copy to clipboard</string>
+    <string name="diag_upload_firebase">Send to developer</string>
+    <string name="diag_no_data">No diagnostic data recorded</string>
+    <string name="diag_uploaded">Diagnostics sent</string>
+    <string name="diag_upload_error">Failed to send diagnostics</string>
 </resources>

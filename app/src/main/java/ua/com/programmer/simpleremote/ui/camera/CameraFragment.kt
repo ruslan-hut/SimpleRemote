@@ -212,6 +212,7 @@ class CameraFragment: Fragment() {
     }
 
     private fun stopCamera(onStop: () -> Unit) {
+        if (view == null) return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             try {
                 cameraProvider.get().unbindAll()

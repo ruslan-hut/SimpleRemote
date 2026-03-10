@@ -1,5 +1,8 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -15,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -79,6 +84,58 @@ class DocumentContentFragment: Fragment() {
                 }
             })
         }
+
+        val deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete)!!
+        val backgroundPaint = Paint().apply { color = 0xFFF44336.toInt() }
+
+        val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ) = false
+
+            override fun isItemViewSwipeEnabled(): Boolean {
+                return viewModel.isEditable.value
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.absoluteAdapterPosition
+                val item = listAdapter?.currentList?.getOrNull(position) ?: return
+                sharedViewModel.setItemDeleted(item.code)
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                if (dX < 0) {
+                    val bg = RectF(
+                        itemView.right + dX,
+                        itemView.top.toFloat(),
+                        itemView.right.toFloat(),
+                        itemView.bottom.toFloat()
+                    )
+                    c.drawRect(bg, backgroundPaint)
+
+                    val iconSize = deleteIcon.intrinsicHeight
+                    val iconTop = itemView.top + (itemView.height - iconSize) / 2
+                    val iconMargin = (itemView.height - iconSize) / 2
+                    val iconLeft = itemView.right - iconMargin - iconSize
+                    val iconRight = itemView.right - iconMargin
+                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconTop + iconSize)
+                    deleteIcon.draw(c)
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+        ItemTouchHelper(swipeCallback).attachToRecyclerView(recycler)
 
         binding?.retryButton?.setOnClickListener {
             binding?.emptyState?.visibility = View.GONE
@@ -203,7 +260,7 @@ class DocumentContentFragment: Fragment() {
 
                     val restValue = item.rest.replace(",", ".").toDoubleOrNull() ?: 0.0
                     lowRestOverlay.visibility = if (restValue <= 0) View.VISIBLE else View.GONE
-                    uncheckedOverlay.visibility = if (item.checked) View.GONE else View.VISIBLE
+                    uncheckedOverlay.visibility = if (!item.checked && !item.modified) View.VISIBLE else View.GONE
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
                     isChecked.setOnCheckedChangeListener { view, isChecked ->

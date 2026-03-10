@@ -10,6 +10,7 @@ data class UserOptions(
     val mode: String = "", // support: input; inventory; assemble
     val loadImages: Boolean = false,
     val confirmWithScan: Boolean = false, // allow confirm product quantity with barcode scan
+    val autoCloseDocument: Boolean = false, // close document fragment after successful save
     val user: String = "",
     val token: String = "",
     val catalog: List<ListType> = listOf(),
