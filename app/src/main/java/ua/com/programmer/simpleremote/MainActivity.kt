@@ -174,6 +174,15 @@ class MainActivity : AppCompatActivity() {
                     barcodeConsumed = true
                     return true
                 }
+                // Buffer had some chars but too few — still consume the
+                // terminator to prevent TAB from switching ViewPager2 tabs.
+                if (barcode.isNotEmpty()) {
+                    Log.d("RC_MainActivity", "barcode too short: $barcode (${barcode.length} < ${scannerSettings.minBarcodeLength})")
+                    barcode.clear()
+                    barcodeConsumed = false
+                    return true
+                }
+                // Buffer empty — normal keyboard TAB/ENTER, let it through
                 barcode.clear()
                 barcodeConsumed = false
                 return super.dispatchKeyEvent(event)
