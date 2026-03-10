@@ -86,4 +86,24 @@
     <string name="edit_unlock_success">Документ освобождён</string>
     <string name="edit_unlock_error">Не удалось освободить документ: %1$s</string>
     <string name="warn_not_editable">Документ не в режиме редактирования</string>
+    <string name="scanner_settings_title">Настройки сканера</string>
+    <string name="scanner_timeout_hint">Таймаут между нажатиями (мс)</string>
+    <string name="scanner_timeout_description">Максимальная пауза между нажатиями клавиш для распознавания сканирования. Увеличьте для Bluetooth сканеров (50–500 мс, по умолчанию 200)</string>
+    <string name="scanner_min_length_hint">Минимальная длина штрихкода</string>
+    <string name="scanner_min_length_description">Минимальное количество символов для распознавания сканирования. Уменьшите для коротких штрихкодов типа EAN-8 (1–20, по умолчанию 4)</string>
+    <string name="scanner_terminator_hint">Клавиша завершения</string>
+    <string name="scanner_terminator_both">Обе</string>
+    <string name="scanner_prefix_hint">Префикс для удаления</string>
+    <string name="scanner_suffix_hint">Суффикс для удаления</string>
+    <string name="scanner_prefix_suffix_description">Некоторые сканеры добавляют префикс/суффикс к штрихкоду. Они будут удалены перед обработкой</string>
+    <string name="scanner_test_title">Тест сканера</string>
+    <string name="scanner_test_result">Распознанный штрихкод</string>
+    <string name="scanner_test_waiting">Отсканируйте штрихкод для теста…</string>
+    <string name="scanner_test_buffer">Текущий буфер</string>
+    <string name="scanner_test_buffer_info">%1$d символов (мин: %2$d)</string>
+    <string name="scanner_test_log">Журнал событий клавиш</string>
+    <string name="scanner_test_settings_summary">Таймаут: %1$d мс | Мин. длина: %2$d | Завершение: %3$s | Префикс: %4$s | Суффикс: %5$s</string>
+    <string name="scanner_test_scan_number">Скан #%1$d</string>
+    <string name="scanner_test_length">Длина: %1$d</string>
+    <string name="scanner_test_raw">Оригинал: %1$s</string>
 </resources>

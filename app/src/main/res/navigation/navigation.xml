@@ -144,4 +144,16 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/scannerSettingsFragment"
+        android:name="ua.com.programmer.simpleremote.ui.settings.ScannerSettingsFragment"
+        android:label="@string/scanner_settings_title" >
+        <action
+            android:id="@+id/action_scannerSettingsFragment_to_scannerTestFragment"
+            app:destination="@id/scannerTestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scannerTestFragment"
+        android:name="ua.com.programmer.simpleremote.ui.settings.ScannerTestFragment"
+        android:label="@string/scanner_test_title" />
 </navigation>

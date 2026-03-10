@@ -86,4 +86,24 @@
     <string name="edit_unlock_success">Документ звільнено</string>
     <string name="edit_unlock_error">Не вдалось звільнити документ: %1$s</string>
     <string name="warn_not_editable">Документ не в режимі редагування</string>
+    <string name="scanner_settings_title">Налаштування сканера</string>
+    <string name="scanner_timeout_hint">Таймаут між натисканнями (мс)</string>
+    <string name="scanner_timeout_description">Максимальна пауза між натисканнями клавіш для розпізнавання сканування. Збільшіть для Bluetooth сканерів (50–500 мс, за замовчуванням 200)</string>
+    <string name="scanner_min_length_hint">Мінімальна довжина штрихкоду</string>
+    <string name="scanner_min_length_description">Мінімальна кількість символів для розпізнавання сканування. Зменшіть для коротких штрихкодів типу EAN-8 (1–20, за замовчуванням 4)</string>
+    <string name="scanner_terminator_hint">Клавіша завершення</string>
+    <string name="scanner_terminator_both">Обидві</string>
+    <string name="scanner_prefix_hint">Префікс для видалення</string>
+    <string name="scanner_suffix_hint">Суфікс для видалення</string>
+    <string name="scanner_prefix_suffix_description">Деякі сканери додають префікс/суфікс до штрихкоду. Вони будуть видалені перед обробкою</string>
+    <string name="scanner_test_title">Тест сканера</string>
+    <string name="scanner_test_result">Розпізнаний штрихкод</string>
+    <string name="scanner_test_waiting">Скануйте штрихкод для тесту…</string>
+    <string name="scanner_test_buffer">Поточний буфер</string>
+    <string name="scanner_test_buffer_info">%1$d символів (мін: %2$d)</string>
+    <string name="scanner_test_log">Журнал подій клавіш</string>
+    <string name="scanner_test_settings_summary">Таймаут: %1$d мс | Мін. довжина: %2$d | Завершення: %3$s | Префікс: %4$s | Суфікс: %5$s</string>
+    <string name="scanner_test_scan_number">Скан #%1$d</string>
+    <string name="scanner_test_length">Довжина: %1$d</string>
+    <string name="scanner_test_raw">Оригінал: %1$s</string>
 </resources>

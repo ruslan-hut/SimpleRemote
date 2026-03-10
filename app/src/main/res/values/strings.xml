@@ -85,4 +85,24 @@
     <string name="edit_unlock_success">Document released</string>
     <string name="edit_unlock_error">Unable to release the document: %1$s</string>
     <string name="warn_not_editable">Document is not in edit mode</string>
+    <string name="scanner_settings_title">Scanner settings</string>
+    <string name="scanner_timeout_hint">Keystroke timeout (ms)</string>
+    <string name="scanner_timeout_description">Max gap between keystrokes to treat them as one scan. Increase for Bluetooth scanners (50–500 ms, default 200)</string>
+    <string name="scanner_min_length_hint">Minimum barcode length</string>
+    <string name="scanner_min_length_description">Minimum characters before Enter/Tab triggers a scan. Reduce for short barcodes like EAN-8 (1–20, default 4)</string>
+    <string name="scanner_terminator_hint">Terminator key</string>
+    <string name="scanner_terminator_both">Both</string>
+    <string name="scanner_prefix_hint">Prefix to strip</string>
+    <string name="scanner_suffix_hint">Suffix to strip</string>
+    <string name="scanner_prefix_suffix_description">Some scanners add prefix/suffix characters to the barcode. These will be removed before processing</string>
+    <string name="scanner_test_title">Test scanner</string>
+    <string name="scanner_test_result">Detected barcode</string>
+    <string name="scanner_test_waiting">Scan a barcode to test…</string>
+    <string name="scanner_test_buffer">Current buffer</string>
+    <string name="scanner_test_buffer_info">%1$d chars (min: %2$d)</string>
+    <string name="scanner_test_log">Key event log</string>
+    <string name="scanner_test_settings_summary">Timeout: %1$d ms | Min length: %2$d | Terminator: %3$s | Prefix: %4$s | Suffix: %5$s</string>
+    <string name="scanner_test_scan_number">Scan #%1$d</string>
+    <string name="scanner_test_length">Length: %1$d</string>
+    <string name="scanner_test_raw">Raw: %1$s</string>
 </resources>

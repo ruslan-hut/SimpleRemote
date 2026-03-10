@@ -26,10 +26,10 @@
                     android:id="@+id/connectionsListFragment"
                     android:icon="@drawable/ic_phonelink_setup_black_24dp"
                     android:title="@string/action_connection_settings" />
-<!--                <item-->
-<!--                    android:id="@+id/nav_logoff"-->
-<!--                    android:icon="@drawable/twotone_phonelink_erase_24"-->
-<!--                    android:title="@string/action_logoff" />-->
+                <item
+                    android:id="@+id/scannerSettingsFragment"
+                    android:icon="@drawable/baseline_barcode_scanner_24"
+                    android:title="@string/scanner_settings_title" />
             </group>
         </menu>
     </item>

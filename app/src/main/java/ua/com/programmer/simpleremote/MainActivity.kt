@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -32,6 +31,7 @@ import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.getGuid
 import ua.com.programmer.simpleremote.databinding.ActivityMainBinding
 import ua.com.programmer.simpleremote.firebase.DeleteOldUsersWorker
+import ua.com.programmer.simpleremote.settings.ScannerSettings
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
 import java.util.concurrent.TimeUnit
 
@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
     private val viewModel : SharedViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
 
+    private lateinit var scannerSettings: ScannerSettings
+    private var keyEventListener: ((KeyEvent) -> Boolean)? = null
+
     private var backPressedTime: Long = 0
     private var barcode = StringBuilder()
     private var lastKeystrokeTime = 0L
@@ -51,6 +54,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+
+        scannerSettings = ScannerSettings(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -147,16 +152,24 @@ class MainActivity : AppCompatActivity() {
      * [SharedViewModel.onBarcodeRead] and both ACTION_DOWN and ACTION_UP for
      * the terminator are consumed so they never reach the focused view.
      */
+    fun setKeyEventListener(listener: ((KeyEvent) -> Boolean)?) {
+        keyEventListener = listener
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // When a test listener is active, forward all events to it instead
+        keyEventListener?.let { listener ->
+            if (listener(event)) return true
+        }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
-            val isTerminator =
-                event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB
+            val isTerminator = scannerSettings.isTerminator(event.keyCode)
 
             if (isTerminator) {
-                if (barcode.length >= MIN_BARCODE_LENGTH) {
-                    Log.d("RC_MainActivity", "barcode: $barcode")
-                    viewModel.onBarcodeRead(barcode.toString())
+                if (barcode.length >= scannerSettings.minBarcodeLength) {
+                    val cleaned = scannerSettings.cleanBarcode(barcode.toString())
+                    Log.d("RC_MainActivity", "barcode: $cleaned")
+                    viewModel.onBarcodeRead(cleaned)
                     barcode.clear()
                     barcodeConsumed = true
                     return true
@@ -167,7 +180,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val currentTime = System.currentTimeMillis()
-            if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > SCANNER_TIMEOUT_MS) {
+            if (barcode.isNotEmpty() && currentTime - lastKeystrokeTime > scannerSettings.keystrokeTimeout) {
                 barcode.clear()
             }
 
@@ -179,7 +192,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (event.action == KeyEvent.ACTION_UP) {
-            if (event.keyCode == KeyEvent.KEYCODE_ENTER || event.keyCode == KeyEvent.KEYCODE_TAB) {
+            if (scannerSettings.isTerminator(event.keyCode)) {
                 if (barcodeConsumed) {
                     barcodeConsumed = false
                     return true
@@ -188,11 +201,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         return super.dispatchKeyEvent(event)
-    }
-
-    companion object {
-        private const val SCANNER_TIMEOUT_MS = 200L
-        private const val MIN_BARCODE_LENGTH = 4
     }
 
     /**
