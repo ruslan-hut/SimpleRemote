@@ -154,6 +154,8 @@ class DocumentContentFragment: Fragment() {
                     sharedViewModel.barcode.collect {
                         if (!viewModel.isEditable.value) {
                             showNotEditableWarning()
+                        } else if (sharedViewModel.collectMode()) {
+                            viewModel.onBarcodeRead(it, ::scrollToProduct)
                         } else if (sharedViewModel.placementMode()) {
                             viewModel.onBarcodeRead(it, ::scrollToProduct)
                         } else if (sharedViewModel.editMode()) {
