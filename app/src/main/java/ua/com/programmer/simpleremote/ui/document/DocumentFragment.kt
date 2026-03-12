@@ -238,7 +238,17 @@ class DocumentFragment: Fragment(), MenuProvider {
     private fun onSuccess() {
         sharedViewModel.setDocumentModified(false)
         if (sharedViewModel.autoCloseDocument()) {
-            findNavController().popBackStack()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setMessage(R.string.toast_saved)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+            dialog.window?.decorView?.postDelayed({
+                if (isAdded) {
+                    dialog.dismiss()
+                    findNavController().popBackStack()
+                }
+            }, 1500)
         } else {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.toast_saved)
