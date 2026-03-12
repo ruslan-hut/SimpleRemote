@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/md_theme_listBackground">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/filter_parameters"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/filter_parameters"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:visibility="gone"/>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/documents_swipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/documents_swipe"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -27,33 +27,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <LinearLayout
+                android:id="@+id/empty_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
 
-    </LinearLayout>
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/baseline_list_24"
+                    app:tint="?attr/colorOutline" />
 
-    <LinearLayout
-        android:id="@+id/empty_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/empty_list"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?attr/colorOutline" />
 
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/baseline_list_24"
-            app:tint="?attr/colorOutline" />
+                <Button
+                    android:id="@+id/retry_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/action_refresh" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/empty_list"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            android:textColor="?attr/colorOutline" />
+            </LinearLayout>
 
-    </LinearLayout>
+        </FrameLayout>
 
-</FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

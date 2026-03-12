@@ -26,6 +26,7 @@ import androidx.work.WorkManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.getGuid
@@ -119,6 +120,14 @@ class MainActivity : AppCompatActivity() {
                         textAccount.text = it.description
                         diagnostics.deviceId = it.guid
                     }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.networkError.collect { message ->
+                    Snackbar.make(binding.navHostContainer, message, Snackbar.LENGTH_LONG).show()
                 }
             }
         }

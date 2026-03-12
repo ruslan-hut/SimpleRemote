@@ -96,18 +96,27 @@ class DocumentListFragment: Fragment(), MenuProvider  {
                 launch {
                     viewModel.documents.collect {
                         adapter.submitList(it)
-                        binding.emptyState.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                        if (it.isNotEmpty()) binding.emptyState.visibility = View.GONE
                     }
                 }
                 launch {
-                    viewModel.isLoading.collect {
-                        binding.documentsSwipe.isRefreshing = it
-                        if (it) binding.emptyState.visibility = View.GONE
+                    viewModel.isLoading.collect { loading ->
+                        binding.documentsSwipe.isRefreshing = loading
+                        if (loading) {
+                            binding.emptyState.visibility = View.GONE
+                        } else {
+                            val empty = viewModel.documents.value.isEmpty()
+                            binding.emptyState.visibility = if (empty) View.VISIBLE else View.GONE
+                        }
                     }
                 }
             }
         }
         binding.documentsSwipe.setOnRefreshListener {
+            viewModel.loadDocuments()
+        }
+        binding.retryButton.setOnClickListener {
+            binding.emptyState.visibility = View.GONE
             viewModel.loadDocuments()
         }
 

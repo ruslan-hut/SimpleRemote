@@ -51,6 +51,8 @@ class SharedViewModel @Inject constructor(
     private val _barcode = Channel<String>(Channel.BUFFERED)
     val barcode: Flow<String> = _barcode.receiveAsFlow()
 
+    val networkError: Flow<String> = networkRepository.networkError
+
     private val _selectedCatalogItem = MutableStateFlow<Catalog?>(null)
     val selectedCatalogItem: StateFlow<Catalog?> get() = _selectedCatalogItem
 

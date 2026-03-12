@@ -15,6 +15,7 @@ data class DocumentsResult(
 
 interface NetworkRepository {
     val userOptions: Flow<UserOptions>
+    val networkError: Flow<String>
     fun documents(type: String, filter: List<FilterItem>): Flow<DocumentsResult>
     fun documentContent(type: String, guid: String): Flow<List<Content>>
     suspend fun saveDocument(document: Document): String

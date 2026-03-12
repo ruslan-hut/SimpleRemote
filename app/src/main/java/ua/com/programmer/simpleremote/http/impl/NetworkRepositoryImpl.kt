@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,8 +14,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
+import retrofit2.HttpException
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,12 +60,26 @@ class NetworkRepositoryImpl @Inject constructor(
     )
 
     private val _activeOptions = MutableStateFlow(UserOptions(isEmpty = true))
+    private val _networkError = Channel<String>(Channel.BUFFERED)
+
+    override val networkError: Flow<String> = _networkError.receiveAsFlow()
 
     private var apiService: HttpClientApi? = null
     private var baseUrl: String = ""
     private val tokenCounter = AtomicInteger(0)
     private val maxTokenRefresh = 3
     private val logger = FirebaseCrashlytics.getInstance()
+
+    private fun emitError(message: String) {
+        _networkError.trySend(message)
+    }
+
+    private fun extractErrorMessage(e: Exception): String {
+        return when (e) {
+            is HttpException -> "Server error: ${e.code()}"
+            else -> e.message ?: "Connection error"
+        }
+    }
 
     private val catalogCache = object : LinkedHashMap<String, List<Catalog>>(16, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<Catalog>>): Boolean {
@@ -105,12 +122,15 @@ class NetworkRepositoryImpl @Inject constructor(
                     filterSchema = response.filter,
                 ))
             } else {
-                Log.e("RC_NetworkRepository", "Failed to fetch documents: ${response?.message}")
+                val msg = response?.message?.ifEmpty { null } ?: "Failed to fetch documents"
+                Log.e("RC_NetworkRepository", "Failed to fetch documents: $msg")
+                emitError(msg)
                 emit(DocumentsResult())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
             logger.recordException(e)
+            emitError(extractErrorMessage(e))
             emit(DocumentsResult())
         }
     }.flowOn(Dispatchers.IO)
@@ -135,12 +155,15 @@ class NetworkRepositoryImpl @Inject constructor(
                 val content = response.data.filterNotNull()
                 emit(content)
             } else {
-                Log.e("RC_NetworkRepository", "Failed to fetch content: ${response?.message}")
+                val msg = response?.message?.ifEmpty { null } ?: "Failed to fetch content"
+                Log.e("RC_NetworkRepository", "Failed to fetch content: $msg")
+                emitError(msg)
                 emit(emptyList())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching content: ${e.message}")
             logger.recordException(e)
+            emitError(extractErrorMessage(e))
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -265,12 +288,15 @@ class NetworkRepositoryImpl @Inject constructor(
                 synchronized(catalogCache) { catalogCache[cacheKey] = items }
                 emit(items)
             } else {
-                Log.e("RC_NetworkRepository", "Failed to fetch catalog: ${response?.message}")
+                val msg = response?.message?.ifEmpty { null } ?: "Failed to fetch catalog"
+                Log.e("RC_NetworkRepository", "Failed to fetch catalog: $msg")
+                emitError(msg)
                 emit(emptyList())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while fetching catalog: ${e.message}")
             logger.recordException(e)
+            emitError(extractErrorMessage(e))
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -295,12 +321,15 @@ class NetworkRepositoryImpl @Inject constructor(
                 val products = response.data.filterNotNull()
                 emit(products.firstOrNull() ?: Product())
             } else {
-                Log.e("RC_NetworkRepository", "Failed to receive barcode: ${response?.message}")
+                val msg = response?.message?.ifEmpty { null } ?: "Failed to receive barcode"
+                Log.e("RC_NetworkRepository", "Failed to receive barcode: $msg")
+                emitError(msg)
                 emit(Product())
             }
         } catch (e: Exception) {
             Log.e("RC_NetworkRepository", "Error while receiving barcode: ${e.message}")
             logger.recordException(e)
+            emitError(extractErrorMessage(e))
             emit(Product())
         }
     }.flowOn(Dispatchers.IO)
@@ -349,12 +378,18 @@ class NetworkRepositoryImpl @Inject constructor(
             Log.e("RC_NetworkRepository", "Failed to update connection: ${e.message}")
             apiService = null
             _activeOptions.value = UserOptions(isEmpty = true)
+            emitError(extractErrorMessage(e))
             logger.recordException(e)
         }
     }
 
     private suspend fun fetchUserOptions(settings: ConnectionSettings): UserOptions? {
         val response = executeCheck(settings) ?: return null
+        if (response.result != "ok") {
+            val msg = response.message.ifEmpty { "Server error" }
+            emitError(msg)
+            return null
+        }
         return if (response.data.isNotEmpty()) {
             val userOptions = response.data[0]
             val options = userOptions?.copy(
