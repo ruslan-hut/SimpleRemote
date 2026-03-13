@@ -109,13 +109,6 @@ class DocumentFragment: Fragment(), MenuProvider {
                         binding?.progressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
                     }
                 }
-                launch {
-                    sharedViewModel.document.collect { doc ->
-                        if (doc != null && doc.locked && sharedViewModel.collectMode() && !viewModel.isEditable.value) {
-                            viewModel.enableEdit()
-                        }
-                    }
-                }
             }
         }
 
