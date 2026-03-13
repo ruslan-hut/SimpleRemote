@@ -38,6 +38,8 @@ class DocumentFragment: Fragment(), MenuProvider {
     private val binding get() = _binding
     private val navigationArgs: DocumentFragmentArgs by navArgs()
 
+    private val isNewDocument: Boolean by lazy { navigationArgs.isNewDocument }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.setDocumentType(navigationArgs.type, navigationArgs.title)
@@ -112,6 +114,10 @@ class DocumentFragment: Fragment(), MenuProvider {
             }
         }
 
+        if (isNewDocument) {
+            viewModel.setEditable(true)
+        }
+
         binding?.addItemButton?.setOnClickListener {
             val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
                 type = "Товары",
@@ -134,6 +140,9 @@ class DocumentFragment: Fragment(), MenuProvider {
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.document_menu, menu)
+        if (isNewDocument) {
+            menu.findItem(R.id.edit_document)?.isVisible = false
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -146,7 +155,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 }
             }
             R.id.delete_document -> {
-                viewModel.deleteDocument()
+                requestDeleteDocument()
             }
             R.id.save_document -> {
                 viewModel.saveDocument(
@@ -250,6 +259,23 @@ class DocumentFragment: Fragment(), MenuProvider {
                 }
                 .show()
         }
+    }
+
+    private fun requestDeleteDocument() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.warning)
+            .setMessage(R.string.confirm_delete_document)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                viewModel.deleteDocument(
+                    documentGuid = sharedViewModel.getDocument().guid,
+                    onSuccess = {
+                        findNavController().popBackStack()
+                    },
+                    onError = ::onError
+                )
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun onError(message: String) {

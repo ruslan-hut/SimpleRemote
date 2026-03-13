@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +45,7 @@ import ua.com.programmer.simpleremote.repository.NetworkRepository
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.currentCoroutineContext
 
 @Singleton
 class NetworkRepositoryImpl @Inject constructor(
@@ -128,6 +130,7 @@ class NetworkRepositoryImpl @Inject constructor(
                 emit(DocumentsResult())
             }
         } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
             Log.e("RC_NetworkRepository", "Error while fetching documents: ${e.message}")
             logger.recordException(e)
             emitError(extractErrorMessage(e))
@@ -161,6 +164,7 @@ class NetworkRepositoryImpl @Inject constructor(
                 emit(emptyList())
             }
         } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
             Log.e("RC_NetworkRepository", "Error while fetching content: ${e.message}")
             logger.recordException(e)
             emitError(extractErrorMessage(e))
@@ -294,6 +298,7 @@ class NetworkRepositoryImpl @Inject constructor(
                 emit(emptyList())
             }
         } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
             Log.e("RC_NetworkRepository", "Error while fetching catalog: ${e.message}")
             logger.recordException(e)
             emitError(extractErrorMessage(e))
@@ -327,12 +332,74 @@ class NetworkRepositoryImpl @Inject constructor(
                 emit(Product())
             }
         } catch (e: Exception) {
+            currentCoroutineContext().ensureActive()
             Log.e("RC_NetworkRepository", "Error while receiving barcode: ${e.message}")
             logger.recordException(e)
             emitError(extractErrorMessage(e))
             emit(Product())
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun deleteDocument(type: String, guid: String): String {
+        val options = _activeOptions.value
+        if (options.isEmpty) {
+            return "Connection error"
+        }
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "deleteDocument",
+            data = DataType(type = type, guid = guid),
+        )
+        logger.log("request body: $body")
+
+        try {
+            val response = apiService?.deleteDocument(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                return "OK"
+            } else {
+                val message = response?.readError()?.ifEmpty { null } ?: "Unknown error"
+                Log.e("RC_NetworkRepository", "Failed to delete document: $message")
+                return message
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while deleting document: ${e.message}")
+            logger.recordException(e)
+        }
+        return "Connection error"
+    }
+
+    override suspend fun newDocument(type: String): Document? {
+        val options = _activeOptions.value
+        if (options.isEmpty) return null
+
+        val body = ListRequest(
+            userID = options.userId,
+            type = "newDocument",
+            data = DataType(type = type),
+        )
+        logger.log("request body: $body")
+
+        try {
+            val response = apiService?.newDocument(options.token, body)
+            if (response != null && response.isSuccessful()) {
+                val document = response.data.firstOrNull()
+                if (document != null) return document
+                Log.e("RC_NetworkRepository", "newDocument: response successful but data is empty")
+                emitError("Unknown error")
+                return null
+            } else {
+                val msg = response?.message?.ifEmpty { null } ?: "Failed to create document"
+                Log.e("RC_NetworkRepository", "Failed to create document: $msg")
+                emitError(msg)
+            }
+        } catch (e: Exception) {
+            Log.e("RC_NetworkRepository", "Error while creating document: ${e.message}")
+            logger.recordException(e)
+            emitError(extractErrorMessage(e))
+        }
+        return null
+    }
 
     override suspend fun reconnect() {
         _activeOptions.value = UserOptions(isEmpty = false)

@@ -39,4 +39,10 @@ interface HttpClientApi {
     @POST("pst/{token}")
     suspend fun unlockDocument(@Path("token") token: String, @Body data: ListRequest): EditLockResponse
 
+    @POST("pst/{token}")
+    suspend fun deleteDocument(@Path("token") token: String, @Body data: ListRequest): DocumentSaveResponse
+
+    @POST("pst/{token}")
+    suspend fun newDocument(@Path("token") token: String, @Body data: ListRequest): DocumentListResponse
+
 }

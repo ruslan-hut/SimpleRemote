@@ -153,7 +153,6 @@ class SharedViewModel @Inject constructor(
     }
 
     fun addProduct(catalog: Catalog, onResult: () -> Unit){
-        if (!editMode()) return
         val list = _content.value.toMutableList()
         val index = list.indexOfFirst { it.code == catalog.code }
         if (index >= 0) {
@@ -251,6 +250,14 @@ class SharedViewModel @Inject constructor(
     fun onBarcodeRead(value: String) {
         if (value.isBlank()) return
         _barcode.trySend(value)
+    }
+
+    fun allowNewDocuments(): Boolean {
+        return _userOptions.value?.allowNewDocuments == true
+    }
+
+    fun catalogLoadImages(type: String): Boolean {
+        return _userOptions.value?.catalog?.any { it.code == type && it.loadImages } == true
     }
 
     fun confirmWithScan(): Boolean {

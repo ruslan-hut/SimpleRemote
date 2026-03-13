@@ -117,4 +117,7 @@
     <string name="diag_no_data">Немає записаних даних</string>
     <string name="diag_uploaded">Діагностику надіслано</string>
     <string name="diag_upload_error">Не вдалось надіслати діагностику</string>
+    <string name="confirm_delete_document">Видалити цей документ?</string>
+    <string name="new_document">Новий документ</string>
+    <string name="create">Створити</string>
 </resources>

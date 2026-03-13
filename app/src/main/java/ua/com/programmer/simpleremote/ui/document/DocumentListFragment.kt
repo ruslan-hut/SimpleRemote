@@ -2,9 +2,7 @@ package ua.com.programmer.simpleremote.ui.document
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -37,6 +35,7 @@ import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.DocumentsListItemBinding
 import ua.com.programmer.simpleremote.databinding.FragmentDocumentsListBinding
 import ua.com.programmer.simpleremote.entity.Document
+import ua.com.programmer.simpleremote.entity.DocumentField
 import ua.com.programmer.simpleremote.entity.FilterItem
 import ua.com.programmer.simpleremote.entity.getFilterDisplayString
 import ua.com.programmer.simpleremote.entity.isAnyFilterSet
@@ -58,6 +57,8 @@ class DocumentListFragment: Fragment(), MenuProvider  {
     private val binding get() = _binding!!
     private val navigationArgs: DocumentListFragmentArgs by navArgs()
     private var pendingFilterName: String? = null
+    private var pendingFieldIndex: Int? = null
+    private var pendingNewDocument: Document? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,13 +121,45 @@ class DocumentListFragment: Fragment(), MenuProvider  {
             viewModel.loadDocuments()
         }
 
+        binding.fabNewDocument.visibility =
+            if (sharedViewModel.allowNewDocuments()) View.VISIBLE else View.GONE
+        binding.fabNewDocument.setOnClickListener {
+            viewModel.createNewDocument()
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.newDocument.collect { doc ->
+                    if (doc != null) {
+                        val document = viewModel.consumeNewDocument() ?: return@collect
+                        showFieldEditorDialog(document)
+                    }
+                }
+            }
+        }
+
         observeCatalogPickerResult()
         updateFilterBanner()
     }
 
     private fun observeCatalogPickerResult() {
-        val catalog = sharedViewModel.consumeSelectedCatalogItem()
-        if (catalog != null && pendingFilterName != null) {
+        val catalog = sharedViewModel.consumeSelectedCatalogItem() ?: return
+
+        if (pendingFieldIndex != null && pendingNewDocument != null) {
+            val fieldIndex = pendingFieldIndex!!
+            val doc = pendingNewDocument!!
+            val field = getField(doc, fieldIndex).copy(
+                code = catalog.code,
+                value = catalog.description,
+            )
+            val updatedDoc = setField(doc, fieldIndex, field)
+            pendingFieldIndex = null
+            pendingNewDocument = null
+            showFieldEditorDialog(updatedDoc)
+            return
+        }
+
+        if (pendingFilterName != null) {
             viewModel.updateFilterValue(pendingFilterName!!, catalog.code, catalog.description)
             pendingFilterName = null
             viewModel.loadDocuments()
@@ -147,6 +180,132 @@ class DocumentListFragment: Fragment(), MenuProvider  {
     private fun openDocument(type: String, title: String) {
         val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type)
         this.findNavController().navigate(action)
+    }
+
+    private fun openNewDocument(document: Document) {
+        sharedViewModel.setDocument(document)
+        val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(
+            title = viewModel.title,
+            type = viewModel.type,
+            isNewDocument = true,
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun showFieldEditorDialog(document: Document) {
+        val fields = listOf(1, 2, 3, 4).filter { getField(document, it).meta.isNotEmpty() }
+        if (fields.isEmpty()) {
+            openNewDocument(document)
+            return
+        }
+
+        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.filter_menu_action_layout, null)
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+        popupWindow.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+        val container = popupView.findViewById<LinearLayout>(R.id.filter_fields_container)
+        val fieldMap = mutableMapOf<Int, TextInputEditText>()
+        var currentDocument = document
+
+        for (fieldIndex in fields) {
+            val field = getField(document, fieldIndex)
+            val itemView = inflater.inflate(R.layout.filter_item_layout, container, false)
+            val inputLayout = itemView as TextInputLayout
+            val editText = itemView.findViewById<TextInputEditText>(R.id.filter_value_edittext)
+
+            inputLayout.hint = field.description.ifEmpty { field.name }
+            editText.setText(field.value)
+
+            fieldMap[fieldIndex] = editText
+
+            when (field.meta) {
+                "date" -> {
+                    editText.setOnClickListener {
+                        val datePicker = MaterialDatePicker.Builder.datePicker().build()
+                        datePicker.addOnPositiveButtonClickListener { timestamp ->
+                            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            val dateStr = sdf.format(Date(timestamp))
+                            editText.setText(dateStr)
+                        }
+                        datePicker.show(childFragmentManager, "datePicker_field$fieldIndex")
+                    }
+                }
+                "reference" -> {
+                    editText.setOnClickListener {
+                        // Save current field values before navigating
+                        for ((idx, et) in fieldMap) {
+                            val f = getField(currentDocument, idx)
+                            if (f.meta == "date") {
+                                currentDocument = setField(currentDocument, idx,
+                                    f.copy(value = et.text?.toString() ?: ""))
+                            }
+                        }
+                        pendingFieldIndex = fieldIndex
+                        pendingNewDocument = currentDocument
+                        popupWindow.dismiss()
+                        val action = DocumentListFragmentDirections
+                            .actionDocumentListFragmentToCatalogListFragment(
+                                type = field.type,
+                                title = field.description.ifEmpty { field.name },
+                                group = "",
+                                pickerMode = true,
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+            }
+
+            container.addView(itemView)
+        }
+
+        val applyButton = popupView.findViewById<Button>(R.id.apply_button)
+        applyButton.text = getString(R.string.create)
+        applyButton.setOnClickListener {
+            for ((fieldIndex, editText) in fieldMap) {
+                val field = getField(currentDocument, fieldIndex)
+                if (field.meta == "date") {
+                    currentDocument = setField(currentDocument, fieldIndex,
+                        field.copy(value = editText.text?.toString() ?: ""))
+                }
+            }
+            popupWindow.dismiss()
+            openNewDocument(currentDocument)
+        }
+
+        val clearButton = popupView.findViewById<Button>(R.id.clear_button)
+        clearButton.text = getString(R.string.action_cancel)
+        clearButton.setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+        popupWindow.showAtLocation(binding.root, android.view.Gravity.CENTER, 0, 0)
+    }
+
+    private fun getField(doc: Document, index: Int): DocumentField {
+        return when (index) {
+            1 -> doc.field1
+            2 -> doc.field2
+            3 -> doc.field3
+            4 -> doc.field4
+            else -> DocumentField()
+        }
+    }
+
+    private fun setField(doc: Document, index: Int, field: DocumentField): Document {
+        return when (index) {
+            1 -> doc.copy(field1 = field)
+            2 -> doc.copy(field2 = field)
+            3 -> doc.copy(field3 = field)
+            4 -> doc.copy(field4 = field)
+            else -> doc
+        }
     }
 
     override fun onResume() {

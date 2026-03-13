@@ -116,4 +116,7 @@
     <string name="diag_no_data">No diagnostic data recorded</string>
     <string name="diag_uploaded">Diagnostics sent</string>
     <string name="diag_upload_error">Failed to send diagnostics</string>
+    <string name="confirm_delete_document">Delete this document?</string>
+    <string name="new_document">New document</string>
+    <string name="create">Create</string>
 </resources>

@@ -13,6 +13,7 @@ data class UserOptions(
     val autoCloseDocument: Boolean = false, // close document fragment after successful save
     val user: String = "",
     val token: String = "",
+    val allowNewDocuments: Boolean = false,
     val catalog: List<ListType> = listOf(),
     val document: List<ListType> = listOf()
 )

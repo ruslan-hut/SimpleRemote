@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -63,8 +64,13 @@ class CatalogListFragment: Fragment() {
 
         setupMenu()
 
+        val loadImages = sharedViewModel.catalogLoadImages(navigationArgs.type ?: "")
+
         val adapter =
             ItemsListAdapter(
+                imageLoader = if (loadImages) {{ imageGuid, imageView ->
+                    sharedViewModel.loadImage(imageGuid, imageView)
+                }} else null,
                 onItemClicked = { item ->
                     if (item.isGroup == 1) {
                         nextPage(item.code)
@@ -157,18 +163,20 @@ class CatalogListFragment: Fragment() {
     }
 
     private class ItemsListAdapter(
+        private val imageLoader: ((String, ImageView) -> Unit)?,
         private val onItemClicked: (Catalog) -> Unit
     ): ListAdapter<Catalog, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
         abstract class ItemViewHolder(binding: ViewBinding): RecyclerView.ViewHolder(binding.root) {
             abstract fun bind(
                 catalog: Catalog,
-                onItemClicked: (Catalog) -> Unit
+                onItemClicked: (Catalog) -> Unit,
+                imageLoader: ((ImageView) -> Unit)? = null,
             )
         }
 
         class ElementViewHolder(private var binding: CatalogListItemGoodsBinding): ItemViewHolder(binding as ViewBinding) {
-            override fun bind(catalog: Catalog, onItemClicked: (Catalog) -> Unit) {
+            override fun bind(catalog: Catalog, onItemClicked: (Catalog) -> Unit, imageLoader: ((ImageView) -> Unit)?) {
                 binding.apply {
                     itemCode.text = catalog.art
                     itemDescription.text = catalog.description
@@ -192,6 +200,12 @@ class CatalogListFragment: Fragment() {
                         restContainer.visibility = View.VISIBLE
                     }
 
+                    if (imageLoader != null) {
+                        imageLoader.invoke(itemImage)
+                    } else {
+                        itemImage.visibility = View.GONE
+                    }
+
                     itemView.setOnClickListener {
                         onItemClicked(catalog)
                     }
@@ -200,7 +214,7 @@ class CatalogListFragment: Fragment() {
         }
 
         class GroupViewHolder(private var binding: CatalogListItemGroupBinding): ItemViewHolder(binding as ViewBinding) {
-            override fun bind(catalog: Catalog, onItemClicked: (Catalog) -> Unit) {
+            override fun bind(catalog: Catalog, onItemClicked: (Catalog) -> Unit, imageLoader: ((ImageView) -> Unit)?) {
                 binding.apply {
                     itemDescription.text = catalog.description
                 }
@@ -245,7 +259,10 @@ class CatalogListFragment: Fragment() {
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-            holder.bind(getItem(position), onItemClicked)
+            val item = getItem(position)
+            holder.bind(item, onItemClicked, imageLoader?.let { loader ->
+                { imageView: ImageView -> loader(item.image, imageView) }
+            })
         }
     }
 }

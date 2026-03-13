@@ -46,7 +46,13 @@ class DocumentViewModel @Inject constructor(
     fun setDocumentId(id: String, onResult: (String, String) -> Unit) {
         if (this.guid == id) return
         this.guid = id
-        onResult(type, guid)
+        if (id.isNotEmpty()) {
+            onResult(type, guid)
+        }
+    }
+
+    fun setEditable(value: Boolean) {
+        _isEditable.value = value
     }
 
     fun getTitle(): String {
@@ -132,8 +138,19 @@ class DocumentViewModel @Inject constructor(
         onResult()
     }
 
-    fun deleteDocument() {
-        //
+    fun deleteDocument(documentGuid: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = withContext(Dispatchers.IO) {
+                networkRepository.deleteDocument(type, documentGuid)
+            }
+            _isLoading.value = false
+            if (result == "OK") {
+                onSuccess()
+            } else {
+                onError(result)
+            }
+        }
     }
 
     fun onBarcodeRead(barcode: String, onResult: (Product) -> Unit) {

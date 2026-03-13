@@ -14,6 +14,7 @@ data class Catalog(
     val groupCode: String = "",
     val rest: Double = 0.0,
     val price: Double = 0.0,
+    val image: String = "",
 )
 
 fun Catalog.getRest(): String {
@@ -49,7 +50,7 @@ fun Catalog.toContent(lineNumber: Int = 1): Content {
         notes = "",
         checked = true, // 1 >= 1
         modified = true,
-        image = this.art,
+        image = this.image.ifEmpty { this.art },
         encodedImage = "",
         place = emptyList()
     )

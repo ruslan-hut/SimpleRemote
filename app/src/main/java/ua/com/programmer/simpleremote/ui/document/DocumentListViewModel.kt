@@ -3,10 +3,12 @@ package ua.com.programmer.simpleremote.ui.document
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.entity.Document
 import ua.com.programmer.simpleremote.entity.FilterItem
 import ua.com.programmer.simpleremote.repository.NetworkRepository
@@ -25,6 +27,9 @@ class DocumentListViewModel @Inject constructor(
 
     private val _filterSchema = MutableStateFlow<List<FilterItem>>(emptyList())
     val filterSchema: StateFlow<List<FilterItem>> get() = _filterSchema
+
+    private val _newDocument = MutableStateFlow<Document?>(null)
+    val newDocument: StateFlow<Document?> get() = _newDocument
 
     private val _activeFilters = mutableListOf<FilterItem>()
     private var fetchJob: Job? = null
@@ -53,6 +58,23 @@ class DocumentListViewModel @Inject constructor(
 
     fun clearAllFilters() {
         _activeFilters.forEach { it.clearValue() }
+    }
+
+    fun createNewDocument() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val document = withContext(Dispatchers.IO) {
+                networkRepository.newDocument(type)
+            }
+            _newDocument.value = document
+            _isLoading.value = false
+        }
+    }
+
+    fun consumeNewDocument(): Document? {
+        val doc = _newDocument.value
+        _newDocument.value = null
+        return doc
     }
 
     fun loadDocuments() {
