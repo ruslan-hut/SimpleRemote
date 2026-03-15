@@ -158,7 +158,9 @@ class ItemEditFragment: Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.take_photo -> {
-                findNavController().navigate(
+                val navController = findNavController()
+                if (navController.currentDestination?.id != R.id.itemEditFragment) return false
+                navController.navigate(
                     ItemEditFragmentDirections.actionItemEditFragmentToCameraFragment(mode = "photo")
                 )
                 true

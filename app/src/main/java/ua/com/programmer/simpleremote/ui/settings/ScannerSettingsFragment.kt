@@ -50,7 +50,9 @@ class ScannerSettingsFragment : Fragment(), MenuProvider {
         setupDiagnostics()
 
         binding.testScanner.setOnClickListener {
-            findNavController().navigate(R.id.action_scannerSettingsFragment_to_scannerTestFragment)
+            val navController = findNavController()
+            if (navController.currentDestination?.id != R.id.scannerSettingsFragment) return@setOnClickListener
+            navController.navigate(R.id.action_scannerSettingsFragment_to_scannerTestFragment)
         }
 
         return binding.root

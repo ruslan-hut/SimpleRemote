@@ -119,18 +119,22 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         binding?.addItemButton?.setOnClickListener {
+            val navController = findNavController()
+            if (navController.currentDestination?.id != R.id.documentFragment) return@setOnClickListener
             val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
                 type = "Товары",
                 title = "Товары",
                 group = "",
             )
-            findNavController().navigate(action)
+            navController.navigate(action)
         }
     }
 
     private fun openCamera() {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.documentFragment) return
         val action = DocumentFragmentDirections.actionDocumentFragmentToCameraFragment(mode = "barcode")
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     override fun onDestroyView() {

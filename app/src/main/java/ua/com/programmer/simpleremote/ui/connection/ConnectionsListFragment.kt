@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.R
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.getGuid
@@ -64,8 +65,10 @@ class ConnectionsListFragment: Fragment() {
     }
 
     private fun openConnection(item: ConnectionSettings?) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.connectionsListFragment) return
         val action = ConnectionsListFragmentDirections.actionConnectionsListFragmentToConnectionFragment(item?.guid)
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     override fun onDestroyView() {

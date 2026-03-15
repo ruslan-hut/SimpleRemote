@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.R
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
@@ -77,8 +78,10 @@ class SelectDocumentTypeFragment: Fragment() {
     }
 
     private fun openDocumentList(type: String, title: String) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.selectDocumentTypeFragment) return
         val action = SelectDocumentTypeFragmentDirections.actionSelectDocumentTypeFragmentToDocumentListFragment(type, title)
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     override fun onDestroyView() {

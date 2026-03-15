@@ -178,18 +178,22 @@ class DocumentListFragment: Fragment(), MenuProvider  {
     }
 
     private fun openDocument(type: String, title: String) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.documentListFragment) return
         val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(title, type)
-        this.findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     private fun openNewDocument(document: Document) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.documentListFragment) return
         sharedViewModel.setDocument(document)
         val action = DocumentListFragmentDirections.actionDocumentListFragmentToDocumentFragment(
             title = viewModel.title,
             type = viewModel.type,
             isNewDocument = true,
         )
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     private fun showFieldEditorDialog(document: Document) {
@@ -257,7 +261,9 @@ class DocumentListFragment: Fragment(), MenuProvider  {
                                 group = "",
                                 pickerMode = true,
                             )
-                        findNavController().navigate(action)
+                        val navController = findNavController()
+                        if (navController.currentDestination?.id != R.id.documentListFragment) return@setOnClickListener
+                        navController.navigate(action)
                     }
                 }
             }
@@ -388,6 +394,8 @@ class DocumentListFragment: Fragment(), MenuProvider  {
                         viewModel.setActiveFilters(activeFilters)
                         pendingFilterName = filterItem.name
                         popupWindow.dismiss()
+                        val navController = findNavController()
+                        if (navController.currentDestination?.id != R.id.documentListFragment) return@setOnClickListener
                         val action = DocumentListFragmentDirections
                             .actionDocumentListFragmentToCatalogListFragment(
                                 type = filterItem.type,
@@ -395,7 +403,7 @@ class DocumentListFragment: Fragment(), MenuProvider  {
                                 group = "",
                                 pickerMode = true
                             )
-                        findNavController().navigate(action)
+                        navController.navigate(action)
                     }
                 }
             }

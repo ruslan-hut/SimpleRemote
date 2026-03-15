@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import ua.com.programmer.simpleremote.R
 import kotlinx.coroutines.launch
 import ua.com.programmer.simpleremote.databinding.FragmentSelectDataTypeBinding
 import ua.com.programmer.simpleremote.databinding.SelectListItemBinding
@@ -78,8 +79,10 @@ class SelectCatalogTypeFragment: Fragment() {
     }
 
     private fun openCatalog(type: String, title: String) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.selectCatalogTypeFragment) return
         val action = SelectCatalogTypeFragmentDirections.actionSelectCatalogTypeFragmentToCatalogListFragment(type, title, "")
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     override fun onDestroyView() {

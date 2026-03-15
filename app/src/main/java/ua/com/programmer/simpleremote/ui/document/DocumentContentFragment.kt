@@ -177,15 +177,19 @@ class DocumentContentFragment: Fragment() {
     }
 
     private fun openProductScreen(product: Product) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.documentFragment) return
         sharedViewModel.setProduct(product)
         val action = DocumentFragmentDirections.actionDocumentFragmentToItemEditFragment(product.code)
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     private fun openProductPlacementScreen(product: Product) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.documentFragment) return
         sharedViewModel.setProduct(product)
         val action = DocumentFragmentDirections.actionDocumentFragmentToItemPlacementFragment(product.code)
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     private fun scrollToProduct(product: Product) {

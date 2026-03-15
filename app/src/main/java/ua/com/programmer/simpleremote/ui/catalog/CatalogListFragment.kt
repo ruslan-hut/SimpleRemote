@@ -153,8 +153,10 @@ class CatalogListFragment: Fragment() {
     }
 
     private fun nextPage(group: String) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id != R.id.catalogListFragment) return
         val action = CatalogListFragmentDirections.actionCatalogListFragmentSelf(viewModel.type, viewModel.title, group, pickerMode)
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 
     override fun onDestroyView() {
