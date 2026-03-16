@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import android.util.Log
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -147,9 +146,14 @@ class DocumentContentFragment: Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.content.collect {
-                        Log.d("RC_ContentFrag", "content collected: size=${it.size}, first=${it.firstOrNull()?.description}")
                         listAdapter?.submitList(it)
                         binding?.emptyState?.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                    }
+                }
+                launch {
+                    viewModel.isEditable.collect {
+                        listAdapter?.isEditable = it
+                        listAdapter?.notifyItemRangeChanged(0, listAdapter?.itemCount ?: 0)
                     }
                 }
                 launch {
@@ -231,8 +235,10 @@ class DocumentContentFragment: Fragment() {
         private val onItemClicked: (Content) -> Unit
     ): ListAdapter<Content, ItemsListAdapter.ItemViewHolder>(DiffCallback) {
 
+        var isEditable: Boolean = false
+
         class ItemViewHolder(private var binding: DocumentContentItemBinding): RecyclerView.ViewHolder(binding.root) {
-            fun bind(item: Content, onItemChecked: (Boolean) -> Unit, imageLoader: (ImageView) -> Unit) {
+            fun bind(item: Content, isEditable: Boolean, onItemChecked: (Boolean) -> Unit, imageLoader: (ImageView) -> Unit) {
                 binding.apply {
                     itemLineNumber.text = "${item.line}"
                     itemDescription.text = item.description
@@ -271,6 +277,7 @@ class DocumentContentFragment: Fragment() {
                     uncheckedOverlay.visibility = if (!item.checked && !item.modified) View.VISIBLE else View.GONE
                     iconStar.visibility = if (item.modified) View.VISIBLE else View.GONE
                     isChecked.isChecked = item.checked
+                    isChecked.isEnabled = isEditable
                     isChecked.setOnCheckedChangeListener { view, isChecked ->
                         if (view.isPressed) {
                             onItemChecked(isChecked)
@@ -313,7 +320,7 @@ class DocumentContentFragment: Fragment() {
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
             val item = getItem(position)
-            holder.bind(getItem(position), { isChecked ->
+            holder.bind(getItem(position), isEditable, { isChecked ->
                 onItemChecked(item.code, isChecked)
             }, { imageView ->
                 imageLoader(item.image, imageView)

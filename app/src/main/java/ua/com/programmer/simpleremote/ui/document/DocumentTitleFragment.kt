@@ -2,7 +2,6 @@ package ua.com.programmer.simpleremote.ui.document
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,11 +47,9 @@ class DocumentTitleFragment: Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.document.collect {
-                        Log.d("RC_TitleFrag", "document collected: guid=${it?.guid}, type=${it?.type}")
                         it?.let {
                             bind(it)
                             viewModel.setDocumentId(it.guid){ type, guid ->
-                                Log.d("RC_TitleFrag", "setDocumentId callback: type=$type, guid=$guid")
                                 sharedViewModel.loadDocumentContent(type, guid)
                             }
                         }
@@ -61,6 +58,13 @@ class DocumentTitleFragment: Fragment() {
                 launch {
                     viewModel.count.collect {
                         binding?.documentArticles?.text = "$it"
+                    }
+                }
+                launch {
+                    viewModel.isEditable.collect { editable ->
+                        binding?.editPlaces?.isEnabled = editable
+                        binding?.documentIsChecked?.isEnabled = editable
+                        binding?.documentNotes?.isClickable = editable
                     }
                 }
             }

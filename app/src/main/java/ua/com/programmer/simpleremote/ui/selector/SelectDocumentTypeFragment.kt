@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.selector
 
-import android.util.Log
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -95,12 +94,10 @@ class SelectDocumentTypeFragment: Fragment() {
     }
 
     private fun checkCachedDocuments() {
-        Log.d("RC_Selector", "checkCachedDocuments: starting check")
         viewLifecycleOwner.lifecycleScope.launch {
             val cached = withContext(Dispatchers.IO) {
                 sharedViewModel.getCachedDocuments()
             }
-            Log.d("RC_Selector", "checkCachedDocuments: found ${cached.size} cached docs")
             if (cached.isNotEmpty()) {
                 showRestoreDialog(cached)
             }
@@ -109,12 +106,10 @@ class SelectDocumentTypeFragment: Fragment() {
 
     private fun showRestoreDialog(cached: List<CachedDocumentData>) {
         val data = cached.first()
-        val displayTitle = data.documentTitle.ifEmpty { data.document.title.ifEmpty { data.document.number } }
-        Log.d("RC_Selector", "showRestoreDialog: guid=${data.document.guid}, type=${data.documentType}, title=$displayTitle, contentSize=${data.content.size}")
 
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restore_unsaved_title)
-            .setMessage(getString(R.string.restore_unsaved_message, displayTitle))
+            .setMessage(getString(R.string.restore_unsaved_message, data.displayTitle))
             .setPositiveButton(R.string.restore) { _, _ ->
                 restoreDocument(data)
             }
@@ -128,13 +123,12 @@ class SelectDocumentTypeFragment: Fragment() {
     }
 
     private fun restoreDocument(data: CachedDocumentData) {
-        Log.d("RC_Selector", "restoreDocument: guid=${data.document.guid}, type=${data.documentType}, contentSize=${data.content.size}")
         sharedViewModel.restoreCachedDocument(data.document, data.content)
         val navController = findNavController()
         if (navController.currentDestination?.id != R.id.selectDocumentTypeFragment) return
         val action = SelectDocumentTypeFragmentDirections.actionSelectDocumentTypeFragmentToDocumentFragment(
             type = data.documentType,
-            title = data.documentTitle.ifEmpty { data.document.title.ifEmpty { data.document.number } },
+            title = data.displayTitle,
         )
         navController.navigate(action)
     }

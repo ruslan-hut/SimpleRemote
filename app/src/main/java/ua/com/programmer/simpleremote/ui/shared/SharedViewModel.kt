@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.shared
 
-import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -70,6 +69,7 @@ class SharedViewModel @Inject constructor(
         return item
     }
 
+    @Volatile
     private var isCaching = false
 
     init {
@@ -112,17 +112,10 @@ class SharedViewModel @Inject constructor(
         documentCacheRepository.scheduleCacheDocument(conn.guid, doc)
     }
 
-    private var _cachedDocumentType = ""
-    private var _cachedDocumentTitle = ""
-
     fun onDocumentLocked(documentType: String = "", documentTitle: String = "") {
         isCaching = true
-        _cachedDocumentType = documentType
-        _cachedDocumentTitle = documentTitle
         val conn = _connection.value ?: return
         val doc = _document.value ?: return
-        val contentSize = _content.value.size
-        Log.d(TAG, "onDocumentLocked: docGuid=${doc.guid}, contentSize=$contentSize, connGuid=${conn.guid}, type=$documentType")
         viewModelScope.launch(Dispatchers.IO) {
             documentCacheRepository.cacheDocument(conn.guid, doc, _content.value, documentType, documentTitle)
         }
@@ -142,25 +135,20 @@ class SharedViewModel @Inject constructor(
     }
 
     suspend fun getCachedDocuments(): List<CachedDocumentData> {
-        val conn = _connection.value
-        Log.d(TAG, "getCachedDocuments: connectionGuid=${conn?.guid}")
-        if (conn == null) return emptyList()
-        val result = documentCacheRepository.getCachedDocuments(conn.guid)
-        Log.d(TAG, "getCachedDocuments: found ${result.size} docs, contentSizes=${result.map { it.content.size }}")
-        return result
+        val conn = _connection.value ?: return emptyList()
+        return documentCacheRepository.getCachedDocuments(conn.guid)
     }
 
+    @Volatile
     private var _isRestoredDocument = false
     val isRestoredDocument: Boolean get() = _isRestoredDocument
 
     fun restoreCachedDocument(document: Document, content: List<Content>) {
-        Log.d(TAG, "restoreCachedDocument: guid=${document.guid}, contentSize=${content.size}, first=${content.firstOrNull()?.description}")
         isCaching = true
         _isRestoredDocument = true
         skipContentLoad = true
         _document.value = document
         _content.value = content
-        Log.d(TAG, "restoreCachedDocument: _content.value.size=${_content.value.size}")
     }
 
     fun consumeRestoredState() {
@@ -191,7 +179,7 @@ class SharedViewModel @Inject constructor(
                 list[index] = item.copy(
                     collect = newCollect,
                     modified = true,
-                    checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+                    checked = (newCollect.toDoubleOrNull() ?: 0.0) == (item.quantity.toDoubleOrNull() ?: 0.0)
                 )
             }
             _content.value = list
@@ -206,7 +194,7 @@ class SharedViewModel @Inject constructor(
                 list[index] = item.copy(
                     collect = newCollect,
                     modified = true,
-                    checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+                    checked = (newCollect.toDoubleOrNull() ?: 0.0) == (item.quantity.toDoubleOrNull() ?: 0.0)
                 )
             } else {
                 val newContent = Content(
@@ -246,7 +234,7 @@ class SharedViewModel @Inject constructor(
             list[index] = item.copy(
                 collect = newCollect,
                 modified = true,
-                checked = (newCollect.toDoubleOrNull() ?: 0.0) >= (item.quantity.toDoubleOrNull() ?: 0.0)
+                checked = (newCollect.toDoubleOrNull() ?: 0.0) == (item.quantity.toDoubleOrNull() ?: 0.0)
             )
         } else {
             val newContent = catalog.toContent(list.size+1)
@@ -259,7 +247,6 @@ class SharedViewModel @Inject constructor(
     }
 
     fun setDocumentContent(content: List<Content>) {
-        Log.d(TAG, "setDocumentContent: size=${content.size}")
         setDocumentModified(true)
         _content.value = content
         checkContent()
@@ -272,19 +259,17 @@ class SharedViewModel @Inject constructor(
 
 
     private var loadContentJob: Job? = null
+    @Volatile
     private var skipContentLoad = false
 
     fun loadDocumentContent(type:String, guid: String) {
-        Log.d(TAG, "loadDocumentContent: type=$type, guid=$guid, skipContentLoad=$skipContentLoad, currentContentSize=${_content.value.size}")
         if (skipContentLoad) {
             skipContentLoad = false
-            Log.d(TAG, "loadDocumentContent: SKIPPED (restored doc)")
             return
         }
         loadContentJob?.cancel()
         loadContentJob = viewModelScope.launch {
             networkRepository.documentContent(type, guid).collect {
-                Log.d(TAG, "loadDocumentContent: NETWORK RESULT size=${it.size}")
                 _content.value = it
             }
         }
@@ -399,7 +384,4 @@ class SharedViewModel @Inject constructor(
         imageLoader.loadFile(file, view)
     }
 
-    companion object {
-        private const val TAG = "RC_SharedVM"
-    }
 }

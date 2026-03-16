@@ -48,7 +48,6 @@ class GlobalModule {
                             "connection_guid TEXT NOT NULL DEFAULT ''," +
                             "document_guid TEXT NOT NULL DEFAULT ''," +
                             "document_type TEXT NOT NULL DEFAULT ''," +
-                            "document_title TEXT NOT NULL DEFAULT ''," +
                             "document_json TEXT NOT NULL DEFAULT ''," +
                             "created_at INTEGER NOT NULL DEFAULT 0," +
                             "updated_at INTEGER NOT NULL DEFAULT 0)"

@@ -1,6 +1,5 @@
 package ua.com.programmer.simpleremote.ui.document
 
-import android.util.Log
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -96,7 +95,6 @@ class DocumentFragment: Fragment(), MenuProvider {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.content.collect {
-                        Log.d("RC_DocFrag", "content collected: size=${it.size}")
                         viewModel.setDocumentContent(it){
                             sharedViewModel.checkContent()
                         }
@@ -122,7 +120,6 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         if (sharedViewModel.isRestoredDocument) {
-            Log.d("RC_DocFrag", "RESTORED document detected, setting editable, contentSize=${sharedViewModel.content.value.size}")
             sharedViewModel.consumeRestoredState()
             viewModel.setEditable(true)
         }

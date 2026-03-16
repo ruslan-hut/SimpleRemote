@@ -29,7 +29,7 @@ class ItemEditViewModel @Inject constructor(
             collect = newQty
             modified = true
             notes = editNotes
-            checked = (newQty.toDoubleOrNull() ?: 0.0) >= (quantity.toDoubleOrNull() ?: 0.0)
+            checked = (newQty.toDoubleOrNull() ?: 0.0) == (quantity.toDoubleOrNull() ?: 0.0)
             userImage = product.getImage()
             encodedImage = fileManager.getFileData(product.getImage())
         }

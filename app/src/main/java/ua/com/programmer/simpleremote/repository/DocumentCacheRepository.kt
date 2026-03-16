@@ -9,7 +9,10 @@ data class CachedDocumentData(
     val content: List<Content>,
     val documentType: String,
     val documentTitle: String,
-)
+) {
+    val displayTitle: String
+        get() = documentTitle.ifEmpty { document.title.ifEmpty { document.number } }
+}
 
 interface DocumentCacheRepository {
     suspend fun cacheDocument(connectionGuid: String, document: Document, content: List<Content>, documentType: String, documentTitle: String)

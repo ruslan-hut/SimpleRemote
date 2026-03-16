@@ -1,15 +1,13 @@
 package ua.com.programmer.simpleremote.dao.impl
 
-import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import ua.com.programmer.simpleremote.dao.database.DocumentCacheDao
 import ua.com.programmer.simpleremote.dao.entity.CachedContentLine
 import ua.com.programmer.simpleremote.dao.entity.CachedDocument
@@ -42,19 +40,18 @@ class DocumentCacheRepositoryImpl @Inject constructor(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val pendingWrites = MutableSharedFlow<PendingWrite>(
-        replay = 0,
-        extraBufferCapacity = 64,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val pendingChannel = Channel<PendingWrite>(capacity = 64)
 
     init {
         scope.launch {
             val buffer = mutableMapOf<String, PendingWrite>()
-            pendingWrites.collect { write ->
+            for (write in pendingChannel) {
                 buffer[write.cacheId] = write
-                // Debounce: wait 300ms then flush all buffered writes
-                delay(300)
+                // Debounce: drain additional items arriving within 300ms
+                while (true) {
+                    val next = withTimeoutOrNull(300) { pendingChannel.receive() }
+                    if (next != null) buffer[next.cacheId] = next else break
+                }
                 val snapshot = buffer.toMap()
                 buffer.clear()
                 for ((_, pending) in snapshot) {
@@ -77,7 +74,7 @@ class DocumentCacheRepositoryImpl @Inject constructor(
                                 dao.updateDocumentData(pending.cacheId, docJson, now)
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // Silently ignore write failures — cache is best-effort
                     }
                 }
@@ -99,7 +96,6 @@ class DocumentCacheRepositoryImpl @Inject constructor(
         val cacheId = buildCacheId(connectionGuid, document.guid)
         val now = System.currentTimeMillis()
         val docJson = gson.toJson(document.copy(lines = emptyList()))
-        Log.d(TAG, "cacheDocument: cacheId=$cacheId, contentSize=${content.size}, docGuid=${document.guid}, type=$documentType")
 
         dao.insertDocument(
             CachedDocument(
@@ -130,34 +126,30 @@ class DocumentCacheRepositoryImpl @Inject constructor(
         content: List<Content>
     ) {
         val cacheId = buildCacheId(connectionGuid, documentGuid)
-        pendingWrites.tryEmit(PendingWrite.ContentWrite(cacheId, content))
+        pendingChannel.trySend(PendingWrite.ContentWrite(cacheId, content))
     }
 
     override fun scheduleCacheDocument(connectionGuid: String, document: Document) {
         val cacheId = buildCacheId(connectionGuid, document.guid)
-        pendingWrites.tryEmit(PendingWrite.DocumentWrite(cacheId, document))
+        pendingChannel.trySend(PendingWrite.DocumentWrite(cacheId, document))
     }
 
     override suspend fun getCachedDocuments(connectionGuid: String): List<CachedDocumentData> {
         val cachedDocs = dao.getCachedDocuments(connectionGuid)
-        Log.d(TAG, "getCachedDocuments: connectionGuid=$connectionGuid, found=${cachedDocs.size} docs")
         return cachedDocs.mapNotNull { cached ->
             try {
                 val document = gson.fromJson(cached.documentJson, Document::class.java)
                 val rawLines = dao.getContentLines(cached.id)
-                Log.d(TAG, "getCachedDocuments: cacheId=${cached.id}, rawLines=${rawLines.size}, docGuid=${document.guid}, type=${cached.documentType}")
                 val contentLines = rawLines.map { line ->
                     gson.fromJson(line.contentJson, Content::class.java)
                 }
-                Log.d(TAG, "getCachedDocuments: deserialized ${contentLines.size} content lines, first=${contentLines.firstOrNull()?.description}")
                 CachedDocumentData(
                     document = document,
                     content = contentLines,
                     documentType = cached.documentType,
                     documentTitle = cached.documentTitle,
                 )
-            } catch (e: Exception) {
-                Log.e(TAG, "getCachedDocuments: failed to deserialize cached=${cached.id}", e)
+            } catch (_: Exception) {
                 dao.deleteDocument(cached.id)
                 null
             }
@@ -176,10 +168,5 @@ class DocumentCacheRepositoryImpl @Inject constructor(
     override suspend fun cleanupStaleCache(maxAgeHours: Long) {
         val threshold = System.currentTimeMillis() - (maxAgeHours * 60 * 60 * 1000)
         dao.deleteStaleDocuments(threshold)
-        Log.d(TAG, "cleanupStaleCache: cleaned entries older than ${maxAgeHours}h")
-    }
-
-    companion object {
-        private const val TAG = "RC_DocCache"
     }
 }
