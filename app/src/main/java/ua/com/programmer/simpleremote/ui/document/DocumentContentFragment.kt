@@ -1,5 +1,6 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.util.Log
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -146,6 +147,7 @@ class DocumentContentFragment: Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.content.collect {
+                        Log.d("RC_ContentFrag", "content collected: size=${it.size}, first=${it.firstOrNull()?.description}")
                         listAdapter?.submitList(it)
                         binding?.emptyState?.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
                     }

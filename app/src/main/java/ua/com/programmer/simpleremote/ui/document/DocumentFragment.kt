@@ -1,5 +1,6 @@
 package ua.com.programmer.simpleremote.ui.document
 
+import android.util.Log
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -95,6 +96,7 @@ class DocumentFragment: Fragment(), MenuProvider {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.content.collect {
+                        Log.d("RC_DocFrag", "content collected: size=${it.size}")
                         viewModel.setDocumentContent(it){
                             sharedViewModel.checkContent()
                         }
@@ -115,6 +117,13 @@ class DocumentFragment: Fragment(), MenuProvider {
         }
 
         if (isNewDocument) {
+            viewModel.setEditable(true)
+            sharedViewModel.onDocumentLocked(viewModel.getType(), viewModel.getTitle())
+        }
+
+        if (sharedViewModel.isRestoredDocument) {
+            Log.d("RC_DocFrag", "RESTORED document detected, setting editable, contentSize=${sharedViewModel.content.value.size}")
+            sharedViewModel.consumeRestoredState()
             viewModel.setEditable(true)
         }
 
@@ -191,6 +200,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_unlock_success))
+                sharedViewModel.onDocumentUnlocked()
                 dialog.window?.decorView?.postDelayed({
                     dialog.dismiss()
                     onSuccess?.invoke()
@@ -225,6 +235,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_lock_success))
+                sharedViewModel.onDocumentLocked(viewModel.getType(), viewModel.getTitle())
                 dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1000)
             },
             onError = { message ->
@@ -242,6 +253,7 @@ class DocumentFragment: Fragment(), MenuProvider {
     }
 
     private fun onSuccess() {
+        sharedViewModel.onDocumentSaved()
         sharedViewModel.setDocumentModified(false)
         if (sharedViewModel.autoCloseDocument()) {
             val dialog = AlertDialog.Builder(requireContext())

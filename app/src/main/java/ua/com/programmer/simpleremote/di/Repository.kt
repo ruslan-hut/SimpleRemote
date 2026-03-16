@@ -10,10 +10,14 @@ import java.util.concurrent.TimeUnit
 import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.dao.database.AppDatabase
 import ua.com.programmer.simpleremote.dao.database.ConnectionSettingsDao
+import com.google.gson.Gson
+import ua.com.programmer.simpleremote.dao.database.DocumentCacheDao
 import ua.com.programmer.simpleremote.dao.impl.ConnectionSettingsImpl
+import ua.com.programmer.simpleremote.dao.impl.DocumentCacheRepositoryImpl
 import ua.com.programmer.simpleremote.http.client.HttpAuthInterceptor
 import ua.com.programmer.simpleremote.http.client.TokenRefresh
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
+import ua.com.programmer.simpleremote.repository.DocumentCacheRepository
 import javax.inject.Singleton
 
 @Module
@@ -24,6 +28,12 @@ class Repository {
     @Singleton
     fun provideConnectionRepository(dao: ConnectionSettingsDao, database: AppDatabase): ConnectionSettingsRepository {
         return ConnectionSettingsImpl(dao, database)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentCacheRepository(dao: DocumentCacheDao, gson: Gson): DocumentCacheRepository {
+        return DocumentCacheRepositoryImpl(dao, gson)
     }
 
 }

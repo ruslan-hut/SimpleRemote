@@ -10,6 +10,9 @@
         <action
             android:id="@+id/action_selectDocumentTypeFragment_to_documentListFragment"
             app:destination="@id/documentListFragment" />
+        <action
+            android:id="@+id/action_selectDocumentTypeFragment_to_documentFragment"
+            app:destination="@id/documentFragment" />
     </fragment>
     <fragment
         android:id="@+id/connectionsListFragment"

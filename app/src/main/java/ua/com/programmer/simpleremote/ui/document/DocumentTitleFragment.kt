@@ -48,9 +48,11 @@ class DocumentTitleFragment: Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     sharedViewModel.document.collect {
+                        Log.d("RC_TitleFrag", "document collected: guid=${it?.guid}, type=${it?.type}")
                         it?.let {
                             bind(it)
                             viewModel.setDocumentId(it.guid){ type, guid ->
+                                Log.d("RC_TitleFrag", "setDocumentId callback: type=$type, guid=$guid")
                                 sharedViewModel.loadDocumentContent(type, guid)
                             }
                         }

@@ -119,4 +119,8 @@
     <string name="confirm_delete_document">Delete this document?</string>
     <string name="new_document">New document</string>
     <string name="create">Create</string>
+    <string name="restore_unsaved_title">Unsaved changes found</string>
+    <string name="restore_unsaved_message">Document \"%1$s\" has unsaved changes. Restore?</string>
+    <string name="restore">Restore</string>
+    <string name="discard">Discard</string>
 </resources>

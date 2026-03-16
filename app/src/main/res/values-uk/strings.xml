@@ -120,4 +120,8 @@
     <string name="confirm_delete_document">Видалити цей документ?</string>
     <string name="new_document">Новий документ</string>
     <string name="create">Створити</string>
+    <string name="restore_unsaved_title">Знайдено незбережені зміни</string>
+    <string name="restore_unsaved_message">Документ \"%1$s\" має незбережені зміни. Відновити?</string>
+    <string name="restore">Відновити</string>
+    <string name="discard">Відхилити</string>
 </resources>
