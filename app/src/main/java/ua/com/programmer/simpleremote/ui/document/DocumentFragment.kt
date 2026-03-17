@@ -192,8 +192,9 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.requestEditUnlock(
             documentGuid = sharedViewModel.getDocument().guid,
             onSuccess = {
-                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorPrimaryContainer)
-                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnPrimaryContainer)
+                val v = view ?: run { dialog.dismiss(); return@requestEditUnlock }
+                val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorPrimaryContainer)
+                val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnPrimaryContainer)
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_unlock_success))
@@ -204,8 +205,9 @@ class DocumentFragment: Fragment(), MenuProvider {
                 }, 1000)
             },
             onError = { message ->
-                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorErrorContainer)
-                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnErrorContainer)
+                val v = view ?: run { dialog.dismiss(); return@requestEditUnlock }
+                val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorErrorContainer)
+                val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnErrorContainer)
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_unlock_error, message))
@@ -227,8 +229,9 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.requestEditLock(
             documentGuid = sharedViewModel.getDocument().guid,
             onSuccess = {
-                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorPrimaryContainer)
-                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnPrimaryContainer)
+                val v = view ?: run { dialog.dismiss(); return@requestEditLock }
+                val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorPrimaryContainer)
+                val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnPrimaryContainer)
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_lock_success))
@@ -236,8 +239,9 @@ class DocumentFragment: Fragment(), MenuProvider {
                 dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1000)
             },
             onError = { message ->
-                val bgColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorErrorContainer)
-                val textColor = MaterialColors.getColor(requireView(), com.google.android.material.R.attr.colorOnErrorContainer)
+                val v = view ?: run { dialog.dismiss(); return@requestEditLock }
+                val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorErrorContainer)
+                val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnErrorContainer)
                 dialog.window?.decorView?.setBackgroundColor(bgColor)
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_lock_error, message))
