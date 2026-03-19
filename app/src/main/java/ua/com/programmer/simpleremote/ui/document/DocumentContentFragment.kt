@@ -71,7 +71,7 @@ class DocumentContentFragment: Fragment() {
         recycler?.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(4)
             setHasFixedSize(true)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -225,6 +225,9 @@ class DocumentContentFragment: Fragment() {
     }
 
     override fun onDestroyView() {
+        recycler?.adapter = null
+        recycler = null
+        listAdapter = null
         super.onDestroyView()
         _binding = null
     }

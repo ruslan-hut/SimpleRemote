@@ -1,6 +1,7 @@
 package ua.com.programmer.simpleremote.ui.document
 
 import android.app.Dialog
+import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -14,7 +15,12 @@ fun showImageDialog(imageView: ImageView) {
     val fullscreenImage = dialogView.findViewById<ImageView>(R.id.fullscreen_image)
     val container = dialogView.findViewById<FrameLayout>(R.id.fullscreen_container)
 
-    fullscreenImage.setImageDrawable(imageView.drawable)
+    val srcDrawable = imageView.drawable
+    if (srcDrawable is BitmapDrawable) {
+        fullscreenImage.setImageBitmap(srcDrawable.bitmap)
+    } else {
+        fullscreenImage.setImageDrawable(srcDrawable)
+    }
 
     val metrics = context.resources.displayMetrics
     val horizontalPadding = (metrics.widthPixels * 0.05).toInt()
@@ -24,6 +30,11 @@ fun showImageDialog(imageView: ImageView) {
     dialog.setContentView(dialogView)
     dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+    dialog.setOnDismissListener {
+        fullscreenImage.setImageDrawable(null)
+    }
+
     dialog.show()
 
     container.setOnClickListener { dialog.dismiss() }

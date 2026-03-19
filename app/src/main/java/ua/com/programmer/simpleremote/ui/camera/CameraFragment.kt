@@ -260,6 +260,8 @@ class CameraFragment: Fragment() {
         super.onDestroyView()
         toneGenerator?.release()
         toneGenerator = null
+        cameraView = null
+        imageCapture = null
         cameraExecutor.shutdown()
         _binding = null
     }

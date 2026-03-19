@@ -192,6 +192,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.requestEditUnlock(
             documentGuid = sharedViewModel.getDocument().guid,
             onSuccess = {
+                if (!isAdded) { dialog.dismiss(); return@requestEditUnlock }
                 val v = view ?: run { dialog.dismiss(); return@requestEditUnlock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorPrimaryContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnPrimaryContainer)
@@ -201,10 +202,11 @@ class DocumentFragment: Fragment(), MenuProvider {
                 sharedViewModel.onDocumentUnlocked()
                 dialog.window?.decorView?.postDelayed({
                     dialog.dismiss()
-                    onSuccess?.invoke()
+                    if (isAdded) onSuccess?.invoke()
                 }, 1000)
             },
             onError = { message ->
+                if (!isAdded) { dialog.dismiss(); return@requestEditUnlock }
                 val v = view ?: run { dialog.dismiss(); return@requestEditUnlock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorErrorContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnErrorContainer)
@@ -229,6 +231,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.requestEditLock(
             documentGuid = sharedViewModel.getDocument().guid,
             onSuccess = {
+                if (!isAdded) { dialog.dismiss(); return@requestEditLock }
                 val v = view ?: run { dialog.dismiss(); return@requestEditLock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorPrimaryContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnPrimaryContainer)
@@ -239,6 +242,7 @@ class DocumentFragment: Fragment(), MenuProvider {
                 dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1000)
             },
             onError = { message ->
+                if (!isAdded) { dialog.dismiss(); return@requestEditLock }
                 val v = view ?: run { dialog.dismiss(); return@requestEditLock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorErrorContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnErrorContainer)

@@ -70,7 +70,7 @@ class ImageLoader @Inject constructor(context: Context) {
                 ?.override(view.width.takeIf { it > 0 } ?: 240, view.height.takeIf { it > 0 } ?: 240)
                 ?.centerCrop()
                 ?.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                ?.format(DecodeFormat.PREFER_ARGB_8888)
+                ?.format(DecodeFormat.PREFER_RGB_565)
                 ?.dontAnimate()
                 ?.placeholder(R.drawable.baseline_downloading_24)
                 ?.error(R.drawable.baseline_block_24)?.into(view)
