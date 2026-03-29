@@ -231,7 +231,7 @@ class DocumentFragment: Fragment(), MenuProvider {
         viewModel.requestEditLock(
             documentGuid = sharedViewModel.getDocument().guid,
             onSuccess = {
-                if (!isAdded) { dialog.dismiss(); return@requestEditLock }
+                if (!isAdded || !dialog.isShowing) return@requestEditLock
                 val v = view ?: run { dialog.dismiss(); return@requestEditLock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorPrimaryContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnPrimaryContainer)
@@ -239,10 +239,12 @@ class DocumentFragment: Fragment(), MenuProvider {
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(textColor)
                 dialog.setMessage(getString(R.string.edit_lock_success))
                 sharedViewModel.onDocumentLocked(viewModel.getType(), viewModel.getTitle())
-                dialog.window?.decorView?.postDelayed({ dialog.dismiss() }, 1000)
+                dialog.window?.decorView?.postDelayed({
+                    if (dialog.isShowing) dialog.dismiss()
+                }, 1000)
             },
             onError = { message ->
-                if (!isAdded) { dialog.dismiss(); return@requestEditLock }
+                if (!isAdded || !dialog.isShowing) return@requestEditLock
                 val v = view ?: run { dialog.dismiss(); return@requestEditLock }
                 val bgColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorErrorContainer)
                 val textColor = MaterialColors.getColor(v, com.google.android.material.R.attr.colorOnErrorContainer)
