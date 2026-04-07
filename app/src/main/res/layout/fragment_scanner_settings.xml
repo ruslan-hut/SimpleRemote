@@ -87,14 +87,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Enter" />
+                android:text="@string/scanner_terminator_enter" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/terminator_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Tab" />
+                android:text="@string/scanner_terminator_tab" />
 
         </RadioGroup>
 

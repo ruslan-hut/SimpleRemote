@@ -128,8 +128,8 @@ class DocumentFragment: Fragment(), MenuProvider {
             val navController = findNavController()
             if (navController.currentDestination?.id != R.id.documentFragment) return@setOnClickListener
             val action = DocumentFragmentDirections.actionDocumentFragmentToCatalogListFragment(
-                type = "Товары",
-                title = "Товары",
+                type = getString(R.string.title_products),
+                title = getString(R.string.title_products),
                 group = "",
             )
             navController.navigate(action)

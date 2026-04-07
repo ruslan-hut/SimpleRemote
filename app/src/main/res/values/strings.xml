@@ -77,6 +77,7 @@
     <string name="filter_label_warehouse">Warehouse: %1$s</string>
     <string name="filter_label_date">Date: %1$s</string>
     <string name="search">Search</string>
+    <string name="filter">Filter</string>
     <string name="empty_list">List is empty</string>
     <string name="edit_lock_progress">Trying to catch the document…</string>
     <string name="edit_lock_success">Document caught for editing</string>
@@ -92,6 +93,8 @@
     <string name="scanner_min_length_description">Minimum characters before Enter/Tab triggers a scan. Reduce for short barcodes like EAN-8 (1–20, default 4)</string>
     <string name="scanner_terminator_hint">Terminator key</string>
     <string name="scanner_terminator_both">Both</string>
+    <string name="scanner_terminator_enter">Enter</string>
+    <string name="scanner_terminator_tab">Tab</string>
     <string name="scanner_prefix_hint">Prefix to strip</string>
     <string name="scanner_suffix_hint">Suffix to strip</string>
     <string name="scanner_prefix_suffix_description">Some scanners add prefix/suffix characters to the barcode. These will be removed before processing</string>

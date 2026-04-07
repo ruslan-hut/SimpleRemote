@@ -78,6 +78,7 @@
     <string name="filter_label_warehouse">Склад: %1$s</string>
     <string name="filter_label_date">Дата: %1$s</string>
     <string name="search">Пошук</string>
+    <string name="filter">Фільтр</string>
     <string name="empty_list">Список порожній</string>
     <string name="edit_lock_progress">Намагаємось захопити документ…</string>
     <string name="edit_lock_success">Документ захоплено для редагування</string>
@@ -93,6 +94,8 @@
     <string name="scanner_min_length_description">Мінімальна кількість символів для розпізнавання сканування. Зменшіть для коротких штрихкодів типу EAN-8 (1–20, за замовчуванням 4)</string>
     <string name="scanner_terminator_hint">Клавіша завершення</string>
     <string name="scanner_terminator_both">Обидві</string>
+    <string name="scanner_terminator_enter">Enter</string>
+    <string name="scanner_terminator_tab">Tab</string>
     <string name="scanner_prefix_hint">Префікс для видалення</string>
     <string name="scanner_suffix_hint">Суфікс для видалення</string>
     <string name="scanner_prefix_suffix_description">Деякі сканери додають префікс/суфікс до штрихкоду. Вони будуть видалені перед обробкою</string>
