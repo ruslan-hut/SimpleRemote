@@ -19,7 +19,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
-import ua.com.programmer.simpleremote.BuildConfig
 import ua.com.programmer.simpleremote.MainActivity
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentScannerSettingsBinding
@@ -89,19 +88,22 @@ class ScannerSettingsFragment : Fragment(), MenuProvider {
         }
 
         binding.diagCopy.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
             if (diag.eventCount == 0) {
-                Toast.makeText(activity, getString(R.string.diag_no_data), Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, getString(R.string.diag_no_data), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val text = diag.exportAsText()
-            val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                ?: return@setOnClickListener
             clipboard.setPrimaryClip(ClipData.newPlainText("Scanner Diagnostics", text))
-            Toast.makeText(activity, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
         }
 
         binding.diagUpload.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
             if (diag.eventCount == 0) {
-                Toast.makeText(activity, getString(R.string.diag_no_data), Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, getString(R.string.diag_no_data), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             uploadToFirestore(diag)
@@ -130,20 +132,23 @@ class ScannerSettingsFragment : Fragment(), MenuProvider {
                 .document(docId)
                 .set(data)
                 .addOnSuccessListener {
-                    Toast.makeText(activity, getString(R.string.diag_uploaded), Toast.LENGTH_SHORT).show()
+                    val ctx = context ?: return@addOnSuccessListener
+                    Toast.makeText(ctx, getString(R.string.diag_uploaded), Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
                     FirebaseCrashlytics.getInstance().recordException(e)
-                    Toast.makeText(activity, getString(R.string.diag_upload_error), Toast.LENGTH_SHORT).show()
+                    val ctx = context ?: return@addOnFailureListener
+                    Toast.makeText(ctx, getString(R.string.diag_upload_error), Toast.LENGTH_SHORT).show()
                 }
         }
 
         if (auth.currentUser == null) {
-            auth.signInWithEmailAndPassword(BuildConfig.FIREBASE_EMAIL, BuildConfig.FIREBASE_PASSWORD)
+            auth.signInAnonymously()
                 .addOnSuccessListener { doUpload() }
                 .addOnFailureListener { e ->
                     FirebaseCrashlytics.getInstance().recordException(e)
-                    Toast.makeText(activity, getString(R.string.diag_upload_error), Toast.LENGTH_SHORT).show()
+                    val ctx = context ?: return@addOnFailureListener
+                    Toast.makeText(ctx, getString(R.string.diag_upload_error), Toast.LENGTH_SHORT).show()
                 }
         } else {
             doUpload()
@@ -168,7 +173,7 @@ class ScannerSettingsFragment : Fragment(), MenuProvider {
         scannerSettings.prefixToStrip = binding.prefixToStrip.text.toString()
         scannerSettings.suffixToStrip = binding.suffixToStrip.text.toString()
 
-        Toast.makeText(activity, getString(R.string.toast_saved), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.toast_saved), Toast.LENGTH_SHORT).show()
         findNavController().popBackStack()
     }
 

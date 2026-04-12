@@ -14,7 +14,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.lang.Exception
 
-class BarcodeImageAnalyzer(barcodeFoundListener: BarcodeFoundListener) : ImageAnalysis.Analyzer {
+class BarcodeImageAnalyzer(barcodeFoundListener: BarcodeFoundListener) : ImageAnalysis.Analyzer, AutoCloseable {
     private val listener: BarcodeFoundListener = barcodeFoundListener
     private val scanner: BarcodeScanner
 
@@ -23,6 +23,10 @@ class BarcodeImageAnalyzer(barcodeFoundListener: BarcodeFoundListener) : ImageAn
             BarcodeScannerOptions.Builder() //.setBarcodeFormats(com.google.mlkit.vision.barcode.Barcode.FORMAT_EAN_13, com.google.mlkit.vision.barcode.Barcode.FORMAT_QR_CODE)
                 .build()
         scanner = BarcodeScanning.getClient(options)
+    }
+
+    override fun close() {
+        scanner.close()
     }
 
     override fun analyze(imageProxy: ImageProxy) {

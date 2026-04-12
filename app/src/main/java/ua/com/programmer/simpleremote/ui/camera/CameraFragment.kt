@@ -69,9 +69,8 @@ class CameraFragment: Fragment() {
     private val cameraProvider: ListenableFuture<ProcessCameraProvider> by lazy {
         ProcessCameraProvider.getInstance(requireContext())
     }
-    private val cameraExecutor: ExecutorService by lazy {
-        Executors.newSingleThreadExecutor()
-    }
+    private var cameraExecutor: ExecutorService? = null
+    private var barcodeAnalyzer: BarcodeImageAnalyzer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +95,7 @@ class CameraFragment: Fragment() {
         }
 
         outputDirectory = requireContext().filesDir
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
         binding.buttonRepeat.setOnClickListener {
             resetCamera()
@@ -149,26 +149,27 @@ class CameraFragment: Fragment() {
             cameraProvider.unbindAll()
 
             if (scanMode) {
+                val executor = cameraExecutor ?: return@Runnable
                 val imageAnalysis = ImageAnalysis.Builder().build()
-                imageAnalysis.setAnalyzer(
-                    cameraExecutor,
-                    BarcodeImageAnalyzer(object : BarcodeFoundListener {
-                        override fun onBarcodeFound(barCode: String?, format: Int) {
-                            val code = barCode ?: ""
-                            makeBeep()
-                            if (code.isNotEmpty()) {
-                                sharedViewModel.onBarcodeRead(barCode ?: "")
-                                stopCamera {
-                                    findNavController().popBackStack()
-                                }
+                barcodeAnalyzer?.close()
+                val analyzer = BarcodeImageAnalyzer(object : BarcodeFoundListener {
+                    override fun onBarcodeFound(barCode: String?, format: Int) {
+                        val code = barCode ?: ""
+                        makeBeep()
+                        if (code.isNotEmpty()) {
+                            sharedViewModel.onBarcodeRead(barCode ?: "")
+                            stopCamera {
+                                findNavController().popBackStack()
                             }
                         }
+                    }
 
-                        override fun onCodeNotFound(error: String?) {
-                            Log.d("RC_CameraFragment", "onCodeNotFound: $error")
-                        }
-                    })
-                )
+                    override fun onCodeNotFound(error: String?) {
+                        Log.d("RC_CameraFragment", "onCodeNotFound: $error")
+                    }
+                })
+                barcodeAnalyzer = analyzer
+                imageAnalysis.setAnalyzer(executor, analyzer)
                 try {
                     cameraProvider.bindToLifecycle(
                         viewLifecycleOwner,
@@ -239,7 +240,8 @@ class CameraFragment: Fragment() {
 
         makeBeep()
 
-        imageCapture!!.takePicture(fileOptions, cameraExecutor, object :
+        val executor = cameraExecutor ?: return
+        imageCapture!!.takePicture(fileOptions, executor, object :
             ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 Log.d("RC_CameraFragment", "Image saved: ${outputFileResults.savedUri}")
@@ -262,7 +264,10 @@ class CameraFragment: Fragment() {
         toneGenerator = null
         cameraView = null
         imageCapture = null
-        cameraExecutor.shutdown()
+        barcodeAnalyzer?.close()
+        barcodeAnalyzer = null
+        cameraExecutor?.shutdown()
+        cameraExecutor = null
         _binding = null
     }
 }

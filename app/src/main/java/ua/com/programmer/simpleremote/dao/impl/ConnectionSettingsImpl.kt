@@ -13,8 +13,9 @@ import ua.com.programmer.simpleremote.dao.entity.ConnectionSettings
 import ua.com.programmer.simpleremote.dao.entity.isDemo
 import ua.com.programmer.simpleremote.entity.UserInfo
 import ua.com.programmer.simpleremote.repository.ConnectionSettingsRepository
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,14 +66,14 @@ class ConnectionSettingsImpl @Inject constructor(
                 connectionSettingsDao.setIsCurrent(first.guid)
                 return
             }
-            val demo = ConnectionSettings.Builder.buildDemo()
+            val demo = ConnectionSettings.buildDemo()
             connectionSettingsDao.insert(demo)
             connectionSettingsDao.setIsCurrent(demo.guid)
         }
     }
 
     private fun getCurrentDate(): String {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
     }
 
     private fun writeUserInfo(connection: ConnectionSettings) {
@@ -95,7 +96,7 @@ class ConnectionSettingsImpl @Inject constructor(
         val auth = FirebaseAuth.getInstance()
 
         if (auth.currentUser == null) {
-            auth.signInWithEmailAndPassword(BuildConfig.FIREBASE_EMAIL, BuildConfig.FIREBASE_PASSWORD)
+            auth.signInAnonymously()
                 .addOnSuccessListener { writeUserInfo(connection) }
                 .addOnFailureListener { e -> logger.recordException(e) }
         } else {

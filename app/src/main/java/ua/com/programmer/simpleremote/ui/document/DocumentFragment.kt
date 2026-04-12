@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuHost
@@ -168,11 +169,15 @@ class DocumentFragment: Fragment(), MenuProvider {
                 requestDeleteDocument()
             }
             R.id.save_document -> {
-                viewModel.saveDocument(
-                    document = sharedViewModel.getDocument(),
-                    onSuccess = ::onSuccess,
-                    onError = ::onError
-                )
+                if (!viewModel.isEditable.value) {
+                    Toast.makeText(requireContext(), R.string.warn_not_editable, Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.saveDocument(
+                        document = sharedViewModel.getDocument(),
+                        onSuccess = ::onSuccess,
+                        onError = ::onError
+                    )
+                }
             }
             R.id.refresh -> {
                 sharedViewModel.loadDocumentContent(viewModel.getType(), viewModel.getDocGuid())

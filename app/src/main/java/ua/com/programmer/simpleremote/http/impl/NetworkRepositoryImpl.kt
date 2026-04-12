@@ -3,10 +3,12 @@ package ua.com.programmer.simpleremote.http.impl
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -83,14 +85,13 @@ class NetworkRepositoryImpl @Inject constructor(
         }
     }
 
-    private val catalogCache = object : LinkedHashMap<String, List<Catalog>>(16, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<Catalog>>): Boolean {
-            return size > 50
-        }
-    }
+    private val catalogCache = java.util.concurrent.ConcurrentHashMap<String, List<Catalog>>()
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private val tokenDispatcher = newSingleThreadContext("token-refresh")
 
     init {
-        tokenRefresh.setRefreshToken { runBlocking(Dispatchers.IO) { refreshToken() } }
+        tokenRefresh.setRefreshToken { runBlocking(tokenDispatcher) { refreshToken() } }
 
         _activeConnection.filterNotNull().onEach { settings ->
             Log.w("RC_NetworkRepository", "connection changed: ${settings.description}")
@@ -267,7 +268,7 @@ class NetworkRepositoryImpl @Inject constructor(
         }
 
         val cacheKey = "$type|$group|$searchFilter"
-        val cached = synchronized(catalogCache) { catalogCache[cacheKey] }
+        val cached = catalogCache[cacheKey]
         if (cached != null) {
             emit(cached)
             return@flow
@@ -289,7 +290,7 @@ class NetworkRepositoryImpl @Inject constructor(
             val response = apiService?.getCatalog(options.token, body)
             if (response != null && response.isSuccessful()) {
                 val items = response.data.filterNotNull()
-                synchronized(catalogCache) { catalogCache[cacheKey] = items }
+                catalogCache[cacheKey] = items
                 emit(items)
             } else {
                 val msg = response?.message?.ifEmpty { null } ?: "Failed to fetch catalog"
@@ -427,7 +428,7 @@ class NetworkRepositoryImpl @Inject constructor(
 
         if (this.baseUrl == baseUrl) return
 
-        synchronized(catalogCache) { catalogCache.clear() }
+        catalogCache.clear()
 
         Log.d("RC_NetworkRepository", "init connection; base url: $baseUrl")
         try {
