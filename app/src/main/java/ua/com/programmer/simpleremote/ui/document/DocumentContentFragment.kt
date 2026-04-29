@@ -173,6 +173,15 @@ class DocumentContentFragment: Fragment() {
         }
     }
 
+    private fun showBarcodeNotFoundDialog() {
+        if (!isAdded) return
+        AlertDialog.Builder(requireContext())
+            .setMessage(R.string.warn_no_barcode)
+            .setPositiveButton(android.R.string.ok, null)
+            .setCancelable(true)
+            .show()
+    }
+
     private fun showNotEditableWarning() {
         val dialog = AlertDialog.Builder(requireContext())
             .setMessage(R.string.warn_not_editable)
@@ -200,7 +209,7 @@ class DocumentContentFragment: Fragment() {
 
     private fun scrollToProduct(product: Product) {
         if (product.id.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.warn_no_barcode, Toast.LENGTH_SHORT).show()
+            showBarcodeNotFoundDialog()
             return
         }
 

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -136,8 +137,34 @@ class CameraFragment: Fragment() {
                         binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
                     }
                 }
+                launch {
+                    viewModel.scanResult.collect { result ->
+                        if (result.product.id.isEmpty()) {
+                            viewModel.pauseScan()
+                            showBarcodeNotFoundDialog(result.barcode)
+                        } else {
+                            viewModel.pauseScan()
+                            sharedViewModel.onBarcodeRead(result.barcode)
+                            stopCamera { findNavController().popBackStack() }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private var notFoundDialog: AlertDialog? = null
+
+    private fun showBarcodeNotFoundDialog(barcode: String) {
+        if (!isAdded) return
+        notFoundDialog?.dismiss()
+        val message = getString(R.string.warn_no_barcode) + "\n" + barcode
+        notFoundDialog = AlertDialog.Builder(requireContext())
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .setCancelable(true)
+            .setOnDismissListener { viewModel.resumeScan() }
+            .show()
     }
 
     private fun setupCamera(scanMode: Boolean) {
@@ -169,13 +196,10 @@ class CameraFragment: Fragment() {
                 val analyzer = BarcodeImageAnalyzer(object : BarcodeFoundListener {
                     override fun onBarcodeFound(barCode: String?, format: Int) {
                         val code = barCode ?: ""
+                        if (code.isEmpty()) return
+                        if (viewModel.scanPaused.value) return
                         makeBeep()
-                        if (code.isNotEmpty()) {
-                            sharedViewModel.onBarcodeRead(barCode ?: "")
-                            stopCamera {
-                                findNavController().popBackStack()
-                            }
-                        }
+                        viewModel.onBarcodeScanned(code)
                     }
 
                     override fun onCodeNotFound(error: String?) {
@@ -296,6 +320,8 @@ class CameraFragment: Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        notFoundDialog?.dismiss()
+        notFoundDialog = null
         toneGenerator?.release()
         toneGenerator = null
         cameraView = null
