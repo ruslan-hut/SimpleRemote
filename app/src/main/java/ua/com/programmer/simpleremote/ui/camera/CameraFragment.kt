@@ -56,6 +56,7 @@ class CameraFragment: Fragment() {
     private var outputDirectory: File? = null
     private var imageFileName: String? = null
     private var toneGenerator: ToneGenerator? = null
+    private var isTakingPhoto = false
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -100,6 +101,7 @@ class CameraFragment: Fragment() {
         binding.buttonRepeat.setOnClickListener {
             resetCamera()
         }
+        binding.buttonConfirm.isEnabled = false
         binding.buttonConfirm.setOnClickListener {
             takePhoto()
         }
@@ -121,6 +123,9 @@ class CameraFragment: Fragment() {
                             binding.textLines.visibility = View.GONE
                         } else {
                             binding.textLines.visibility = View.VISIBLE
+                            binding.buttonConfirm.visibility = View.VISIBLE
+                            binding.delimiter.visibility = View.VISIBLE
+                            binding.buttonConfirm.isEnabled = imageCapture != null && !isTakingPhoto
                         }
                         setupCamera(it)
                     }
@@ -139,8 +144,15 @@ class CameraFragment: Fragment() {
             return
         }
         Log.d("RC_CameraFragment", "setupCamera: scan=$scanMode")
+        if (!scanMode) {
+            imageCapture = null
+            binding.buttonConfirm.isEnabled = false
+        }
         cameraView = binding.cameraView
         cameraProvider.addListener(Runnable {
+            if (_binding == null) {
+                return@Runnable
+            }
             val preview = Preview.Builder().build()
             preview.surfaceProvider = cameraView?.surfaceProvider
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -149,6 +161,7 @@ class CameraFragment: Fragment() {
             cameraProvider.unbindAll()
 
             if (scanMode) {
+                imageCapture = null
                 val executor = cameraExecutor ?: return@Runnable
                 val imageAnalysis = ImageAnalysis.Builder().build()
                 barcodeAnalyzer?.close()
@@ -181,15 +194,19 @@ class CameraFragment: Fragment() {
                     Log.e("RC_CameraFragment", "image analysis: bind provider error: ${e.message}")
                 }
             }else{
-                imageCapture = ImageCapture.Builder().build()
+                val capture = ImageCapture.Builder().build()
                 try {
                     cameraProvider.bindToLifecycle(
                         viewLifecycleOwner,
                         cameraSelector,
                         preview,
-                        imageCapture
+                        capture
                     )
+                    imageCapture = capture
+                    binding.buttonConfirm.isEnabled = !isTakingPhoto
                 } catch (e: kotlin.Exception) {
+                    imageCapture = null
+                    binding.buttonConfirm.isEnabled = false
                     Log.e("RC_CameraFragment", "image capture: bind provider error: ${e.message}")
                 }
             }
@@ -232,6 +249,19 @@ class CameraFragment: Fragment() {
     }
 
     private fun takePhoto() {
+        val capture = imageCapture
+        val executor = cameraExecutor
+        if (capture == null || isTakingPhoto) {
+            Log.w("RC_CameraFragment", "takePhoto: imageCapture is not ready")
+            return
+        }
+        if (executor == null) {
+            Log.w("RC_CameraFragment", "takePhoto: cameraExecutor is not ready")
+            return
+        }
+        isTakingPhoto = true
+        binding.buttonConfirm.isEnabled = false
+
         imageFileName = UUID.randomUUID().toString() + ".jpg"
 
         val fileOptions = ImageCapture.OutputFileOptions.Builder(
@@ -240,8 +270,7 @@ class CameraFragment: Fragment() {
 
         makeBeep()
 
-        val executor = cameraExecutor ?: return
-        imageCapture!!.takePicture(fileOptions, executor, object :
+        capture.takePicture(fileOptions, executor, object :
             ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 Log.d("RC_CameraFragment", "Image saved: ${outputFileResults.savedUri}")
@@ -252,6 +281,10 @@ class CameraFragment: Fragment() {
             }
 
             override fun onError(exception: ImageCaptureException) {
+                isTakingPhoto = false
+                view?.post {
+                    _binding?.buttonConfirm?.isEnabled = imageCapture != null
+                }
                 imageFileName = ""
                 Log.e("RC_CameraFragment", "Image capture failed: ${exception.message}")
             }
@@ -264,6 +297,7 @@ class CameraFragment: Fragment() {
         toneGenerator = null
         cameraView = null
         imageCapture = null
+        isTakingPhoto = false
         barcodeAnalyzer?.close()
         barcodeAnalyzer = null
         cameraExecutor?.shutdown()
