@@ -38,17 +38,14 @@
             </intent-filter>
         </activity>
 
-        <!--
-            Workaround for a known Google Play Services bug: SignInHubActivity crashes with
-            NPE when Android recreates it after process death, because the Intent extras are
-            lost. The app does not use Google Sign-In directly (only Firebase Email/Password
-            auth), but firebase-auth pulls in play-services-auth which registers this activity.
-            See: https://github.com/firebase/firebase-android-sdk/issues/4WW
-        -->
+        <!-- Firebase Auth pulls in this transient Play Services proxy activity. Some devices
+             restore it without the private Intent extras it requires, causing an internal NPE. -->
         <activity
             android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
             android:excludeFromRecents="true"
             android:exported="false"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
             tools:node="merge"
             tools:ignore="MissingClass" />
 
