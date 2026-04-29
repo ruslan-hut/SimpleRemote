@@ -32,6 +32,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.com.programmer.simpleremote.R
 import ua.com.programmer.simpleremote.databinding.FragmentCameraBinding
 import ua.com.programmer.simpleremote.ui.shared.SharedViewModel
@@ -84,7 +85,7 @@ class CameraFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCameraBinding.inflate(inflater)
         return binding.root
     }
@@ -190,7 +191,7 @@ class CameraFragment: Fragment() {
                         imageAnalysis,
                         preview
                     )
-                } catch (e: kotlin.Exception) {
+                } catch (e: Exception) {
                     Log.e("RC_CameraFragment", "image analysis: bind provider error: ${e.message}")
                 }
             }else{
@@ -204,7 +205,7 @@ class CameraFragment: Fragment() {
                     )
                     imageCapture = capture
                     binding.buttonConfirm.isEnabled = !isTakingPhoto
-                } catch (e: kotlin.Exception) {
+                } catch (e: Exception) {
                     imageCapture = null
                     binding.buttonConfirm.isEnabled = false
                     Log.e("RC_CameraFragment", "image capture: bind provider error: ${e.message}")
@@ -233,7 +234,9 @@ class CameraFragment: Fragment() {
         if (view == null) return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             try {
-                cameraProvider.get().unbindAll()
+                withContext(Dispatchers.IO) {
+                    cameraProvider.get()
+                }.unbindAll()
                 onStop()
             } catch (e: Exception) {
                 Log.e("RC_CameraFragment", "stopCamera: $e")
